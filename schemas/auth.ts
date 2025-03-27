@@ -1,4 +1,4 @@
-import { object, string } from 'zod';
+import { object, string, boolean } from 'zod';
 
 const getPasswordSchema = (type: 'password' | 'confirmPassword') =>
     string({ required_error: `${type} is required` })
@@ -20,4 +20,10 @@ export const ResetPasswordSchema = object({
 }).refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
     path: ['confirmPassword']
+});
+
+export const LoginSchema = object({
+    email: getEmailSchema(),
+    password: getPasswordSchema('password'),
+    rememberMe: boolean().default(true)
 });

@@ -10,27 +10,43 @@ generator client {
 }
 
 enum UserRole {
-  ADMIN
-  CONSUMER
   BUSINESSADMIN
   TECHNICAL
   PAYMENTS
 }
 
+enum Status {
+  DRAFT
+  PENDING
+  APPROVED
+  DISABLED
+  REJECTED
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+  NOTSAY
+}
+
 model User {
-  id            String    @id @default(cuid())
+  id            String        @id @default(cuid())
   name          String
   email         String
   emailVerified Boolean
   image         String?
-  createdAt     DateTime
-  updatedAt     DateTime
   sessions      Session[]
   accounts      Account[]
   role          String?
   banned        Boolean?
   banReason     String?
   banExpires    DateTime?
+  lastName      String
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  consumer      Consumer?
+  merchantUser  MerchantUser?
 
   @@unique([email])
   @@map("user")
@@ -40,8 +56,8 @@ model Session {
   id        String   @id @default(cuid())
   expiresAt DateTime
   token     String
-  createdAt DateTime
-  updatedAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   ipAddress String?
   userAgent String?
   userId    String
@@ -66,8 +82,8 @@ model Account {
   refreshTokenExpiresAt DateTime?
   scope                 String?
   password              String?
-  createdAt             DateTime
-  updatedAt             DateTime
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
 
   @@map("account")
 }
@@ -81,4 +97,169 @@ model Verification {
   updatedAt  DateTime?
 
   @@map("verification")
+}
+
+model Consumer {
+  id          String     @id @default(cuid())
+  barcode     String
+  user        User       @relation(fields: [userId], references: [id])
+  userId      String     @unique
+  gender      Gender
+  dateOfBirth DateTime?
+  phoneNumber String?
+  roles       UserRole[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  Receipts    Receipt[]
+}
+
+model MerchantUser {
+  id             String   @id @default(cuid())
+  jobTitle       String
+  phoneNumber    String
+  primaryContact Boolean
+  merchant       Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  merchantId     String
+  brand          Brand    @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  brandId        String
+  user           User     @relation(fields: [userId], references: [id])
+  userId         String   @unique
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Country {
+  id        String     @id @default(cuid())
+  isoCode   String
+  name      String
+  currency  String
+  states    State[]
+  Merchants Merchant[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  Store     Store[]
+  Brand     Brand[]
+}
+
+model State {
+  id        String     @id @default(cuid())
+  isoCode   String
+  name      String
+  country   Country    @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  countryId String
+  Merchants Merchant[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  Store     Store[]
+  Brand     Brand[]
+}
+
+model Merchant {
+  id               String         @id @default(cuid())
+  name             String
+  status           Status
+  phoneNumber      String
+  genericEmail     String
+  invoiceEmail     String?
+  address1         String
+  address2         String
+  suburb           String
+  postcode         String
+  state            State          @relation(fields: [stateId], references: [id], onDelete: Cascade)
+  stateId          String
+  country          Country        @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  countryId        String
+  formattedAddress String
+  latitude         Float
+  longitude        Float
+  abn              String
+  acn              String
+  logoUrl          String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  Brands           Brand[]
+  MerchantUser     MerchantUser[]
+}
+
+model Brand {
+  id               String         @id @default(cuid())
+  status           Status
+  merchant         Merchant       @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  merchantId       String
+  name             String
+  tradingAsName    String
+  logoUrl          String
+  address1         String
+  address2         String
+  suburb           String
+  postcode         String
+  state            State          @relation(fields: [stateId], references: [id], onDelete: Cascade)
+  stateId          String
+  country          Country        @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  countryId        String
+  formattedAddress String
+  latitude         Float
+  longitude        Float
+  abn              String?
+  acn              String?
+  phoneNumber      String
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  Stores           Store[]
+  MerchantUsers    MerchantUser[]
+}
+
+model Store {
+  id               String    @id @default(cuid())
+  status           Status
+  brand            Brand     @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  brandId          String
+  address1         String
+  address2         String
+  suburb           String
+  postcode         String
+  state            State     @relation(fields: [stateId], references: [id], onDelete: Cascade)
+  stateId          String
+  country          Country   @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  countryId        String
+  formattedAddress String
+  latitude         Float
+  longitude        Float
+  abn              String?
+  acn              String?
+  phoneNumber      String
+  currency         String
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  Receipts         Receipt[]
+}
+
+model Receipt {
+  id               String        @id @default(cuid())
+  consumer         Consumer      @relation(fields: [consumerId], references: [id], onDelete: Cascade)
+  consumerId       String
+  store            Store         @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  storeId          String
+  subTotal         Float
+  tax              Float
+  cardSurcharge    Float
+  otherInformation String[]
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  ReceiptItems     ReceiptItem[]
+}
+
+model ReceiptItem {
+  id          String  @id @default(cuid())
+  receipt     Receipt @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+  receiptId   String
+  name        String
+  sku         String?
+  description String?
+  modelNumber String?
+  quantity    Int
+  itemCost    Float
+  itemTax     Float
+  subTotal    Float
+  tax         Float
 }

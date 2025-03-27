@@ -1,7 +1,16 @@
+import { SidebarProvider } from '@/context/SidebarContext';
+import { ThemeProvider } from '@/context/ThemeContext';
+
 export default function FullWidthPageLayout({
-  children,
+    children
 }: {
-  children: React.ReactNode;
+    children: React.ReactNode;
 }) {
-  return <div>{children}</div>;
+    return (
+        <div>
+            <ThemeProvider>
+                <SidebarProvider>{children}</SidebarProvider>
+            </ThemeProvider>
+        </div>
+    );
 }

@@ -1,18 +1,63 @@
 'use client';
 
-import { EyeClosed, EyeIcon } from 'lucide-react';
+import * as z from 'zod';
+import { useForm } from 'react-hook-form';
+import { useState, useTransition } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useState } from 'react';
 
-import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormMessage
+} from '@/components/ui/form';
 import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+    PasswordInputAuth,
+    FormInputAuth
+} from '@/components/form/FormInputAuth';
+import { AuthSubmitButton } from '@/components/form/Buttons';
+import { LoginSchema } from '@/schemas/auth';
+import { authClient } from '@/lib/auth-client';
+import FormError from '@/components/form/FormError';
 
-import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 const LoginForm = () => {
-    const [showPassword, setShowPassword] = useState(false);
+    const router = useRouter();
+    const [error, setError] = useState<string | undefined>('');
+    const [isPending, startTransition] = useTransition();
+
+    const form = useForm<z.infer<typeof LoginSchema>>({
+        resolver: zodResolver(LoginSchema),
+        defaultValues: {
+            email: '',
+            password: '',
+            rememberMe: true
+        }
+    });
+
+    const onSubmit = (values: z.infer<typeof LoginSchema>) => {
+        setError('');
+        startTransition(async () => {
+            const { error } = await authClient.signIn.email({
+                email: values.email,
+                password: values.password,
+                rememberMe: values.rememberMe
+            });
+            if (error) {
+                toast.error(error.message);
+            } else {
+                router.push('/merchant/');
+                router.refresh();
+            }
+        });
+    };
+
     return (
         <div className="flex w-full flex-1 flex-col lg:w-1/2">
             <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center">
@@ -26,71 +71,81 @@ const LoginForm = () => {
                         </p>
                     </div>
                     <div>
-                        <form action="/">
-                            <div className="flex flex-col space-y-6">
-                                <div>
-                                    <Label
-                                        htmlFor="email"
-                                        className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400"
-                                    >
-                                        Email{' '}
-                                        <span className="text-red-700">*</span>
-                                    </Label>
-                                    <Input
-                                        placeholder="info@gmail.com"
-                                        type="email"
+                        <Form {...form}>
+                            <FormError message={error} />
+                            <form
+                                className="space-y-6"
+                                onSubmit={form.handleSubmit(onSubmit)}
+                            >
+                                <div className="relative">
+                                    <FormField
+                                        control={form.control}
                                         name="email"
-                                        className={cn('h-11')}
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormControl>
+                                                    <FormInputAuth
+                                                        {...field}
+                                                        label="Email"
+                                                        name="email"
+                                                        type="text"
+                                                        defaultValue=""
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
                                     />
                                 </div>
-                                <div>
-                                    <Label
-                                        htmlFor="password"
-                                        className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400"
-                                    >
-                                        Password{' '}
-                                        <span className="text-red-700">
-                                            *
-                                        </span>{' '}
-                                    </Label>
-                                    <div className="relative">
-                                        <Input
-                                            className={cn('h-11')}
-                                            type={
-                                                showPassword
-                                                    ? 'text'
-                                                    : 'password'
-                                            }
-                                            placeholder="Enter your password"
-                                        />
-                                        <span
-                                            onClick={() =>
-                                                setShowPassword(!showPassword)
-                                            }
-                                            className="absolute top-1/2 right-4 z-30 -translate-y-1/2 cursor-pointer"
-                                        >
-                                            {showPassword ? (
-                                                <EyeIcon />
-                                            ) : (
-                                                <EyeClosed />
-                                            )}
-                                        </span>
-                                    </div>
+                                <div className="relative">
+                                    <FormField
+                                        control={form.control}
+                                        name="password"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormControl>
+                                                    <PasswordInputAuth
+                                                        {...field}
+                                                        label="Password"
+                                                        name="password"
+                                                        type="password"
+                                                        defaultValue=""
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
                                 </div>
                                 <div className="flex items-center justify-between">
                                     <div className="items-center flex space-x-2">
-                                        <Checkbox
-                                            id="rememberme"
-                                            className="size-5"
+                                        <FormField
+                                            control={form.control}
+                                            name="rememberMe"
+                                            render={({ field }) => (
+                                                <FormItem className="flex items-center space-x-2">
+                                                    <FormControl>
+                                                        <Checkbox
+                                                            className="size-5"
+                                                            checked={
+                                                                field.value
+                                                            }
+                                                            onCheckedChange={(
+                                                                checked
+                                                            ) =>
+                                                                field.onChange(
+                                                                    checked ===
+                                                                        true
+                                                                )
+                                                            }
+                                                        />
+                                                    </FormControl>
+                                                    <Label className="text-sm font-normal block text-gray-700 dark:text-gray-400">
+                                                        Remember Me
+                                                    </Label>
+                                                </FormItem>
+                                            )}
                                         />
-                                        <div className="grid gap-1.5 ">
-                                            <label
-                                                htmlFor="rememberme"
-                                                className="text-sm font-normal block text-gray-700 dark:text-gray-400"
-                                            >
-                                                Keep me logged in
-                                            </label>
-                                        </div>
                                     </div>
                                     <Link
                                         href="/merchant/forgot-password"
@@ -100,12 +155,22 @@ const LoginForm = () => {
                                     </Link>
                                 </div>
                                 <div>
+                                    <AuthSubmitButton
+                                        text="Login"
+                                        isPending={isPending}
+                                    />
+                                </div>
+                            </form>
+                        </Form>
+
+                        {/* 
+                                <div>
                                     <Button className="bg-blue-700 w-full h-11 hover:bg-blue-800 cursor-pointer dark:text-white">
                                         Sign in
                                     </Button>
                                 </div>
                             </div>
-                        </form>
+                        </form> */}
                     </div>
                 </div>
             </div>

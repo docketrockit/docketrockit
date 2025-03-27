@@ -13,24 +13,18 @@ import {
     FormItem,
     FormMessage
 } from '@/components/ui/form';
-import { FormInputAuth } from '@/components/form/FormInputAuth';
+import { PasswordInputAuth } from '@/components/form/FormInputAuth';
 import { toast } from 'sonner';
 
 import { ResetPasswordSchema } from '@/schemas/auth';
 import { authClient } from '@/lib/auth-client';
 import { AuthSubmitButton } from '@/components/form/Buttons';
 import FormError from '@/components/form/FormError';
-import FormSuccess from '@/components/form/FormSuccess';
-
-export interface ResetPasswordFormProps {
-    token: string | undefined;
-    tokenError: string | null;
-}
+import { ResetPasswordFormProps } from '@/types/auth';
 
 const ResetPasswordForm = ({ token, tokenError }: ResetPasswordFormProps) => {
     const router = useRouter();
     const [error, setError] = useState<string | undefined>('');
-    const [success, setSuccess] = useState<string | undefined>('');
     const [isPending, startTransition] = useTransition();
 
     const form = useForm<z.infer<typeof ResetPasswordSchema>>({
@@ -43,20 +37,17 @@ const ResetPasswordForm = ({ token, tokenError }: ResetPasswordFormProps) => {
 
     const onSubmit = (values: z.infer<typeof ResetPasswordSchema>) => {
         setError('');
-        setSuccess('');
 
         startTransition(async () => {
-            const { error } = await authClient.forgetPassword({
-                email: values.password,
-                redirectTo: '/reset-password'
+            const { error } = await authClient.resetPassword({
+                newPassword: values.password,
+                token
             });
             if (error) {
                 toast.error(error.message);
             } else {
-                toast.success('Password reset');
-                setSuccess(
-                    'If an account exists with this email, you will receive a password reset link.'
-                );
+                toast.success('Password reset successful. Login to continue.');
+                router.push('/merchant/login');
             }
         });
     };
@@ -68,13 +59,8 @@ const ResetPasswordForm = ({ token, tokenError }: ResetPasswordFormProps) => {
                     <div>
                         <div className="mb-5 sm:mb-8">
                             <h1 className="text-3xl sm:text-4xl mb-2 font-semibold text-gray-800 dark:text-white/90">
-                                Forgot Your Password?
+                                Reset Password
                             </h1>
-                            {/* <p className="text-sm text-gray-500 dark:text-gray-400">
-                                Enter the email address linked to your account,
-                                and we’ll send you a link to reset your
-                                password.
-                            </p> */}
                         </div>
                         <div>
                             <FormError message={tokenError} />
@@ -91,53 +77,68 @@ const ResetPasswordForm = ({ token, tokenError }: ResetPasswordFormProps) => {
                 <div>
                     <div className="mb-5 sm:mb-8">
                         <h1 className="text-3xl sm:text-4xl mb-2 font-semibold text-gray-800 dark:text-white/90">
-                            Forgot Your Password?
+                            Reset Password
                         </h1>
                         <p className="text-sm text-gray-500 dark:text-gray-400">
-                            Enter the email address linked to your account, and
-                            we’ll send you a link to reset your password.
+                            Use the form below to reset your password.
                         </p>
                     </div>
                     <div>
-                        {success ? (
-                            <FormSuccess message={success} />
-                        ) : (
-                            <Form {...form}>
-                                <FormError message={error} />
-                                <form
-                                    className="space-y-6"
-                                    onSubmit={form.handleSubmit(onSubmit)}
-                                >
-                                    <div className="relative">
-                                        <FormField
-                                            control={form.control}
-                                            name="email"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormControl>
-                                                        <FormInputAuth
-                                                            {...field}
-                                                            label="Email"
-                                                            name="email"
-                                                            type="text"
-                                                            defaultValue=""
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
+                        <Form {...form}>
+                            <FormError message={error} />
+                            <form
+                                className="space-y-6"
+                                onSubmit={form.handleSubmit(onSubmit)}
+                            >
+                                <div className="relative">
+                                    <FormField
+                                        control={form.control}
+                                        name="password"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormControl>
+                                                    <PasswordInputAuth
+                                                        {...field}
+                                                        label="Password"
+                                                        name="password"
+                                                        type="password"
+                                                        defaultValue=""
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+                                <div className="relative">
+                                    <FormField
+                                        control={form.control}
+                                        name="confirmPassword"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormControl>
+                                                    <PasswordInputAuth
+                                                        {...field}
+                                                        label="Confirm Password"
+                                                        name="confirmPassword"
+                                                        type="password"
+                                                        defaultValue=""
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
 
-                                    <div>
-                                        <AuthSubmitButton
-                                            text="Reset Password"
-                                            isPending={isPending}
-                                        />
-                                    </div>
-                                </form>
-                            </Form>
-                        )}
+                                <div>
+                                    <AuthSubmitButton
+                                        text="Reset Password"
+                                        isPending={isPending}
+                                    />
+                                </div>
+                            </form>
+                        </Form>
                     </div>
                 </div>
             </div>
