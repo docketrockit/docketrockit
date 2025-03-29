@@ -9,10 +9,17 @@ generator client {
   previewFeatures = ["fullTextSearchPostgres"]
 }
 
-enum UserRole {
+enum MerchantRole {
   BUSINESSADMIN
   TECHNICAL
   PAYMENTS
+}
+
+enum AdminRole {
+  ADMIN
+  SALES
+  TECHNICAL
+  ACCOUNTS
 }
 
 enum Status {
@@ -47,6 +54,7 @@ model User {
   updatedAt     DateTime      @updatedAt
   consumer      Consumer?
   merchantUser  MerchantUser?
+  adminUser     AdminUser?
 
   @@unique([email])
   @@map("user")
@@ -100,32 +108,43 @@ model Verification {
 }
 
 model Consumer {
-  id          String     @id @default(cuid())
+  id          String    @id @default(cuid())
   barcode     String
-  user        User       @relation(fields: [userId], references: [id])
-  userId      String     @unique
+  user        User      @relation(fields: [userId], references: [id])
+  userId      String    @unique
   gender      Gender
   dateOfBirth DateTime?
   phoneNumber String?
-  roles       UserRole[]
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
   Receipts    Receipt[]
 }
 
 model MerchantUser {
-  id             String   @id @default(cuid())
+  id             String         @id @default(cuid())
   jobTitle       String
   phoneNumber    String
   primaryContact Boolean
-  merchant       Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  access         MerchantRole[]
+  merchant       Merchant       @relation(fields: [merchantId], references: [id], onDelete: Cascade)
   merchantId     String
-  brand          Brand    @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  brand          Brand          @relation(fields: [brandId], references: [id], onDelete: Cascade)
   brandId        String
-  user           User     @relation(fields: [userId], references: [id])
-  userId         String   @unique
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  user           User           @relation(fields: [userId], references: [id])
+  userId         String         @unique
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+model AdminUser {
+  id          String      @id @default(cuid())
+  jobTitle    String
+  phoneNumber String
+  access      AdminRole[]
+  user        User        @relation(fields: [userId], references: [id])
+  userId      String      @unique
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 }
 
 model Country {

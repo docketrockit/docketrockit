@@ -41,3 +41,28 @@ export const AuthSubmitButton = ({
         </Button>
     );
 };
+
+export const SubmitButton = ({
+    className = '',
+    text = 'submit',
+    size = 'lg',
+    isPending
+}: SubmitButtonProps) => {
+    return (
+        <Button
+            type="submit"
+            disabled={isPending}
+            className={cn(className)}
+            size={size}
+        >
+            {isPending ? (
+                <>
+                    <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                    Please wait...
+                </>
+            ) : (
+                text
+            )}
+        </Button>
+    );
+};

@@ -1,5 +1,12 @@
 export enum UserRole {
-    BUSINESSADMIN = 'BUSINESSADMIN',
-    TECHNICAL = 'TECHNICAL',
-    PAYMENTS = 'PAYMENTS'
+    BUSINESSADMIN = 'Business Admin',
+    TECHNICAL = 'Technical',
+    PAYMENTS = 'Payments'
+}
+
+export enum AdminRole {
+    ADMIN = 'Admin',
+    SALES = 'Sales',
+    TECHNICAL = 'Technical',
+    ACCOUNTS = 'Accounts'
 }

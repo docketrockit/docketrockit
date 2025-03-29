@@ -4,7 +4,6 @@ import { useSidebar } from '@/context/SidebarContext';
 import AppHeader from '@/components/layout/AppHeader';
 import AppSidebar from '@/components/layout/AppSidebar';
 import Backdrop from '@/components/layout/Backdrop';
-import React from 'react';
 
 export default function AdminLayout({
     children

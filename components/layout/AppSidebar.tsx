@@ -1,8 +1,10 @@
 'use client';
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+
+import { useEffect, useRef, useState, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
+
 import { useSidebar } from '@/context/SidebarContext';
 import {
     GridIcon,
@@ -10,7 +12,9 @@ import {
     UserCircleIcon,
     ChevronDownIcon,
     Ellipsis,
-    FileText
+    FileText,
+    Building2,
+    UsersRound
 } from 'lucide-react';
 
 import logo from '../../public/images/logo/logo.png';
@@ -29,23 +33,51 @@ const navItems: NavItem[] = [
     {
         icon: <GridIcon />,
         name: 'Dashboard',
-        path: '/'
+        path: '/merchant'
     },
     {
-        icon: <TableProperties />,
-        name: 'Reports',
-        path: '/reports'
-    },
-    {
-        icon: <UserCircleIcon />,
         name: 'Users',
-        path: '/users'
+        icon: <UsersRound />,
+        subItems: [
+            {
+                name: 'Add Admin User',
+                path: '/merchant/users/admin/add'
+            },
+            {
+                name: 'Add Merchant User',
+                path: '/merchant/users/merchants/add'
+            },
+            { name: 'View Admin Users', path: '/merchant/users/admin' },
+            { name: 'View Merchant Users', path: '/merchant/users/merchants' },
+            { name: 'View Consumer Users', path: '/merchant/users/consumers' }
+        ]
     },
     {
-        name: 'Invoices',
-        icon: <FileText />,
-        path: '/invoices'
+        name: 'Merchants',
+        icon: <Building2 />,
+        subItems: [
+            {
+                name: 'Add Merchant',
+                path: '/merchant/merchants/add'
+            },
+            { name: 'View Merchants', path: '/merchant/merchants' }
+        ]
     }
+    // {
+    //     icon: <TableProperties />,
+    //     name: 'Reports',
+    //     path: '/reports'
+    // },
+    // {
+    //     icon: <UserCircleIcon />,
+    //     name: 'Users',
+    //     path: '/users'
+    // },
+    // {
+    //     name: 'Invoices',
+    //     icon: <FileText />,
+    //     path: '/invoices'
+    // }
 ];
 
 const AppSidebar: React.FC = () => {
