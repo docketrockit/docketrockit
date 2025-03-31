@@ -9,19 +9,6 @@ generator client {
   previewFeatures = ["fullTextSearchPostgres"]
 }
 
-enum MerchantRole {
-  BUSINESSADMIN
-  TECHNICAL
-  PAYMENTS
-}
-
-enum AdminRole {
-  ADMIN
-  SALES
-  TECHNICAL
-  ACCOUNTS
-}
-
 enum Status {
   DRAFT
   PENDING
@@ -37,74 +24,76 @@ enum Gender {
   NOTSAY
 }
 
+enum Role {
+  CONSUMER
+  MERCHANT
+  ADMIN
+}
+
 model User {
-  id            String        @id @default(cuid())
-  name          String
-  email         String
-  emailVerified Boolean
-  image         String?
-  sessions      Session[]
-  accounts      Account[]
-  role          String?
-  banned        Boolean?
-  banReason     String?
-  banExpires    DateTime?
-  lastName      String
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  consumer      Consumer?
-  merchantUser  MerchantUser?
-  adminUser     AdminUser?
+  id                       String                     @id @default(cuid())
+  firstName                String
+  lastName                 String
+  email                    String
+  emailVerified            Boolean                    @default(false)
+  emailVerifiedTime        DateTime?
+  password                 String
+  image                    String?
+  role                     Role[]
+  totpKey                  Bytes?
+  recoveryCode             Bytes
+  createdAt                DateTime                   @default(now())
+  updatedAt                DateTime                   @updatedAt
+  consumer                 Consumer?
+  merchantUser             MerchantUser?
+  adminUser                AdminUser?
+  Session                  Session[]
+  EmailVerificationRequest EmailVerificationRequest[]
+  PasswordResetSession     PasswordResetSession[]
 
   @@unique([email])
-  @@map("user")
 }
 
 model Session {
-  id        String   @id @default(cuid())
-  expiresAt DateTime
-  token     String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  ipAddress String?
-  userAgent String?
+  id                String   @id @default(cuid())
+  expiresAt         Int
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  ipAddress         String?
+  userAgent         String?
+  twoFactorVerified Boolean  @default(false)
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId])
+}
+
+model EmailVerificationRequest {
+  id        String   @id
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  email     String
+  expiresAt Int
+  code      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  impersonatedBy String?
-
-  @@unique([token])
-  @@map("session")
+  @@unique([userId])
 }
 
-model Account {
-  id                    String    @id @default(cuid())
-  accountId             String
-  providerId            String
-  userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accessToken           String?
-  refreshToken          String?
-  idToken               String?
-  accessTokenExpiresAt  DateTime?
-  refreshTokenExpiresAt DateTime?
-  scope                 String?
-  password              String?
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+model PasswordResetSession {
+  id                String   @id
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  email             String
+  expiresAt         Int
+  code              String
+  emailVerified     Boolean  @default(false)
+  TwoFactorVerified Boolean  @default(false)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
-  @@map("account")
-}
-
-model Verification {
-  id         String    @id @default(cuid())
-  identifier String
-  value      String
-  expiresAt  DateTime
-  createdAt  DateTime?
-  updatedAt  DateTime?
-
-  @@map("verification")
+  @@unique([userId])
 }
 
 model Consumer {
@@ -121,30 +110,28 @@ model Consumer {
 }
 
 model MerchantUser {
-  id             String         @id @default(cuid())
+  id             String   @id @default(cuid())
   jobTitle       String
   phoneNumber    String
   primaryContact Boolean
-  access         MerchantRole[]
-  merchant       Merchant       @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  merchant       Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
   merchantId     String
-  brand          Brand          @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  brand          Brand    @relation(fields: [brandId], references: [id], onDelete: Cascade)
   brandId        String
-  user           User           @relation(fields: [userId], references: [id])
-  userId         String         @unique
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
+  user           User     @relation(fields: [userId], references: [id])
+  userId         String   @unique
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }
 
 model AdminUser {
-  id          String      @id @default(cuid())
+  id          String   @id @default(cuid())
   jobTitle    String
   phoneNumber String
-  access      AdminRole[]
-  user        User        @relation(fields: [userId], references: [id])
-  userId      String      @unique
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Country {
