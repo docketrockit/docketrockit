@@ -23,7 +23,6 @@ import {
 } from '@/components/form/FormInputAuth';
 import { AuthSubmitButton } from '@/components/form/Buttons';
 import { LoginSchema } from '@/schemas/auth';
-import { authClient } from '@/lib/auth-client';
 import FormError from '@/components/form/FormError';
 
 const LoginForm = () => {
@@ -43,17 +42,17 @@ const LoginForm = () => {
     const onSubmit = (values: z.infer<typeof LoginSchema>) => {
         setError('');
         startTransition(async () => {
-            const { error } = await authClient.signIn.email({
-                email: values.email,
-                password: values.password,
-                rememberMe: values.rememberMe
-            });
-            if (error) {
-                toast.error(error.message);
-            } else {
-                router.push('/merchant/');
-                router.refresh();
-            }
+            // const { error } = await authClient.signIn.email({
+            //     email: values.email,
+            //     password: values.password,
+            //     rememberMe: values.rememberMe
+            // });
+            // if (error) {
+            //     toast.error(error.message);
+            // } else {
+            //     router.push('/merchant/');
+            //     router.refresh();
+            // }
         });
     };
 

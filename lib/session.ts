@@ -17,6 +17,8 @@ export interface Session extends SessionFlags {
     id: string;
     expiresAt: Date;
     userId: string;
+    ipAddress: string;
+    userAgent: string;
 }
 
 type SessionValidationResult =
@@ -40,7 +42,9 @@ export const validateSessionToken = async (
         id: row.id,
         userId: row.userId,
         expiresAt: new Date(row.expiresAt * 1000),
-        twoFactorVerified: Boolean(row.twoFactorVerified)
+        twoFactorVerified: Boolean(row.twoFactorVerified),
+        ipAddress: row.ipAddress || '',
+        userAgent: row.userAgent || ''
     };
     const user: User = {
         id: row.user.id,
@@ -124,7 +128,9 @@ export function generateSessionToken(): string {
 export const createSession = async (
     token: string,
     userId: string,
-    flags: SessionFlags
+    flags: SessionFlags,
+    ipAddress: string,
+    userAgent: string
 ): Promise<Session> => {
     const sessionId = encodeHexLowerCase(
         sha256(new TextEncoder().encode(token))
@@ -133,14 +139,18 @@ export const createSession = async (
         id: sessionId,
         userId,
         expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
-        twoFactorVerified: flags.twoFactorVerified
+        twoFactorVerified: flags.twoFactorVerified,
+        ipAddress,
+        userAgent
     };
     await db.session.create({
         data: {
             id: session.id,
             userId: session.userId,
             expiresAt: Math.floor(session.expiresAt.getTime() / 1000),
-            twoFactorVerified: session.twoFactorVerified
+            twoFactorVerified: session.twoFactorVerified,
+            ipAddress,
+            userAgent
         }
     });
     return session;

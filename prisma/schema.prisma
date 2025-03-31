@@ -126,8 +126,8 @@ model MerchantUser {
 
 model AdminUser {
   id          String   @id @default(cuid())
-  jobTitle    String
-  phoneNumber String
+  jobTitle    String?
+  phoneNumber String?
   user        User     @relation(fields: [userId], references: [id])
   userId      String   @unique
   createdAt   DateTime @default(now())
