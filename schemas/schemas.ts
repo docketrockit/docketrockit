@@ -14,8 +14,8 @@ export const getEmailSchema = () =>
         .min(1, 'Email is required')
         .email('Invalid email');
 
-export const getStringSchema = (type: string) =>
+export const getStringSchema = (type: string, min = 1) =>
     string({ required_error: `${type} is required` }).min(
-        1,
+        min,
         `${type} is required`
     );

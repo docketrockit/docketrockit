@@ -6,14 +6,14 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
         const response = NextResponse.next();
         const token = request.cookies.get('session')?.value ?? null;
 
-        // Extract IP address and user agent
-        const ip: string =
-            request.headers.get('x-forwarded-for')?.split(',')[0] || '';
-        const userAgent: string = request.headers.get('user-agent') || '';
+        // // Extract IP address and user agent
+        // const ip: string =
+        //     request.headers.get('x-forwarded-for')?.split(',')[0] || '';
+        // const userAgent: string = request.headers.get('user-agent') || '';
 
         // Attach IP and user-agent to response headers (or log them)
-        response.headers.set('x-ip', ip);
-        response.headers.set('x-user-agent', userAgent);
+        // response.headers.set('x-ip', ip);
+        // response.headers.set('x-user-agent', userAgent);
 
         if (token !== null) {
             // Only extend cookie expiration on GET requests since we can be sure

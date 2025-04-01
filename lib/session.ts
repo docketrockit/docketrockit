@@ -55,7 +55,7 @@ export const validateSessionToken = async (
         lastName: row.user.lastName
     };
     if (Date.now() >= session.expiresAt.getTime()) {
-        await db.session.delete({ where: { id: session.id } });
+        await db.session.deleteMany({ where: { id: session.id } });
         return { session: null, user: null };
     }
     if (Date.now() >= session.expiresAt.getTime() - 1000 * 60 * 60 * 24 * 15) {
@@ -83,16 +83,17 @@ export const getCurrentSession = cache(
 );
 
 export const invalidateSession = async (sessionId: string): Promise<void> => {
-    await db.session.delete({ where: { id: sessionId } });
+    await db.session.deleteMany({ where: { id: sessionId } });
 };
 
 export const invalidateUserSessions = async (userId: string): Promise<void> => {
-    await db.user.delete({ where: { id: userId } });
+    await db.user.deleteMany({ where: { id: userId } });
 };
 
 export const setSessionTokenCookie = async (
     token: string,
-    expiresAt: Date
+    expiresAt: Date,
+    rememberMe: boolean
 ): Promise<void> => {
     const cookieStore = await cookies();
     cookieStore.set('session', token, {
@@ -100,14 +101,11 @@ export const setSessionTokenCookie = async (
         path: '/',
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
-        expires: expiresAt
+        expires: rememberMe ? expiresAt : undefined
     });
 };
 
-export const deleteSessionTokenCookie = async (
-    token: string,
-    expiresAt: Date
-): Promise<void> => {
+export const deleteSessionTokenCookie = async (): Promise<void> => {
     const cookieStore = await cookies();
     cookieStore.set('session', '', {
         httpOnly: true,
@@ -130,15 +128,19 @@ export const createSession = async (
     userId: string,
     flags: SessionFlags,
     ipAddress: string,
-    userAgent: string
+    userAgent: string,
+    rememberMe: boolean
 ): Promise<Session> => {
     const sessionId = encodeHexLowerCase(
         sha256(new TextEncoder().encode(token))
     );
+    const expiresAt = rememberMe
+        ? new Date(Date.now() + 1000 * 60 * 60 * 24 * 30) // 30 days
+        : new Date(Date.now() + 1000 * 60 * 60 * 24); // 1 day (or session-based)
     const session: Session = {
         id: sessionId,
         userId,
-        expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
+        expiresAt,
         twoFactorVerified: flags.twoFactorVerified,
         ipAddress,
         userAgent

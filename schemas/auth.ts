@@ -1,6 +1,6 @@
-import { object, boolean } from 'zod';
+import { object, boolean, string } from 'zod';
 
-import { getEmailSchema, getPasswordSchema } from './schemas';
+import { getEmailSchema, getPasswordSchema, getStringSchema } from './schemas';
 
 export const ForgotPasswordSchema = object({
     email: getEmailSchema()
@@ -18,4 +18,13 @@ export const LoginSchema = object({
     email: getEmailSchema(),
     password: getPasswordSchema('Password'),
     rememberMe: boolean().default(true)
+});
+
+export const VerifyEmailSchema = object({
+    code: getStringSchema('Verification code')
+});
+
+export const TwoFactorSetupSchema = object({
+    code: getStringSchema('Verification code'),
+    encodedKey: getStringSchema('Key', 28)
 });

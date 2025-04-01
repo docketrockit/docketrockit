@@ -14,6 +14,11 @@ export interface EmailVerificationRequest {
     expiresAt: Date;
 }
 
+export const sendVerificationEmailBucket = new ExpiringTokenBucket<string>(
+    3,
+    60 * 10
+);
+
 export const getUserEmailVerificationRequest = async (
     userId: string,
     id: string
@@ -42,7 +47,7 @@ export const getUserEmailVerificationRequest = async (
 export const deleteUserEmailVerificationRequest = async (
     userId: string
 ): Promise<void> => {
-    await db.emailVerificationRequest.delete({ where: { userId } });
+    await db.emailVerificationRequest.deleteMany({ where: { userId } });
 };
 
 export const createEmailVerificationRequest = async (
@@ -115,8 +120,3 @@ export const getUserEmailVerificationRequestFromRequest =
         }
         return request;
     };
-
-export const sendVerificationEmailBucket = new ExpiringTokenBucket<number>(
-    3,
-    60 * 10
-);

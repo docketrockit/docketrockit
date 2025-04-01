@@ -1,12 +1,17 @@
-"use client";
-import Image from "next/image";
-import Link from "next/link";
-import React, { useState } from "react";
-import { Dropdown } from "../ui/dropdown/Dropdown";
-import { DropdownItem } from "../ui/dropdown/DropdownItem";
+'use client';
+
+import Image from 'next/image';
+import Link from 'next/link';
+import { useState, useTransition } from 'react';
+import { toast } from 'sonner';
+
+import { Dropdown } from '@/components/ui/dropdown/Dropdown';
+import { DropdownItem } from '@/components/ui/dropdown/DropdownItem';
+import { logoutAction } from '@/actions/logout';
 
 export default function UserDropdown() {
     const [isOpen, setIsOpen] = useState(false);
+    const [isPending, startTransition] = useTransition();
 
     function toggleDropdown(
         e: React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -18,6 +23,16 @@ export default function UserDropdown() {
     function closeDropdown() {
         setIsOpen(false);
     }
+
+    const onLogout = () => {
+        startTransition(async () => {
+            const data = await logoutAction();
+            if (data.message) {
+                toast.error(data.message);
+            }
+        });
+    };
+
     return (
         <div className="relative">
             <button
@@ -44,7 +59,7 @@ export default function UserDropdown() {
 
                 <svg
                     className={`stroke-gray-500 transition-transform duration-200 dark:stroke-gray-400 ${
-                        isOpen ? "rotate-180" : ""
+                        isOpen ? 'rotate-180' : ''
                     }`}
                     width="18"
                     height="20"
@@ -153,9 +168,9 @@ export default function UserDropdown() {
                         </DropdownItem>
                     </li>
                 </ul>
-                <Link
-                    href="/signin"
-                    className="group text-theme-sm mt-3 flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
+                <div
+                    className="cursor-pointer group text-theme-sm mt-3 flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
+                    onClick={onLogout}
                 >
                     <svg
                         className="fill-gray-500 group-hover:fill-gray-700 dark:group-hover:fill-gray-300"
@@ -173,7 +188,7 @@ export default function UserDropdown() {
                         />
                     </svg>
                     Sign out
-                </Link>
+                </div>
             </Dropdown>
         </div>
     );

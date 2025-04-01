@@ -2,9 +2,8 @@
 
 import * as z from 'zod';
 import { useForm } from 'react-hook-form';
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { toast } from 'sonner';
 
@@ -24,9 +23,9 @@ import {
 import { AuthSubmitButton } from '@/components/form/Buttons';
 import { LoginSchema } from '@/schemas/auth';
 import FormError from '@/components/form/FormError';
+import { login } from '@/actions/login';
 
 const LoginForm = () => {
-    const router = useRouter();
     const [error, setError] = useState<string | undefined>('');
     const [isPending, startTransition] = useTransition();
 
@@ -42,19 +41,18 @@ const LoginForm = () => {
     const onSubmit = (values: z.infer<typeof LoginSchema>) => {
         setError('');
         startTransition(async () => {
-            // const { error } = await authClient.signIn.email({
-            //     email: values.email,
-            //     password: values.password,
-            //     rememberMe: values.rememberMe
-            // });
-            // if (error) {
-            //     toast.error(error.message);
-            // } else {
-            //     router.push('/merchant/');
-            //     router.refresh();
-            // }
+            const data = await login(values);
+            if (!data.result) {
+                form.setValue('password', '');
+                toast.error(data.message);
+                setError(data.message);
+            }
         });
     };
+
+    // useEffect(() => {
+    //     console.log('Form errors:', form.formState.errors);
+    // }, [form.formState.errors]);
 
     return (
         <div className="flex w-full flex-1 flex-col lg:w-1/2">
@@ -160,15 +158,6 @@ const LoginForm = () => {
                                 </div>
                             </form>
                         </Form>
-
-                        {/* 
-                                <div>
-                                    <Button className="bg-blue-700 w-full h-11 hover:bg-blue-800 cursor-pointer dark:text-white">
-                                        Sign in
-                                    </Button>
-                                </div>
-                            </div>
-                        </form> */}
                     </div>
                 </div>
             </div>

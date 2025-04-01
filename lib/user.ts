@@ -1,7 +1,9 @@
+'use server';
+
 import db from './db';
 import { decrypt, decryptToString, encrypt, encryptString } from './encryption';
 import { hashPassword } from './password';
-import { generateRandomRecoveryCode } from './utils';
+import { generateRandomRecoveryCodes } from './utils';
 
 export interface User {
     id: string;
@@ -19,13 +21,10 @@ export const createUser = async (
     lastName: string
 ): Promise<User> => {
     const passwordHash = await hashPassword(password);
-    const recoveryCode = generateRandomRecoveryCode();
-    const encryptedRecoveryCode = encryptString(recoveryCode);
     const row = await db.user.create({
         data: {
             email,
             password: passwordHash,
-            recoveryCode: encryptedRecoveryCode,
             firstName,
             lastName
         }
@@ -87,15 +86,22 @@ export const getUserPasswordHash = async (userId: string): Promise<string> => {
     return row.password;
 };
 
-export const getUserRecoverCode = async (userId: string): Promise<string> => {
+export const getUserRecoveryCodes = async (
+    userId: string
+): Promise<string[]> => {
     const row = await db.user.findUnique({
         where: { id: userId },
-        select: { recoveryCode: true }
+        select: { recoveryCodes: true }
     });
     if (!row) {
         throw new Error('Invalid user ID');
     }
-    return decryptToString(row.recoveryCode);
+    const recoveryCodes = row.recoveryCodes.map((code) => {
+        console.log(decryptToString(code));
+        return decryptToString(code);
+    });
+    console.log(recoveryCodes);
+    return recoveryCodes;
 };
 
 export const getUserTOTPKey = async (
@@ -128,16 +134,18 @@ export const updateUserTOTPKey = async (
 
 export const resetUserRecoveryCode = async (
     userId: string
-): Promise<string> => {
-    const recoveryCode = generateRandomRecoveryCode();
-    const encrypted = encryptString(recoveryCode);
+): Promise<string[]> => {
+    const recoveryCodes = generateRandomRecoveryCodes();
+    const encryptedRecoveryCodes = recoveryCodes.map((code) => {
+        return encryptString(code);
+    });
     await db.user.update({
         where: { id: userId },
         data: {
-            recoveryCode: encrypted
+            recoveryCodes: encryptedRecoveryCodes
         }
     });
-    return recoveryCode;
+    return recoveryCodes;
 };
 
 export const getUserFromEmail = async (email: string): Promise<User | null> => {

@@ -3,7 +3,7 @@ import { sha256 } from '@oslojs/crypto/sha2';
 import { cookies } from 'next/headers';
 
 import db from './db';
-import { generateRandomOTP } from './utils';
+import { generateResetPasswordToken } from './utils';
 import type { User } from './user';
 
 export interface PasswordResetSession {
@@ -33,7 +33,7 @@ export const createPasswordResetSession = async (
         userId,
         email,
         expiresAt: new Date(Date.now() + 1000 * 60 * 10),
-        code: generateRandomOTP(),
+        code: generateResetPasswordToken(),
         emailVerified: false,
         twoFactorVerified: false
     };
@@ -80,7 +80,7 @@ export const validatePasswordResetSessionToken = async (
         lastName: row.user.lastName
     };
     if (Date.now() >= session.expiresAt.getTime()) {
-        await db.passwordResetSession.delete({ where: { id: session.id } });
+        await db.passwordResetSession.deleteMany({ where: { id: session.id } });
         return { session: null, user: null };
     }
     return { session, user };
@@ -107,7 +107,7 @@ export const setPasswordResetSessionAs2FAVerified = async (
 export const invalidateUserPasswordResetSessions = async (
     userId: string
 ): Promise<void> => {
-    await db.passwordResetSession.delete({
+    await db.passwordResetSession.deleteMany({
         where: { userId }
     });
 };

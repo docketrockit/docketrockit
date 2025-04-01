@@ -1,21 +1,17 @@
-import { hash, verify } from '@node-rs/argon2';
+import { compare, hash, genSalt } from 'bcrypt-ts';
 import { sha1 } from '@oslojs/crypto/sha1';
 import { encodeHexLowerCase } from '@oslojs/encoding';
 
 export const hashPassword = async (password: string): Promise<string> => {
-    return await hash(password, {
-        memoryCost: 19456,
-        timeCost: 2,
-        outputLen: 32,
-        parallelism: 1
-    });
+    const salt = await genSalt(10);
+    return await hash(password, salt);
 };
 
 export const verifyPasswordHash = async (
     hash: string,
     password: string
 ): Promise<boolean> => {
-    return await verify(hash, password);
+    return await compare(password, hash);
 };
 
 export const verifyPasswordStrength = async (

@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { useState, useTransition } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
+import { toast } from 'sonner';
 
 import {
     Form,
@@ -14,12 +15,11 @@ import {
     FormMessage
 } from '@/components/ui/form';
 import { FormInputAuth } from '@/components/form/FormInputAuth';
-import { toast } from 'sonner';
 
 import { ForgotPasswordSchema } from '@/schemas/auth';
-import { authClient } from '@/lib/auth-client';
 import { AuthSubmitButton } from '@/components/form/Buttons';
 import FormError from '@/components/form/FormError';
+import { forgotPasswordAction } from '@/actions/forgotPassword';
 import FormSuccess from '@/components/form/FormSuccess';
 
 const ForgotPasswordForm = () => {
@@ -39,12 +39,9 @@ const ForgotPasswordForm = () => {
         setSuccess('');
 
         startTransition(async () => {
-            const { error } = await authClient.forgetPassword({
-                email: values.email,
-                redirectTo: '/merchant/reset-password'
-            });
-            if (error) {
-                toast.error(error.message);
+            const data = await forgotPasswordAction(values);
+            if (!data.result) {
+                toast.error(data.message);
             } else {
                 toast.success('Password reset');
                 setSuccess(
