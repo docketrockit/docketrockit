@@ -37,6 +37,11 @@ model User {
   email                    String
   emailVerified            Boolean                    @default(false)
   emailVerifiedTime        DateTime?
+  postcode                 String?
+  city                     String?
+  state                    State?                     @relation(fields: [stateId], references: [id], onDelete: Cascade)
+  stateId                  String?
+  phoneNumber              String?
   password                 String
   image                    String?
   role                     Role[]
@@ -63,6 +68,7 @@ model Session {
   userAgent         String?
   twoFactorVerified Boolean  @default(false)
   userId            String
+  rememberMe        Boolean
   user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId])
@@ -101,7 +107,6 @@ model Consumer {
   userId      String    @unique
   gender      Gender?
   dateOfBirth DateTime?
-  phoneNumber String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   Receipts    Receipt[]
@@ -110,7 +115,6 @@ model Consumer {
 model MerchantUser {
   id             String   @id @default(cuid())
   jobTitle       String
-  phoneNumber    String
   primaryContact Boolean
   merchant       Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
   merchantId     String
@@ -123,13 +127,12 @@ model MerchantUser {
 }
 
 model AdminUser {
-  id          String   @id @default(cuid())
-  jobTitle    String?
-  phoneNumber String?
-  user        User     @relation(fields: [userId], references: [id])
-  userId      String   @unique
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(cuid())
+  jobTitle  String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Country {
@@ -154,8 +157,9 @@ model State {
   Merchants Merchant[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
-  Store     Store[]
-  Brand     Brand[]
+  Stores    Store[]
+  Brands    Brand[]
+  Users     User[]
 }
 
 model Merchant {

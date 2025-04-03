@@ -19,6 +19,7 @@ export interface Session extends SessionFlags {
     userId: string;
     ipAddress: string;
     userAgent: string;
+    rememberMe: boolean;
 }
 
 type SessionValidationResult =
@@ -45,6 +46,7 @@ export const validateSessionToken = async (
                     image: true,
                     role: true,
                     adminUser: true,
+                    phoneNumber: true,
                     merchantUser: { include: { merchant: true, brand: true } },
                     consumerUser: true
                 }
@@ -60,7 +62,8 @@ export const validateSessionToken = async (
         expiresAt: new Date(row.expiresAt * 1000),
         twoFactorVerified: Boolean(row.twoFactorVerified),
         ipAddress: row.ipAddress || '',
-        userAgent: row.userAgent || ''
+        userAgent: row.userAgent || '',
+        rememberMe: row.rememberMe
     };
     const user: User = {
         id: row.user.id,
@@ -69,20 +72,19 @@ export const validateSessionToken = async (
         registered2FA: Boolean(row.user.totpKey !== null),
         firstName: row.user.firstName,
         lastName: row.user.lastName,
-        role: row.user.role
+        role: row.user.role,
+        phoneNumber: row.user.phoneNumber || undefined
     };
 
     if (row.user.adminUser) {
         user.adminUser = {
-            jobTitle: row.user.adminUser.jobTitle || undefined,
-            phoneNumber: row.user.adminUser.phoneNumber || undefined
+            jobTitle: row.user.adminUser.jobTitle || undefined
         };
     }
 
     if (row.user.merchantUser) {
         user.merchantUser = {
             jobTitle: row.user.merchantUser.jobTitle,
-            phoneNumber: row.user.merchantUser.phoneNumber,
             primaryContact: row.user.merchantUser.primaryContact,
             merchant: row.user.merchantUser.merchant.name,
             merchantId: row.user.merchantUser.merchantId,
@@ -95,8 +97,7 @@ export const validateSessionToken = async (
         user.consumerUser = {
             barcode: row.user.consumerUser.barcode,
             gender: row.user.consumerUser.gender,
-            dateOfBirth: row.user.consumerUser.dateOfBirth,
-            phoneNumber: row.user.consumerUser.phoneNumber || undefined
+            dateOfBirth: row.user.consumerUser.dateOfBirth
         };
     }
 
@@ -189,7 +190,8 @@ export const createSession = async (
         expiresAt,
         twoFactorVerified: flags.twoFactorVerified,
         ipAddress,
-        userAgent
+        userAgent,
+        rememberMe
     };
     await db.session.create({
         data: {
@@ -198,7 +200,8 @@ export const createSession = async (
             expiresAt: Math.floor(session.expiresAt.getTime() / 1000),
             twoFactorVerified: session.twoFactorVerified,
             ipAddress,
-            userAgent
+            userAgent,
+            rememberMe
         }
     });
     return session;

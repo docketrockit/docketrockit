@@ -17,7 +17,7 @@ export const ResetPasswordSchema = object({
 export const LoginSchema = object({
     email: getEmailSchema(),
     password: getPasswordSchema('Password'),
-    rememberMe: boolean().default(true)
+    rememberMe: boolean()
 });
 
 export const VerifyEmailSchema = object({

@@ -14,3 +14,13 @@ export const AdminUserSchema = object({
     password: getPasswordSchema('Password'),
     access: array(adminRoleSchema)
 });
+
+export const UserProfileSchema = object({
+    firstName: getStringSchema('First name'),
+    lastName: getStringSchema('Last name'),
+    phoneNumber: getStringSchema('Phone number'),
+    jobTitle: getStringSchema('Job title'),
+    city: getStringSchema('City'),
+    state: getStringSchema('State'),
+    postcode: getStringSchema('Postcode')
+});

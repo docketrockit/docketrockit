@@ -16,6 +16,7 @@ export interface User {
     lastName: string;
     image?: string;
     role: Role[];
+    phoneNumber?: string;
     consumerUser?: ConsumerUser;
     merchantUser?: MerchantUser;
     adminUser?: AdminUser;
@@ -25,12 +26,10 @@ export interface ConsumerUser {
     barcode: string;
     gender: Gender | null;
     dateOfBirth?: Date | null;
-    phoneNumber?: string;
 }
 
 export interface MerchantUser {
     jobTitle: string;
-    phoneNumber: string;
     primaryContact: boolean;
     merchant: string;
     merchantId: string;
@@ -40,7 +39,6 @@ export interface MerchantUser {
 
 export interface AdminUser {
     jobTitle?: string;
-    phoneNumber?: string;
 }
 
 export const createUser = async (
@@ -175,6 +173,7 @@ export const getUserFromEmail = async (email: string): Promise<User | null> => {
             image: true,
             role: true,
             adminUser: true,
+            phoneNumber: true,
             merchantUser: { include: { merchant: true, brand: true } },
             consumerUser: true
         }
@@ -189,20 +188,19 @@ export const getUserFromEmail = async (email: string): Promise<User | null> => {
         firstName: row.firstName,
         lastName: row.lastName,
         image: row.image || undefined,
+        phoneNumber: row.phoneNumber || undefined,
         role: row.role
     };
 
     if (row.adminUser) {
         user.adminUser = {
-            jobTitle: row.adminUser.jobTitle || undefined,
-            phoneNumber: row.adminUser.phoneNumber || undefined
+            jobTitle: row.adminUser.jobTitle || undefined
         };
     }
 
     if (row.merchantUser) {
         user.merchantUser = {
             jobTitle: row.merchantUser.jobTitle,
-            phoneNumber: row.merchantUser.phoneNumber,
             primaryContact: row.merchantUser.primaryContact,
             merchant: row.merchantUser.merchant.name,
             merchantId: row.merchantUser.merchantId,
@@ -215,8 +213,7 @@ export const getUserFromEmail = async (email: string): Promise<User | null> => {
         user.consumerUser = {
             barcode: row.consumerUser.barcode,
             gender: row.consumerUser.gender,
-            dateOfBirth: row.consumerUser.dateOfBirth,
-            phoneNumber: row.consumerUser.phoneNumber || undefined
+            dateOfBirth: row.consumerUser.dateOfBirth
         };
     }
 
