@@ -43,7 +43,6 @@ const ForgotPasswordForm = () => {
             if (!data.result) {
                 toast.error(data.message);
             } else {
-                toast.success('Password reset');
                 setSuccess(
                     'If an account exists with this email, you will receive a password reset link.'
                 );

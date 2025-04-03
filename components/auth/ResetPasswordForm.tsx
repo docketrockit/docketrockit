@@ -4,7 +4,8 @@ import * as z from 'zod';
 import { useForm } from 'react-hook-form';
 import { useState, useTransition } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { toast } from 'sonner';
 
 import {
     Form,
@@ -14,16 +15,14 @@ import {
     FormMessage
 } from '@/components/ui/form';
 import { PasswordInputAuth } from '@/components/form/FormInputAuth';
-import { toast } from 'sonner';
 
 import { ResetPasswordSchema } from '@/schemas/auth';
-import { authClient } from '@/lib/auth-client';
 import { AuthSubmitButton } from '@/components/form/Buttons';
 import FormError from '@/components/form/FormError';
 import { ResetPasswordFormProps } from '@/types/auth';
+import { resetPasswordAction } from '@/actions/forgotPassword';
 
 const ResetPasswordForm = ({ token, tokenError }: ResetPasswordFormProps) => {
-    const router = useRouter();
     const [error, setError] = useState<string | undefined>('');
     const [isPending, startTransition] = useTransition();
 
@@ -39,15 +38,9 @@ const ResetPasswordForm = ({ token, tokenError }: ResetPasswordFormProps) => {
         setError('');
 
         startTransition(async () => {
-            const { error } = await authClient.resetPassword({
-                newPassword: values.password,
-                token
-            });
-            if (error) {
-                toast.error(error.message);
-            } else {
-                toast.success('Password reset successful. Login to continue.');
-                router.push('/merchant/login');
+            const data = await resetPasswordAction(values);
+            if (!data.result) {
+                toast.error(data.message);
             }
         });
     };
@@ -65,6 +58,12 @@ const ResetPasswordForm = ({ token, tokenError }: ResetPasswordFormProps) => {
                         <div>
                             <FormError message={tokenError} />
                         </div>
+                        <Link
+                            href="/merchant/login"
+                            className="text-blue-700 hover:text-blue-800 dark:text-blue-300 text-sm"
+                        >
+                            Back to login
+                        </Link>
                     </div>
                 </div>
             </div>

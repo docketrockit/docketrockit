@@ -4,9 +4,10 @@ import * as z from 'zod';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { decodeBase64 } from '@oslojs/encoding';
-import { verifyTOTP } from '@oslojs/otp';
+import { verifyTOTPWithGracePeriod } from '@oslojs/otp';
 
 import { verifyPasswordHash } from '@/lib/password';
+import { totpBucket } from '@/lib/2fa';
 import {
     RefillingTokenBucket,
     Throttler,
@@ -23,13 +24,15 @@ import {
     getUserFromEmail,
     getUserPasswordHash,
     updateUserEmailAndSetEmailAsVerified,
-    updateUserTOTPKey
+    updateUserTOTPKey,
+    getUserTOTPKey
 } from '@/lib/user';
 import { globalPOSTRateLimit } from '@/lib/request';
 import {
     LoginSchema,
     VerifyEmailSchema,
-    TwoFactorSetupSchema
+    TwoFactorSetupSchema,
+    TwoFactorVerficationSchema
 } from '@/schemas/auth';
 import type { SessionFlags } from '@/lib/session';
 import {
@@ -122,9 +125,9 @@ export const login = async (
         return redirect('/merchant/verify-email');
     }
     if (!user.registered2FA) {
-        return redirect('/merchant/2fa/setup');
+        return redirect('/merchant/twofactor/setup');
     }
-    return redirect('/merchant/2fa');
+    return redirect('/merchant/twofactor');
 };
 
 export const verifyEmailAction = async (
@@ -188,7 +191,7 @@ export const verifyEmailAction = async (
     );
     await deleteEmailVerificationRequestCookie();
     if (!user.registered2FA) {
-        return redirect('/merchant/2fa/setup');
+        return redirect('/merchant/twofactor/setup');
     }
     return redirect('/merchant');
 };
@@ -235,7 +238,7 @@ export const resendEmailVerificationCodeAction =
         return { result: true, message: 'A new code was sent to your inbox.' };
     };
 
-export const setup2FAAction = async (
+export const setupTwoFactorAction = async (
     values: z.infer<typeof TwoFactorSetupSchema>
 ): Promise<ActionResult> => {
     if (!(await globalPOSTRateLimit())) {
@@ -275,10 +278,53 @@ export const setup2FAAction = async (
     if (!totpUpdateBucket.consume(user.id, 1)) {
         return { result: false, message: 'Too many requests' };
     }
-    if (!verifyTOTP(key, 30, 6, code)) {
+    if (!verifyTOTPWithGracePeriod(key, 30, 6, code, 60)) {
         return { result: false, message: 'Invalid code' };
     }
     await updateUserTOTPKey(session.userId, key);
     await setSessionAs2FAVerified(session.id);
     return { result: true, message: 'Two factor successfully set up' };
+};
+
+export const verifyTwoFactorAction = async (
+    values: z.infer<typeof TwoFactorVerficationSchema>
+): Promise<ActionResult> => {
+    if (!(await globalPOSTRateLimit())) {
+        return { result: false, message: 'Too many requests' };
+    }
+    const { session, user } = await getCurrentSession();
+    if (session === null) {
+        return { result: false, message: 'Not authenticated' };
+    }
+    if (
+        !user.emailVerified ||
+        !user.registered2FA ||
+        session.twoFactorVerified
+    ) {
+        return { result: false, message: 'Forbidden' };
+    }
+    if (!totpBucket.check(user.id, 1)) {
+        return { result: false, message: 'Too many requests' };
+    }
+
+    const validatedFields = TwoFactorVerficationSchema.safeParse(values);
+
+    if (!validatedFields.success) {
+        return { result: false, message: 'Please enter a valid code' };
+    }
+
+    const { code } = validatedFields.data;
+    if (!totpBucket.consume(user.id, 1)) {
+        return { result: false, message: 'Too many requests' };
+    }
+    const totpKey = await getUserTOTPKey(user.id);
+    if (totpKey === null) {
+        return { result: false, message: 'Forbidden' };
+    }
+    if (!verifyTOTPWithGracePeriod(totpKey, 30, 6, code, 60)) {
+        return { result: false, message: 'Invalid code' };
+    }
+    totpBucket.reset(user.id);
+    await setSessionAs2FAVerified(session.id);
+    return redirect('/merchant');
 };

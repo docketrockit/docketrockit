@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     description: 'DocketRockit | Merchant Admin | 2FA Setup'
 };
 
-const TwoFASetupPage = async () => {
+const TwoFactorSetupPage = async () => {
     if (!(await globalGETRateLimit())) {
         return 'Too many requests';
     }
@@ -25,7 +25,7 @@ const TwoFASetupPage = async () => {
         return redirect('/merchant/verify-email');
     }
     if (user.registered2FA && !session.twoFactorVerified) {
-        return redirect('/merchant/2fa');
+        return redirect('/merchant/twofactor');
     }
 
     const totpKey = new Uint8Array(20);
@@ -42,4 +42,4 @@ const TwoFASetupPage = async () => {
     );
 };
 
-export default TwoFASetupPage;
+export default TwoFactorSetupPage;

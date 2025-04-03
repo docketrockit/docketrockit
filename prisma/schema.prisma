@@ -41,10 +41,10 @@ model User {
   image                    String?
   role                     Role[]
   totpKey                  Bytes?
-  recoveryCodes            Bytes[]
+  recoveryCodes            String[]
   createdAt                DateTime                   @default(now())
   updatedAt                DateTime                   @updatedAt
-  consumer                 Consumer?
+  consumerUser             Consumer?
   merchantUser             MerchantUser?
   adminUser                AdminUser?
   Session                  Session[]
@@ -82,16 +82,14 @@ model EmailVerificationRequest {
 }
 
 model PasswordResetSession {
-  id                String   @id
-  userId            String
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  email             String
-  expiresAt         Int
-  code              String
-  emailVerified     Boolean  @default(false)
-  TwoFactorVerified Boolean  @default(false)
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  id        String   @id
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  email     String
+  expiresAt Int
+  code      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([userId])
 }
@@ -101,7 +99,7 @@ model Consumer {
   barcode     String
   user        User      @relation(fields: [userId], references: [id])
   userId      String    @unique
-  gender      Gender
+  gender      Gender?
   dateOfBirth DateTime?
   phoneNumber String?
   createdAt   DateTime  @default(now())

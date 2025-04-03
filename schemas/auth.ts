@@ -28,3 +28,7 @@ export const TwoFactorSetupSchema = object({
     code: getStringSchema('Verification code'),
     encodedKey: getStringSchema('Key', 28)
 });
+
+export const TwoFactorVerficationSchema = object({
+    code: getStringSchema('Verification code')
+});

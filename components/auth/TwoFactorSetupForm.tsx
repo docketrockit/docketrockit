@@ -22,21 +22,21 @@ import {
 import { AuthSubmitButton } from '@/components/form/Buttons';
 import { TwoFactorSetupSchema } from '@/schemas/auth';
 import FormError from '@/components/form/FormError';
-import { setup2FAAction } from '@/actions/login';
+import { setupTwoFactorAction } from '@/actions/login';
 import { resetUserRecoveryCode } from '@/lib/user';
 import Link from 'next/link';
 
-export interface VerifyEmailFormProps {
+export interface TwoFactorSetupFormProps {
     encodedTOTPKey: string;
     qrcode: string;
     userId: string;
 }
 
-const VerifyEmailForm = ({
+const TwoFactorSetupForm = ({
     encodedTOTPKey,
     qrcode,
     userId
-}: VerifyEmailFormProps) => {
+}: TwoFactorSetupFormProps) => {
     const [error, setError] = useState<string | undefined>('');
     const [success, setSuccess] = useState<boolean>(false);
     const [recoveryCodes, setRecoveryCodes] = useState<string[]>([]);
@@ -53,7 +53,7 @@ const VerifyEmailForm = ({
     const onSubmit = (values: z.infer<typeof TwoFactorSetupSchema>) => {
         setError('');
         startTransition(async () => {
-            const data = await setup2FAAction(values);
+            const data = await setupTwoFactorAction(values);
             if (!data.result) {
                 form.setValue('code', '');
                 setError(data.message);
@@ -77,7 +77,7 @@ const VerifyEmailForm = ({
                         <p className="text-sm text-gray-500 dark:text-gray-400">
                             {!success
                                 ? 'Scan the QRCode below and enter the verification code to finish setup'
-                                : 'Save your recovery codes below in case you lose your authentication software'}
+                                : 'Save your recovery codes below in case you lose your authentication software. You will not be able to access these again.'}
                         </p>
                     </div>
                     {!success ? (
@@ -188,4 +188,4 @@ const VerifyEmailForm = ({
     );
 };
 
-export default VerifyEmailForm;
+export default TwoFactorSetupForm;

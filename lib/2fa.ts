@@ -1,10 +1,10 @@
 import db from './db';
 import { decryptToString, encryptString } from './encryption';
 import { ExpiringTokenBucket } from './rate-limit';
-import { generateRandomRecoveryCode } from './utils';
+import { generateRandomRecoveryCodes } from './utils';
 
-export const totpBucket = new ExpiringTokenBucket<number>(5, 60 * 30);
-export const recoveryCodeBucket = new ExpiringTokenBucket<number>(3, 60 * 60);
+export const totpBucket = new ExpiringTokenBucket<string>(5, 60 * 30);
+export const recoveryCodeBucket = new ExpiringTokenBucket<string>(3, 60 * 60);
 
 export const resetUser2FAWithRecoveryCode = async (
     userId: string,

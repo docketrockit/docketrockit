@@ -12,8 +12,6 @@ export interface PasswordResetSession {
     email: string;
     expiresAt: Date;
     code: string;
-    emailVerified: boolean;
-    twoFactorVerified: boolean;
 }
 
 export type PasswordResetSessionValidationResult =
@@ -33,9 +31,7 @@ export const createPasswordResetSession = async (
         userId,
         email,
         expiresAt: new Date(Date.now() + 1000 * 60 * 10),
-        code: generateResetPasswordToken(),
-        emailVerified: false,
-        twoFactorVerified: false
+        code: generateResetPasswordToken()
     };
     await db.passwordResetSession.create({
         data: {
@@ -67,9 +63,7 @@ export const validatePasswordResetSessionToken = async (
         userId: row.userId,
         email: row.email,
         code: row.code,
-        expiresAt: new Date(row.expiresAt * 1000),
-        emailVerified: Boolean(row.emailVerified),
-        twoFactorVerified: Boolean(row.TwoFactorVerified)
+        expiresAt: new Date(row.expiresAt * 1000)
     };
     const user: User = {
         id: row.user.id,
@@ -86,22 +80,33 @@ export const validatePasswordResetSessionToken = async (
     return { session, user };
 };
 
-export const setPasswordResetSessionAsEmailVerified = async (
-    sessionId: string
-): Promise<void> => {
-    await db.passwordResetSession.update({
-        where: { id: sessionId },
-        data: { emailVerified: true }
+export const getPasswordResetTokenByToken = async (
+    token: string
+): Promise<PasswordResetSessionValidationResult> => {
+    const row = await db.passwordResetSession.findFirst({
+        where: { code: token },
+        include: { user: true }
     });
-};
 
-export const setPasswordResetSessionAs2FAVerified = async (
-    sessionId: string
-): Promise<void> => {
-    await db.passwordResetSession.update({
-        where: { id: sessionId },
-        data: { TwoFactorVerified: true }
-    });
+    if (row === null) return { session: null, user: null };
+
+    const session: PasswordResetSession = {
+        id: row.id,
+        userId: row.userId,
+        email: row.email,
+        code: row.code,
+        expiresAt: new Date(row.expiresAt * 1000)
+    };
+    const user: User = {
+        id: row.user.id,
+        email: row.user.email,
+        emailVerified: Boolean(row.user.emailVerified),
+        registered2FA: Boolean(row.user.totpKey !== null),
+        firstName: row.user.firstName,
+        lastName: row.user.lastName
+    };
+
+    return { session, user };
 };
 
 export const invalidateUserPasswordResetSessions = async (

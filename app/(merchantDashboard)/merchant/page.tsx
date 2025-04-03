@@ -1,7 +1,4 @@
-import { redirect } from 'next/navigation';
-
-import { getCurrentSession } from '@/lib/session';
-import { globalGETRateLimit } from '@/lib/request';
+import { authCheck } from '@/lib/authCheck';
 
 export async function generateMetadata() {
     const title = 'Dashboard';
@@ -14,24 +11,8 @@ export async function generateMetadata() {
 }
 
 const AdminDashboardMainPage = async () => {
-    if (!(await globalGETRateLimit())) {
-        return 'Too many requests';
-    }
-    const { session, user } = await getCurrentSession();
-    if (session === null) {
-        return redirect('/login');
-    }
-    if (!user.emailVerified) {
-        return redirect('/verify-email');
-    }
-    if (!user.registered2FA) {
-        return redirect('/2fa/setup');
-    }
-    if (!session.twoFactorVerified) {
-        return redirect('/2fa');
-    }
-    if (!session) redirect('/merchant/login');
+    const { session, user } = await authCheck();
 
-    return <div>page</div>;
+    return <div>page {user.firstName}</div>;
 };
 export default AdminDashboardMainPage;

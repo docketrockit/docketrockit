@@ -1,4 +1,4 @@
-import { checkResetToken } from '@/actions/auth';
+import { checkResetToken } from '@/actions/forgotPassword';
 import ResetPasswordForm from '@/components/auth/ResetPasswordForm';
 import { Metadata } from 'next';
 
@@ -21,8 +21,8 @@ const ResetPasswordPage = async ({
         error = 'No token provided';
     } else {
         const tokenCheck = await checkResetToken(token);
-        if (tokenCheck.error) {
-            error = tokenCheck.error;
+        if (!tokenCheck.result) {
+            error = tokenCheck.message;
         }
     }
 

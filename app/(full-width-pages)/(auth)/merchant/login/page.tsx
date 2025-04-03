@@ -20,10 +20,10 @@ const LoginPage = async () => {
             return redirect('/merchant/verify-email');
         }
         if (!user.registered2FA) {
-            return redirect('/merchant/2fa/setup');
+            return redirect('/merchant/twofactor/setup');
         }
         if (!session.twoFactorVerified) {
-            return redirect('/merchant/2fa');
+            return redirect('/merchant/twofactor');
         }
         return redirect('/merchant');
     }

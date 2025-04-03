@@ -33,7 +33,23 @@ export const validateSessionToken = async (
     );
     const row = await db.session.findUnique({
         where: { id: sessionId },
-        include: { user: true }
+        include: {
+            user: {
+                select: {
+                    id: true,
+                    email: true,
+                    emailVerified: true,
+                    totpKey: true,
+                    firstName: true,
+                    lastName: true,
+                    image: true,
+                    role: true,
+                    adminUser: true,
+                    merchantUser: { include: { merchant: true, brand: true } },
+                    consumerUser: true
+                }
+            }
+        }
     });
 
     if (!row) return { session: null, user: null };
@@ -52,8 +68,38 @@ export const validateSessionToken = async (
         emailVerified: Boolean(row.user.emailVerified),
         registered2FA: Boolean(row.user.totpKey !== null),
         firstName: row.user.firstName,
-        lastName: row.user.lastName
+        lastName: row.user.lastName,
+        role: row.user.role
     };
+
+    if (row.user.adminUser) {
+        user.adminUser = {
+            jobTitle: row.user.adminUser.jobTitle || undefined,
+            phoneNumber: row.user.adminUser.phoneNumber || undefined
+        };
+    }
+
+    if (row.user.merchantUser) {
+        user.merchantUser = {
+            jobTitle: row.user.merchantUser.jobTitle,
+            phoneNumber: row.user.merchantUser.phoneNumber,
+            primaryContact: row.user.merchantUser.primaryContact,
+            merchant: row.user.merchantUser.merchant.name,
+            merchantId: row.user.merchantUser.merchantId,
+            brand: row.user.merchantUser.brand.name,
+            brandId: row.user.merchantUser.brandId
+        };
+    }
+
+    if (row.user.consumerUser) {
+        user.consumerUser = {
+            barcode: row.user.consumerUser.barcode,
+            gender: row.user.consumerUser.gender,
+            dateOfBirth: row.user.consumerUser.dateOfBirth,
+            phoneNumber: row.user.consumerUser.phoneNumber || undefined
+        };
+    }
+
     if (Date.now() >= session.expiresAt.getTime()) {
         await db.session.deleteMany({ where: { id: session.id } });
         return { session: null, user: null };
@@ -87,7 +133,7 @@ export const invalidateSession = async (sessionId: string): Promise<void> => {
 };
 
 export const invalidateUserSessions = async (userId: string): Promise<void> => {
-    await db.user.deleteMany({ where: { id: userId } });
+    await db.session.deleteMany({ where: { id: userId } });
 };
 
 export const setSessionTokenCookie = async (
