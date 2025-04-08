@@ -24,6 +24,7 @@ import { UserProfileDetailsAdmin } from '@/actions/user';
 import FormError from '@/components/form/FormError';
 import PostcodeSearch from './PostcodeSearch';
 import { cn } from '@/lib/utils';
+import { updateUserProfileAdmin } from '@/actions/user';
 
 interface EditProfileModelProps {
     isOpen: boolean;
@@ -57,13 +58,14 @@ const EditProfileModal = ({
     const onSubmit = (values: z.infer<typeof UserProfileSchema>) => {
         setError('');
         startTransition(async () => {
-            // const data = await login(values);
-            // if (!data.result) {
-            //     form.setValue('password', '');
-            //     toast.error(data.message);
-            //     setError(data.message);
-            // }
-            console.log(values);
+            const data = await updateUserProfileAdmin(values);
+            if (!data.result) {
+                toast.error(data.message);
+                setError(data.message);
+            } else {
+                closeModal();
+                toast.success(data.message);
+            }
         });
     };
 

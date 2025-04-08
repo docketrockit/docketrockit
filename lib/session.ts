@@ -134,7 +134,7 @@ export const invalidateSession = async (sessionId: string): Promise<void> => {
 };
 
 export const invalidateUserSessions = async (userId: string): Promise<void> => {
-    await db.session.deleteMany({ where: { id: userId } });
+    await db.session.deleteMany({ where: { userId } });
 };
 
 export const setSessionTokenCookie = async (

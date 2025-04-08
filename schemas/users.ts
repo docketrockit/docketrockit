@@ -24,3 +24,11 @@ export const UserProfileSchema = object({
     state: getStringSchema('State'),
     postcode: getStringSchema('Postcode')
 });
+
+export const EmailSchema = object({
+    email: getEmailSchema()
+});
+
+export const VerifyEmailSchema = object({
+    code: getStringSchema('Verification code')
+});

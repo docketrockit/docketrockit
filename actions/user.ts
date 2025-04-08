@@ -2,20 +2,29 @@
 
 import * as z from 'zod';
 import { Prisma } from '@prisma/client';
-import { headers } from 'next/headers';
+import { revalidatePath } from 'next/cache';
 
 import db from '@/lib/db';
-import { UserProfileSchema } from '@/schemas/users';
-import { globalPOSTRateLimit } from '@/lib/request';
 import {
-    getCurrentSession,
-    invalidateUserSessions,
-    deleteSessionTokenCookie,
-    createSession,
-    generateSessionToken,
-    SessionFlags,
-    setSessionTokenCookie
-} from '@/lib/session';
+    UserProfileSchema,
+    EmailSchema,
+    VerifyEmailSchema
+} from '@/schemas/users';
+import { globalPOSTRateLimit } from '@/lib/request';
+import { getCurrentSession } from '@/lib/session';
+import { ExpiringTokenBucket } from '@/lib/rate-limit';
+import {
+    createEmailVerificationRequest,
+    deleteEmailVerificationRequestCookie,
+    deleteUserEmailVerificationRequest,
+    getUserEmailVerificationRequestFromRequest,
+    sendVerificationEmailBucket,
+    setEmailVerificationRequestCookie
+} from '@/lib/email-verification';
+import { sendVerificationEmail } from '@/lib/mail';
+import { updateUserEmailAndSetEmailAsVerified } from '@/lib/user';
+
+const bucket = new ExpiringTokenBucket<string>(5, 60 * 30);
 
 export type UserProfileDetailsAdmin = Prisma.UserGetPayload<{
     include: {
@@ -110,29 +119,103 @@ export const updateUserProfileAdmin = async (
         });
     }
 
-    const headerStore = await headers();
-    const clientIP = headerStore.get('X-Forwarded-For');
-    const userAgent = headerStore.get('user-agent');
+    await getCurrentSession();
 
-    await invalidateUserSessions(user.id);
-    await deleteSessionTokenCookie();
-    const sessionFlags: SessionFlags = {
-        twoFactorVerified: false
-    };
-    const sessionToken = generateSessionToken();
-    const newSession = await createSession(
-        sessionToken,
-        user.id,
-        sessionFlags,
-        clientIP || '',
-        userAgent || '',
-        session.rememberMe
-    );
-    setSessionTokenCookie(
-        sessionToken,
-        newSession.expiresAt,
-        session.rememberMe
-    );
-
+    revalidatePath('/merchant/profile');
     return { result: true, message: 'Profile Updated' };
+};
+
+export const verifyEmailUpdateCode = async (
+    values: z.infer<typeof EmailSchema>
+): Promise<ActionResult> => {
+    const { session, user } = await getCurrentSession();
+    if (session === null) {
+        return { result: false, message: 'Not authenticated' };
+    }
+    if (!sendVerificationEmailBucket.check(user.id, 1)) {
+        return { result: false, message: 'Too many requests' };
+    }
+    if (!sendVerificationEmailBucket.consume(user.id, 1)) {
+        return { result: false, message: 'Too many requests' };
+    }
+    const validatedFields = EmailSchema.safeParse(values);
+
+    if (!validatedFields.success) {
+        return { result: false, message: 'Please enter a valid code' };
+    }
+
+    const { email } = validatedFields.data;
+    const verificationRequest = await createEmailVerificationRequest(
+        user.id,
+        email
+    );
+    await sendVerificationEmail({
+        email: verificationRequest.email,
+        code: verificationRequest.code
+    });
+    await setEmailVerificationRequestCookie(verificationRequest);
+    return { result: true, message: 'A new code was sent to your inbox.' };
+};
+
+export const verifyEmailCode = async (
+    values: z.infer<typeof VerifyEmailSchema>
+): Promise<ActionResult> => {
+    if (!(await globalPOSTRateLimit())) {
+        return { result: false, message: 'Too many requests' };
+    }
+
+    const { session, user } = await getCurrentSession();
+    if (session === null) {
+        return { result: false, message: 'Not authenticated' };
+    }
+    if (user.registered2FA && !session.twoFactorVerified) {
+        return { result: false, message: 'Forbidden' };
+    }
+    if (!bucket.check(user.id, 1)) {
+        return { result: false, message: 'Too many requests' };
+    }
+
+    let verificationRequest =
+        await getUserEmailVerificationRequestFromRequest();
+    if (verificationRequest === null) {
+        return { result: false, message: 'Not authenticated' };
+    }
+
+    const validatedFields = VerifyEmailSchema.safeParse(values);
+
+    if (!validatedFields.success) {
+        return { result: false, message: 'Please enter a valid code' };
+    }
+
+    const { code } = validatedFields.data;
+
+    if (!bucket.consume(user.id, 1)) {
+        return { result: false, message: 'Too many requests' };
+    }
+    if (Date.now() >= verificationRequest.expiresAt.getTime()) {
+        verificationRequest = await createEmailVerificationRequest(
+            verificationRequest.userId,
+            verificationRequest.email
+        );
+        sendVerificationEmail({
+            email: verificationRequest.email,
+            code: verificationRequest.code
+        });
+        return {
+            result: false,
+            message:
+                'The verification code was expired. We sent another code to your inbox.'
+        };
+    }
+    if (verificationRequest.code !== code) {
+        return { result: false, message: 'Incorrect code' };
+    }
+    await deleteUserEmailVerificationRequest(user.id);
+    await updateUserEmailAndSetEmailAsVerified(
+        user.id,
+        verificationRequest.email
+    );
+    await deleteEmailVerificationRequestCookie();
+
+    return { result: true, message: 'Email successfully updated' };
 };
