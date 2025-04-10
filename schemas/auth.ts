@@ -24,6 +24,10 @@ export const VerifyEmailSchema = object({
     code: getStringSchema('Verification code')
 });
 
+export const RecoveryCodeSchema = object({
+    code: getStringSchema('Recovery code')
+});
+
 export const TwoFactorSetupSchema = object({
     code: getStringSchema('Verification code'),
     encodedKey: getStringSchema('Key', 28)

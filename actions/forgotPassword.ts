@@ -14,12 +14,13 @@ import {
 } from '@/lib/password-reset';
 import { verifyPasswordStrength } from '@/lib/password';
 import { sendPasswordResetEmail } from '@/lib/mail';
-import { RefillingTokenBucket } from '@/lib/rate-limit';
+import { RefillingTokenBucket, ExpiringTokenBucket } from '@/lib/rate-limit';
 import { globalPOSTRateLimit } from '@/lib/request';
 import {
     generateSessionToken,
     invalidateUserSessions,
-    deleteSessionTokenCookie
+    deleteSessionTokenCookie,
+    getCurrentSession
 } from '@/lib/session';
 import { getUserFromEmail, updateUserPassword } from '@/lib/user';
 import { ForgotPasswordSchema, ResetPasswordSchema } from '@/schemas/auth';
@@ -134,7 +135,7 @@ export const resetPasswordAction = async (
     if (!globalPOSTRateLimit()) {
         return { result: false, message: 'Too many requests' };
     }
-    const { session: passwordResetSession, user } =
+    const { session: passwordResetSession } =
         await validatePasswordResetSessionRequest();
     if (passwordResetSession === null) {
         return { result: false, message: 'Not authenticated' };
@@ -161,4 +162,35 @@ export const resetPasswordAction = async (
     await deletePasswordResetSessionTokenCookie();
     await deleteSessionTokenCookie();
     return redirect('/merchant/login');
+};
+
+export const updatePasswordAction = async (
+    values: z.infer<typeof ResetPasswordSchema>
+): Promise<ActionResult> => {
+    if (!globalPOSTRateLimit()) {
+        return { result: false, message: 'Too many requests' };
+    }
+    const { session, user } = await getCurrentSession();
+    if (session === null) {
+        return { result: false, message: 'Not authenticated' };
+    }
+
+    const validatedFields = ResetPasswordSchema.safeParse(values);
+
+    if (!validatedFields.success) {
+        return { result: false, message: 'Invalid fields' };
+    }
+
+    const { password, confirmPassword } = validatedFields.data;
+
+    if (password !== confirmPassword)
+        return { result: false, message: "Passwords don't match" };
+
+    const strongPassword = await verifyPasswordStrength(password);
+    if (!strongPassword) {
+        return { result: false, message: 'Weak password' };
+    }
+    await updateUserPassword(user.id, password);
+
+    return redirect('/merchant/verify-email');
 };

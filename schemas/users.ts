@@ -1,18 +1,17 @@
-import { object, array, z } from 'zod';
+import { object, array, nativeEnum } from 'zod';
 
 import { getStringSchema, getEmailSchema, getPasswordSchema } from './schemas';
-import { AdminRole } from '@/types/user';
+import { AdminRole } from '@prisma/client';
 
-const adminRoleSchema = array(
-    z.enum(Object.keys(AdminRole) as [keyof typeof AdminRole])
-);
+const adminRoleSchema = nativeEnum(AdminRole);
 
 export const AdminUserSchema = object({
-    name: getStringSchema('First name'),
+    firstName: getStringSchema('First name'),
     lastName: getStringSchema('Last name'),
     email: getEmailSchema(),
     password: getPasswordSchema('Password'),
-    access: array(adminRoleSchema)
+    jobTitle: getStringSchema('Job title'),
+    adminRole: array(adminRoleSchema)
 });
 
 export const UserProfileSchema = object({

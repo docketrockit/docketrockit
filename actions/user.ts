@@ -8,8 +8,10 @@ import db from '@/lib/db';
 import {
     UserProfileSchema,
     EmailSchema,
-    VerifyEmailSchema
+    VerifyEmailSchema,
+    AdminUserSchema
 } from '@/schemas/users';
+import { checkEmailAvailability } from '@/lib/email';
 import { globalPOSTRateLimit } from '@/lib/request';
 import { getCurrentSession } from '@/lib/session';
 import { ExpiringTokenBucket } from '@/lib/rate-limit';
@@ -21,8 +23,9 @@ import {
     sendVerificationEmailBucket,
     setEmailVerificationRequestCookie
 } from '@/lib/email-verification';
-import { sendVerificationEmail } from '@/lib/mail';
-import { updateUserEmailAndSetEmailAsVerified } from '@/lib/user';
+import { verifyPasswordStrength } from '@/lib/password';
+import { sendCreateUserAccountEmail, sendVerificationEmail } from '@/lib/mail';
+import { updateUserEmailAndSetEmailAsVerified, createUser } from '@/lib/user';
 
 const bucket = new ExpiringTokenBucket<string>(5, 60 * 30);
 
@@ -218,4 +221,56 @@ export const verifyEmailCode = async (
     await deleteEmailVerificationRequestCookie();
 
     return { result: true, message: 'Email successfully updated' };
+};
+
+export const createNewAdminUser = async (
+    values: z.infer<typeof AdminUserSchema>
+): Promise<ActionResult> => {
+    if (!(await globalPOSTRateLimit())) {
+        return { result: false, message: 'Too many requests' };
+    }
+    const validatedFields = AdminUserSchema.safeParse(values);
+
+    if (!validatedFields.success) {
+        return { result: false, message: 'Invalid fields' };
+    }
+
+    const { firstName, lastName, email, password, jobTitle, adminRole } =
+        validatedFields.data;
+
+    const emailAvailable = checkEmailAvailability(email);
+    if (!emailAvailable) {
+        return { result: false, message: 'Email is already used' };
+    }
+
+    const strongPassword = await verifyPasswordStrength(password);
+    if (!strongPassword) {
+        return { result: false, message: 'Weak password' };
+    }
+    const user = await createUser({
+        email,
+        password,
+        firstName,
+        lastName,
+        role: 'ADMIN'
+    });
+    await db.adminUser.create({
+        data: {
+            jobTitle,
+            adminRole,
+            userId: user.id
+        }
+    });
+    const emailVerificationRequest = await createEmailVerificationRequest(
+        user.id,
+        user.email
+    );
+    await sendCreateUserAccountEmail({
+        email,
+        firstName,
+        password,
+        code: emailVerificationRequest.code
+    });
+
+    return { result: true, message: 'Admin user created' };
 };

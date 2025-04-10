@@ -7,7 +7,7 @@ import { decodeBase64 } from '@oslojs/encoding';
 import { verifyTOTPWithGracePeriod } from '@oslojs/otp';
 
 import { verifyPasswordHash } from '@/lib/password';
-import { totpBucket } from '@/lib/2fa';
+import { totpBucket, resetUser2FAWithRecoveryCode } from '@/lib/twofactor';
 import {
     RefillingTokenBucket,
     Throttler,
@@ -32,13 +32,15 @@ import {
     LoginSchema,
     VerifyEmailSchema,
     TwoFactorSetupSchema,
-    TwoFactorVerficationSchema
+    TwoFactorVerficationSchema,
+    RecoveryCodeSchema
 } from '@/schemas/auth';
 import type { SessionFlags } from '@/lib/session';
 import {
     createEmailVerificationRequest,
     deleteEmailVerificationRequestCookie,
     deleteUserEmailVerificationRequest,
+    getUserEmailVerificationRequestByEmail,
     getUserEmailVerificationRequestFromRequest,
     sendVerificationEmailBucket,
     setEmailVerificationRequestCookie
@@ -120,7 +122,11 @@ export const login = async (
         rememberMe
     );
     setSessionTokenCookie(sessionToken, session.expiresAt, rememberMe);
+    await getCurrentSession();
 
+    if (!user.passwordVerified) {
+        return redirect('/merchant/update-password');
+    }
     if (!user.emailVerified) {
         return redirect('/merchant/verify-email');
     }
@@ -136,7 +142,6 @@ export const verifyEmailAction = async (
     if (!(await globalPOSTRateLimit())) {
         return { result: false, message: 'Too many requests' };
     }
-
     const { session, user } = await getCurrentSession();
     if (session === null) {
         return { result: false, message: 'Not authenticated' };
@@ -151,7 +156,13 @@ export const verifyEmailAction = async (
     let verificationRequest =
         await getUserEmailVerificationRequestFromRequest();
     if (verificationRequest === null) {
-        return { result: false, message: 'Not authenticated' };
+        verificationRequest = await getUserEmailVerificationRequestByEmail(
+            user.id,
+            user.email
+        );
+        if (verificationRequest === null) {
+            return { result: false, message: 'Not authenticated' };
+        }
     }
 
     const validatedFields = VerifyEmailSchema.safeParse(values);
@@ -327,4 +338,49 @@ export const verifyTwoFactorAction = async (
     totpBucket.reset(user.id);
     await setSessionAs2FAVerified(session.id);
     return redirect('/merchant');
+};
+
+export const verifyRecoveryCode = async (
+    values: z.infer<typeof RecoveryCodeSchema>
+): Promise<ActionResult> => {
+    if (!(await globalPOSTRateLimit())) {
+        return { result: false, message: 'Too many requests' };
+    }
+    const { session, user } = await getCurrentSession();
+    if (session === null) {
+        return { result: false, message: 'Not authenticated' };
+    }
+    if (
+        !user.emailVerified ||
+        !user.registered2FA ||
+        session.twoFactorVerified
+    ) {
+        return { result: false, message: 'Forbidden' };
+    }
+    if (!totpBucket.check(user.id, 1)) {
+        return { result: false, message: 'Too many requests' };
+    }
+
+    const validatedFields = TwoFactorVerficationSchema.safeParse(values);
+
+    if (!validatedFields.success) {
+        return { result: false, message: 'Please enter a valid code' };
+    }
+
+    const { code } = validatedFields.data;
+
+    console.log(code);
+
+    if (!totpBucket.consume(user.id, 1)) {
+        return { result: false, message: 'Too many requests' };
+    }
+
+    const verified = await resetUser2FAWithRecoveryCode({
+        userId: user.id,
+        recoveryCode: code
+    });
+
+    if (!verified) return { result: false, message: "Backup code didn't work" };
+
+    return redirect('/merchant/twofactor/setup');
 };

@@ -1,3 +1,5 @@
+'use server';
+
 import { encodeHexLowerCase } from '@oslojs/encoding';
 import { sha256 } from '@oslojs/crypto/sha2';
 import { cookies } from 'next/headers';
@@ -70,8 +72,10 @@ export const validatePasswordResetSessionToken = async (
         email: row.user.email,
         emailVerified: Boolean(row.user.emailVerified),
         registered2FA: Boolean(row.user.totpKey !== null),
+        passwordVerified: Boolean(row.user.passwordVerified),
         firstName: row.user.firstName,
-        lastName: row.user.lastName
+        lastName: row.user.lastName,
+        role: row.user.role
     };
     if (Date.now() >= session.expiresAt.getTime()) {
         await db.passwordResetSession.deleteMany({ where: { id: session.id } });
@@ -102,8 +106,10 @@ export const getPasswordResetTokenByToken = async (
         email: row.user.email,
         emailVerified: Boolean(row.user.emailVerified),
         registered2FA: Boolean(row.user.totpKey !== null),
+        passwordVerified: Boolean(row.user.passwordVerified),
         firstName: row.user.firstName,
-        lastName: row.user.lastName
+        lastName: row.user.lastName,
+        role: row.user.role
     };
 
     return { session, user };
@@ -156,3 +162,16 @@ export const deletePasswordResetSessionTokenCookie =
             secure: process.env.NODE_ENV === 'production'
         });
     };
+
+export const checkPasswordUpdate = async (userId: string): Promise<boolean> => {
+    const user = await db.user.findFirst({
+        where: { id: userId },
+        select: { passwordVerified: true }
+    });
+
+    console.log(user);
+
+    if (!user) return true;
+
+    return user.passwordVerified;
+};

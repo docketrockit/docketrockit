@@ -40,6 +40,7 @@ export const validateSessionToken = async (
                     id: true,
                     email: true,
                     emailVerified: true,
+                    passwordVerified: true,
                     totpKey: true,
                     firstName: true,
                     lastName: true,
@@ -70,6 +71,7 @@ export const validateSessionToken = async (
         email: row.user.email,
         emailVerified: Boolean(row.user.emailVerified),
         registered2FA: Boolean(row.user.totpKey !== null),
+        passwordVerified: Boolean(row.user.passwordVerified),
         firstName: row.user.firstName,
         lastName: row.user.lastName,
         role: row.user.role,
@@ -78,7 +80,8 @@ export const validateSessionToken = async (
 
     if (row.user.adminUser) {
         user.adminUser = {
-            jobTitle: row.user.adminUser.jobTitle || undefined
+            jobTitle: row.user.adminUser.jobTitle || undefined,
+            adminRole: row.user.adminUser.adminRole
         };
     }
 

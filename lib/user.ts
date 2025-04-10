@@ -1,6 +1,6 @@
 'use server';
 
-import { Role, Gender } from '@prisma/client';
+import { Role, Gender, AdminRole } from '@prisma/client';
 
 import db from './db';
 import { decrypt, encrypt } from './encryption';
@@ -12,6 +12,7 @@ export interface User {
     email: string;
     emailVerified: boolean;
     registered2FA: boolean;
+    passwordVerified: boolean;
     firstName: string;
     lastName: string;
     image?: string;
@@ -39,15 +40,24 @@ export interface MerchantUser {
 
 export interface AdminUser {
     jobTitle?: string;
+    adminRole: AdminRole[];
 }
 
-export const createUser = async (
-    email: string,
-    password: string,
-    firstName: string,
-    lastName: string,
-    role: Role
-): Promise<User> => {
+interface CreateUserProps {
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    role: Role;
+}
+
+export const createUser = async ({
+    email,
+    password,
+    firstName,
+    lastName,
+    role
+}: CreateUserProps): Promise<User> => {
     const passwordHash = await hashPassword(password);
     const row = await db.user.create({
         data: {
@@ -65,6 +75,7 @@ export const createUser = async (
         email,
         emailVerified: false,
         registered2FA: false,
+        passwordVerified: false,
         firstName,
         lastName,
         role: [role]
@@ -79,7 +90,7 @@ export const updateUserPassword = async (
     const passwordHash = await hashPassword(password);
     await db.user.update({
         where: { id: userId },
-        data: { password: passwordHash }
+        data: { password: passwordHash, passwordVerified: true }
     });
 };
 
@@ -167,6 +178,7 @@ export const getUserFromEmail = async (email: string): Promise<User | null> => {
             id: true,
             email: true,
             emailVerified: true,
+            passwordVerified: true,
             totpKey: true,
             firstName: true,
             lastName: true,
@@ -185,6 +197,7 @@ export const getUserFromEmail = async (email: string): Promise<User | null> => {
         email: row.email,
         emailVerified: row.emailVerified,
         registered2FA: Boolean(row.totpKey !== null),
+        passwordVerified: row.passwordVerified,
         firstName: row.firstName,
         lastName: row.lastName,
         image: row.image || undefined,
@@ -194,7 +207,8 @@ export const getUserFromEmail = async (email: string): Promise<User | null> => {
 
     if (row.adminUser) {
         user.adminUser = {
-            jobTitle: row.adminUser.jobTitle || undefined
+            jobTitle: row.adminUser.jobTitle || undefined,
+            adminRole: row.adminUser.adminRole
         };
     }
 

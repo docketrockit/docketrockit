@@ -44,6 +44,32 @@ export const getUserEmailVerificationRequest = async (
     return request;
 };
 
+export const getUserEmailVerificationRequestByEmail = async (
+    userId: string,
+    email: string
+): Promise<EmailVerificationRequest | null> => {
+    const row = await db.emailVerificationRequest.findFirst({
+        where: { email, userId },
+        select: {
+            id: true,
+            userId: true,
+            code: true,
+            email: true,
+            expiresAt: true
+        }
+    });
+    if (!row) return null;
+    const request: EmailVerificationRequest = {
+        id: row.id,
+        userId: row.userId,
+        code: row.code,
+        email: row.email,
+        expiresAt: new Date(row.expiresAt * 1000)
+    };
+    await setEmailVerificationRequestCookie(request);
+    return request;
+};
+
 export const deleteUserEmailVerificationRequest = async (
     userId: string
 ): Promise<void> => {

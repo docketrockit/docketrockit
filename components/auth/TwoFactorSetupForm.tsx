@@ -59,7 +59,6 @@ const TwoFactorSetupForm = ({
                 setError(data.message);
             } else {
                 const codes = await resetUserRecoveryCode(userId);
-                console.log(codes);
                 setRecoveryCodes(codes);
                 setSuccess(true);
             }
@@ -77,7 +76,7 @@ const TwoFactorSetupForm = ({
                         <p className="text-sm text-gray-500 dark:text-gray-400">
                             {!success
                                 ? 'Scan the QRCode below and enter the verification code to finish setup'
-                                : 'Save your recovery codes below in case you lose your authentication software. You will not be able to access these again.'}
+                                : 'Save your recovery codes below in case you lose your authentication software. You will not be able to access these again. These have been reset if you are setting up two factor authentication again.'}
                         </p>
                     </div>
                     {!success ? (
