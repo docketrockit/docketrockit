@@ -37,6 +37,12 @@ enum AdminRole {
   ACCOUNTS
 }
 
+enum MerchantRole {
+  ADMIN
+  TECHNICAL
+  ACCOUNTS
+}
+
 model User {
   id                       String                     @id @default(cuid())
   firstName                String
@@ -57,6 +63,7 @@ model User {
   recoveryCodes            String[]
   createdAt                DateTime                   @default(now())
   updatedAt                DateTime                   @updatedAt
+  status                   Status                     @default(APPROVED)
   consumerUser             Consumer?
   merchantUser             MerchantUser?
   adminUser                AdminUser?
@@ -115,17 +122,18 @@ model Consumer {
 }
 
 model MerchantUser {
-  id             String   @id @default(cuid())
+  id             String         @id @default(cuid())
   jobTitle       String
   primaryContact Boolean
-  merchant       Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  merchant       Merchant       @relation(fields: [merchantId], references: [id], onDelete: Cascade)
   merchantId     String
-  brand          Brand    @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  merchantRole   MerchantRole[]
+  brand          Brand          @relation(fields: [brandId], references: [id], onDelete: Cascade)
   brandId        String
-  user           User     @relation(fields: [userId], references: [id])
-  userId         String   @unique
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  user           User           @relation(fields: [userId], references: [id])
+  userId         String         @unique
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
 }
 
 model AdminUser {

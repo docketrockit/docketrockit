@@ -100,6 +100,17 @@ export const login = async (
     if (!throttler.consume(user.id)) {
         return { result: false, message: 'Too many requests' };
     }
+
+    const hasAdminMerchant = user.role.some((role) =>
+        ['MERCHANT', 'ADMIN'].includes(role)
+    );
+
+    if (!hasAdminMerchant)
+        return {
+            result: false,
+            message: 'Invalid email and password combination'
+        };
+
     const passwordHash = await getUserPasswordHash(user.id);
     const validPassword = await verifyPasswordHash(passwordHash, password);
     if (!validPassword) {
@@ -108,6 +119,7 @@ export const login = async (
             message: 'Invalid email and password combination'
         };
     }
+
     throttler.reset(user.id);
     const sessionFlags: SessionFlags = {
         twoFactorVerified: false
@@ -368,8 +380,6 @@ export const verifyRecoveryCode = async (
     }
 
     const { code } = validatedFields.data;
-
-    console.log(code);
 
     if (!totpBucket.consume(user.id, 1)) {
         return { result: false, message: 'Too many requests' };

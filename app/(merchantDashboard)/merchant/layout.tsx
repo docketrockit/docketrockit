@@ -13,7 +13,7 @@ const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
     return (
         <div className="min-h-screen xl:flex">
             {/* Sidebar and Backdrop */}
-            <AppSidebar />
+            <AppSidebar session={session} user={user} />
             <Backdrop />
             {/* Main Content Area */}
             <LayoutProvider>

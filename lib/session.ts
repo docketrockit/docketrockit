@@ -92,7 +92,8 @@ export const validateSessionToken = async (
             merchant: row.user.merchantUser.merchant.name,
             merchantId: row.user.merchantUser.merchantId,
             brand: row.user.merchantUser.brand.name,
-            brandId: row.user.merchantUser.brandId
+            brandId: row.user.merchantUser.brandId,
+            merchantRole: row.user.merchantUser.merchantRole
         };
     }
 

@@ -1,5 +1,7 @@
 'use client';
 
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
+
 import { useSidebar } from '@/context/SidebarContext';
 
 export default function LayoutProvider({
@@ -19,7 +21,7 @@ export default function LayoutProvider({
         <div
             className={`flex-1 transition-all  duration-300 ease-in-out ${mainContentMargin}`}
         >
-            {children}
+            <NuqsAdapter>{children}</NuqsAdapter>
         </div>
     );
 }

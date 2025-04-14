@@ -1,8 +1,7 @@
 import { redirect } from 'next/navigation';
-import { Session } from '@/lib/session';
-import { User } from '@/lib/user';
 
-import { getCurrentSession } from '@/lib/session';
+import { User } from '@/lib/user';
+import { Session, getCurrentSession } from '@/lib/session';
 import { globalGETRateLimit } from '@/lib/request';
 
 interface AuthCheckLayoutReturn {
@@ -50,4 +49,38 @@ export const authCheck = async (): Promise<AuthCheckReturn> => {
     if (!session || !user) redirect('/merchant/login');
 
     return { session, user };
+};
+
+export const authCheckRole = async ({
+    roles,
+    access
+}: {
+    roles: string[];
+    access: string[];
+}): Promise<AuthCheckLayoutReturn> => {
+    const { session, user } = await getCurrentSession();
+
+    if (!session || !user) return { result: false, session, user };
+
+    const hasRole = user.role.some((role) => roles.includes(role));
+
+    if (!hasRole) return { result: false, session, user };
+
+    let hasAccess = false;
+
+    if (user.adminUser) {
+        hasAccess = user.adminUser.adminRole.some((role) =>
+            access.includes(role)
+        );
+    }
+
+    if (user.merchantUser) {
+        hasAccess = user.merchantUser.merchantRole.some((role) =>
+            access.includes(role)
+        );
+    }
+
+    if (!hasAccess) return { result: false, session, user };
+
+    return { result: true, session, user };
 };
