@@ -12,12 +12,16 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuTrigger
+    DropdownMenuTrigger,
+    DropdownMenuSeparator
 } from '@/components/ui/dropdown-menu';
 import { DataTableColumnHeader } from '@/components/datatable/DataTableColumnHeader';
 
 import { getStatusIcon } from '@/lib/utils';
-import { UpdateUserAdminSheet } from './UpdateAdminUserSheet';
+import { UpdateAdminUserSheet } from './UpdateAdminUserSheet';
+import UserResetPasswordDialog from '../UserResetPasswordDialog';
+import UserResetTwoFactorDialog from '../UserResetTwoFactorDialog';
+import { useAlertDialog } from '@/hooks/useAlertDialog';
 
 type AdminUser = Prisma.UserGetPayload<{
     include: { adminUser: true };
@@ -98,7 +102,8 @@ export const getColumns = (): ColumnDef<AdminUser>[] => {
             }
         },
         {
-            accessorKey: 'adminRole',
+            id: 'adminRole',
+            accessorFn: (row) => row.adminUser?.adminRole ?? [],
             header: ({ column }) => (
                 <DataTableColumnHeader column={column} title="Access" />
             ),
@@ -121,9 +126,22 @@ export const getColumns = (): ColumnDef<AdminUser>[] => {
                     </>
                 );
             },
-            filterFn: (row, id, value) => {
-                return Array.isArray(value) && value.includes(row.getValue(id));
-            }
+            // filterFn: (row, id, value) => {
+            //     return Array.isArray(value) && value.includes(row.getValue(id));
+            // }
+            filterFn: (row, columnId, filterValue: string[]) => {
+                const userRoles = row.original.adminUser?.adminRole ?? [];
+                const rolesToFilter = Array.isArray(filterValue)
+                    ? filterValue
+                    : [filterValue];
+                return rolesToFilter.some((role) =>
+                    userRoles.includes(role as AdminRole)
+                );
+                // return filterValue.some((role) =>
+                //     userRoles.includes(role as AdminRole)
+                // );
+            },
+            enableColumnFilter: true
         },
         {
             accessorKey: 'status',
@@ -161,16 +179,36 @@ export const getColumns = (): ColumnDef<AdminUser>[] => {
         {
             id: 'actions',
             cell: function Cell({ row }) {
-                const [showUpdateTypeSheet, setShowUpdateTypeSheet] =
+                const [showUpdateAdminUserSheet, setShowUpdateAdminUserSheet] =
                     useState(false);
 
+                const {
+                    isOpen: isResetPasswordDialogOpen,
+                    openDialog: openResetPasswordDialog,
+                    setIsOpen: setResetPasswordDialogOpen
+                } = useAlertDialog();
+                const {
+                    isOpen: isResetTwoFactorDialogOpen,
+                    openDialog: openResetTwoFactorDialog,
+                    setIsOpen: setResetTwoFactorDialogOpen
+                } = useAlertDialog();
                 return (
                     <>
-                        {/* <UpdateUserAdminSheet
-                            open={showUpdateTypeSheet}
-                            onOpenChange={setShowUpdateTypeSheet}
-                            type={row.original}
-                        /> */}
+                        <UpdateAdminUserSheet
+                            open={showUpdateAdminUserSheet}
+                            onOpenChange={setShowUpdateAdminUserSheet}
+                            user={row.original}
+                        />
+                        <UserResetPasswordDialog
+                            isOpen={isResetPasswordDialogOpen}
+                            onOpenChange={setResetPasswordDialogOpen}
+                            user={row.original}
+                        />
+                        <UserResetTwoFactorDialog
+                            isOpen={isResetTwoFactorDialogOpen}
+                            onOpenChange={setResetTwoFactorDialogOpen}
+                            user={row.original}
+                        />
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button
@@ -187,10 +225,21 @@ export const getColumns = (): ColumnDef<AdminUser>[] => {
                             <DropdownMenuContent align="end" className="w-40">
                                 <DropdownMenuItem
                                     onSelect={() =>
-                                        setShowUpdateTypeSheet(true)
+                                        setShowUpdateAdminUserSheet(true)
                                     }
                                 >
                                     Edit
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem
+                                    onSelect={() => openResetPasswordDialog()}
+                                >
+                                    Reset Password
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    onSelect={() => openResetTwoFactorDialog()}
+                                >
+                                    Reset Two Factor
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>

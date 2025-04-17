@@ -7,12 +7,19 @@ export interface Option {
 
 type FilterFieldValue<TData> = keyof TData | 'global';
 
-export interface DataTableFilterField<TData> {
+// export interface DataTableFilterField<TData> {
+//     label: string;
+//     value: FilterFieldValue<TData>;
+//     placeholder?: string;
+//     options?: Option[];
+// }
+
+export type DataTableFilterField<T> = {
     label: string;
-    value: FilterFieldValue<TData>;
+    value: keyof T; // 👈 allows custom column IDs like 'adminRole'
     placeholder?: string;
     options?: Option[];
-}
+};
 
 export interface DataTableFilterOption<TData> {
     id: string;

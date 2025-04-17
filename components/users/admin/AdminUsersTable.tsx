@@ -2,7 +2,7 @@
 'use memo';
 
 import { use, useMemo } from 'react';
-import { User } from '@prisma/client';
+import { Prisma, AdminRole } from '@prisma/client';
 
 import { type DataTableFilterField } from '@/types/data-table';
 import { statusLabels } from '@/types/global';
@@ -18,6 +18,10 @@ import { getColumns } from './AdminUsersTableColumns';
 import { AdminUsersTableFloatingBar } from './AdminUsersTableFloatingBar';
 import { useAdminUsersTable } from '@/components/users/admin/AdminUsersTableProviders';
 import { AdminUsersTableToolbarActions } from './AdminUsersTableToolbarActions';
+
+type AdminUser = Prisma.UserGetPayload<{
+    include: { adminUser: true };
+}>;
 
 interface AdminUsersTableProps {
     adminUsersPromise: ReturnType<typeof getAdminUsers>;
@@ -63,7 +67,19 @@ export const AdminUsersTable = ({
     //     }
     // ];
 
-    const filterFields: DataTableFilterField<User>[] = [
+    const formatRoleLabel = (role: string) =>
+        role
+            .toLowerCase()
+            .replace(/_/g, ' ')
+            .replace(/\b\w/g, (c) => c.toUpperCase());
+
+    const adminRoleOptions = Object.values(AdminRole).map((role) => ({
+        label: formatRoleLabel(role),
+        value: role,
+        withCount: true
+    }));
+
+    const filterFields: DataTableFilterField<AdminUser>[] = [
         {
             label: 'Search Names...',
             value: 'firstName',
@@ -78,6 +94,11 @@ export const AdminUsersTable = ({
                 icon: getStatusIcon(status.value),
                 withCount: true
             }))
+        },
+        {
+            label: 'Access',
+            value: 'adminRole',
+            options: adminRoleOptions
         }
     ];
 
@@ -94,6 +115,7 @@ export const AdminUsersTable = ({
         },
         // For remembering the previous row selection on page change
         getRowId: (originalRow, index) => `${originalRow.id}-${index}`
+
         /* */
     });
 

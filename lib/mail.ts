@@ -59,3 +59,44 @@ export const sendCreateUserAccountEmail = async ({
         <p>Click <a href="${domain}/merchant/">here</a> to login.</p>`
     });
 };
+
+export const sendUserPasswordResetEmail = async ({
+    email,
+    firstName,
+    password
+}: {
+    email: string;
+    firstName: string;
+    password: string;
+}) => {
+    await resend.emails.send({
+        from: process.env.NEXT_PUBLIC_APP_EMAIL as string,
+        to: email,
+        subject: 'DocketRockit - Merchant Dashboard - Password Reset',
+        html: `<p>Hi ${firstName},</p>
+        <p>Your DocketRockit Merchant Dashboard password has been reset.</p>
+        <p>Please use the link below to login. Your temporary password is: ${password}</p>
+        <p>You will need to change this on your first login.</p>
+        <p>Click <a href="${domain}/merchant/">here</a> to login.</p>`
+    });
+};
+
+export const sendUserTwoFactorResetEmail = async ({
+    email,
+    firstName
+}: {
+    email: string;
+    firstName: string;
+}) => {
+    await resend.emails.send({
+        from: process.env.NEXT_PUBLIC_APP_EMAIL as string,
+        to: email,
+        subject:
+            'DocketRockit - Merchant Dashboard - Two Factor Authentication Reset',
+        html: `<p>Hi ${firstName},</p>
+        <p>Your DocketRockit Merchant Dashboard two factor authentication has been reset.</p>
+        <p>Please use the link below to login.</p>
+        <p>You will need to reset this when you next login.</p>
+        <p>Click <a href="${domain}/merchant/">here</a> to login.</p>`
+    });
+};

@@ -8,10 +8,8 @@ import db from '@/lib/db';
 import {
     UserProfileSchema,
     EmailSchema,
-    VerifyEmailSchema,
-    AdminUserSchema
+    VerifyEmailSchema
 } from '@/schemas/users';
-import { checkEmailAvailability } from '@/lib/email';
 import { globalPOSTRateLimit } from '@/lib/request';
 import { getCurrentSession } from '@/lib/session';
 import { ExpiringTokenBucket } from '@/lib/rate-limit';
@@ -23,9 +21,16 @@ import {
     sendVerificationEmailBucket,
     setEmailVerificationRequestCookie
 } from '@/lib/email-verification';
-import { verifyPasswordStrength } from '@/lib/password';
-import { sendCreateUserAccountEmail, sendVerificationEmail } from '@/lib/mail';
-import { updateUserEmailAndSetEmailAsVerified, createUser } from '@/lib/user';
+import {
+    sendVerificationEmail,
+    sendUserPasswordResetEmail,
+    sendUserTwoFactorResetEmail
+} from '@/lib/mail';
+import { authCheckRole } from '@/lib/authCheck';
+import { getErrorMessage } from '@/lib/handleError';
+import { updateUserEmailAndSetEmailAsVerified } from '@/lib/user';
+import generatePassword from '@/utils/generatePassword';
+import { hashPassword } from '@/lib/password';
 
 const bucket = new ExpiringTokenBucket<string>(5, 60 * 30);
 
@@ -223,54 +228,95 @@ export const verifyEmailCode = async (
     return { result: true, message: 'Email successfully updated' };
 };
 
-export const createNewAdminUser = async (
-    values: z.infer<typeof AdminUserSchema>
-): Promise<ActionResult> => {
-    if (!(await globalPOSTRateLimit())) {
-        return { result: false, message: 'Too many requests' };
-    }
-    const validatedFields = AdminUserSchema.safeParse(values);
-
-    if (!validatedFields.success) {
-        return { result: false, message: 'Invalid fields' };
-    }
-
-    const { firstName, lastName, email, password, jobTitle, adminRole } =
-        validatedFields.data;
-
-    const emailAvailable = checkEmailAvailability(email);
-    if (!emailAvailable) {
-        return { result: false, message: 'Email is already used' };
-    }
-
-    const strongPassword = await verifyPasswordStrength(password);
-    if (!strongPassword) {
-        return { result: false, message: 'Weak password' };
-    }
-    const user = await createUser({
-        email,
-        password,
-        firstName,
-        lastName,
-        role: 'ADMIN'
+export const resetUserPassword = async (id: string): Promise<ActionResult> => {
+    const { user: adminUser } = await authCheckRole({
+        roles: ['ADMIN'],
+        access: ['ADMIN']
     });
-    await db.adminUser.create({
-        data: {
-            jobTitle,
-            adminRole,
-            userId: user.id
+
+    if (!adminUser)
+        return {
+            result: false,
+            message: getErrorMessage('Unauthorized')
+        };
+
+    try {
+        if (!(await globalPOSTRateLimit())) {
+            return {
+                result: false,
+                message: getErrorMessage('Too many requests')
+            };
         }
-    });
-    const emailVerificationRequest = await createEmailVerificationRequest(
-        user.id,
-        user.email
-    );
-    await sendCreateUserAccountEmail({
-        email,
-        firstName,
-        password,
-        code: emailVerificationRequest.code
+
+        const password = generatePassword(12);
+        const passwordHash = await hashPassword(password);
+        const user = await db.user.update({
+            where: { id },
+            data: { password: passwordHash, passwordVerified: false }
+        });
+        if (!user) return { result: false, message: 'User not found' };
+        sendUserPasswordResetEmail({
+            email: user.email,
+            firstName: user.firstName,
+            password
+        });
+        return { result: true, message: 'Password successfully reset' };
+    } catch (error) {
+        if (
+            error instanceof Prisma.PrismaClientKnownRequestError &&
+            error.code === 'P2025'
+        ) {
+            // P2025 = "An operation failed because it depends on one or more records that were required but not found"
+            return { result: false, message: 'User not found' };
+        }
+        return {
+            result: false,
+            message: getErrorMessage(error)
+        };
+    }
+};
+
+export const resetUserTwoFactor = async (id: string): Promise<ActionResult> => {
+    const { user: adminUser } = await authCheckRole({
+        roles: ['ADMIN'],
+        access: ['ADMIN']
     });
 
-    return { result: true, message: 'Admin user created' };
+    if (!adminUser)
+        return {
+            result: false,
+            message: getErrorMessage('Unauthorized')
+        };
+
+    try {
+        if (!(await globalPOSTRateLimit())) {
+            return {
+                result: false,
+                message: getErrorMessage('Too many requests')
+            };
+        }
+
+        const user = await db.user.update({
+            where: { id },
+            data: { totpKey: null, recoveryCodes: [] }
+        });
+        if (!user) return { result: false, message: 'User not found' };
+        sendUserTwoFactorResetEmail({
+            email: user.email,
+            firstName: user.firstName
+        });
+        return { result: true, message: 'Two factor successfully reset' };
+    } catch (error) {
+        if (
+            error instanceof Prisma.PrismaClientKnownRequestError &&
+            error.code === 'P2025'
+        ) {
+            // P2025 = "An operation failed because it depends on one or more records that were required but not found"
+            return { result: false, message: 'User not found' };
+        }
+        return {
+            result: false,
+            message: getErrorMessage(error)
+        };
+    }
 };

@@ -56,16 +56,6 @@ const navItems: NavItem[] = [
         ],
         subItems: [
             {
-                name: 'Add Admin User',
-                path: '/merchant/users/admin/add',
-                rolesAllowed: [{ role: 'ADMIN', access: ['ADMIN'] }]
-            },
-            {
-                name: 'Add Merchant User',
-                path: '/merchant/users/merchants/add',
-                rolesAllowed: [{ role: 'ADMIN', access: [] }]
-            },
-            {
                 name: 'View Admin Users',
                 path: '/merchant/users/admin',
                 rolesAllowed: [{ role: 'ADMIN', access: ['ADMIN'] }]

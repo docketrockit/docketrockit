@@ -12,7 +12,7 @@ type FormInputProps = {
     label?: string;
     defaultValue?: string;
     icon?: LucideIcon;
-};
+} & React.InputHTMLAttributes<HTMLInputElement>;
 
 export const FormInputIcon = forwardRef<HTMLInputElement, FormInputProps>(
     function FormInputAuth(
@@ -28,6 +28,36 @@ export const FormInputIcon = forwardRef<HTMLInputElement, FormInputProps>(
                     type={type}
                     placeholder={label}
                     className="w-full rounded-lg bg-background pl-10"
+                    {...props}
+                />
+            </div>
+        );
+    }
+);
+
+export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
+    function FormInputAuth(
+        {
+            label,
+            name,
+            type,
+            defaultValue,
+            icon: Icon = Eye,
+            onChange,
+            value,
+            ...props
+        },
+        ref
+    ) {
+        return (
+            <div className="relative">
+                <Input
+                    type={type}
+                    placeholder={label}
+                    className="w-full rounded-lg bg-background h-12 pl-3"
+                    onChange={onChange}
+                    value={value}
+                    defaultValue={defaultValue}
                     {...props}
                 />
             </div>

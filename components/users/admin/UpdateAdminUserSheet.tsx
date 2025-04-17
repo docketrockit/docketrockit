@@ -5,7 +5,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useTransition, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import { BreweryType } from '@prisma/client';
+import { AdminRole } from '@prisma/client';
+import { UserRound, Mail, Briefcase } from 'lucide-react';
+import { ReloadIcon } from '@radix-ui/react-icons';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -13,17 +15,8 @@ import {
     FormControl,
     FormField,
     FormItem,
-    FormLabel,
     FormMessage
 } from '@/components/ui/form';
-import {
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectTrigger,
-    SelectValue
-} from '@/components/ui/select';
 import {
     Sheet,
     SheetClose,
@@ -33,42 +26,54 @@ import {
     SheetHeader,
     SheetTitle
 } from '@/components/ui/sheet';
-import { Textarea } from '@/components/ui/textarea';
-import { Icons } from '@/components/global/Icons';
-
-import { updateBreweryType } from '@/actions/breweryTypes';
-import { BreweryTypeSchema } from '@/schemas/admin';
-import { statusLabels } from '@/utils/types';
+import { FormInputIcon } from '@/components/form/FormInputs';
+import { MultiSelect } from '@/components/ui/multi-select';
+import { AdminRoleLabels } from '@/types/user';
+import { updateAdminUser } from '@/actions/adminUsers';
+import { AdminUserSchemaUpdate } from '@/schemas/users';
+import { cn } from '@/lib/utils';
+import { AdminUser } from '@/types/adminUsers';
 
 interface UpdateTaskSheetProps
     extends React.ComponentPropsWithRef<typeof Sheet> {
-    type: BreweryType;
+    user: AdminUser;
 }
 
-export const UpdateUserAdminSheet = ({
-    type,
+export const UpdateAdminUserSheet = ({
+    user,
     ...props
 }: UpdateTaskSheetProps) => {
     const [isUpdatePending, startUpdateTransition] = useTransition();
 
-    const form = useForm<z.infer<typeof BreweryTypeSchema>>({
-        resolver: zodResolver(BreweryTypeSchema),
+    const adminRoleOptions = Object.values(AdminRole).map((value) => ({
+        value,
+        label: AdminRoleLabels[value]
+    }));
+
+    const form = useForm<z.infer<typeof AdminUserSchemaUpdate>>({
+        resolver: zodResolver(AdminUserSchemaUpdate),
         defaultValues: {
-            status: type.status,
-            name: type.name
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            jobTitle: user.adminUser?.jobTitle,
+            adminRole: user.adminUser?.adminRole
         }
     });
 
     useEffect(() => {
         form.reset({
-            status: type.status,
-            name: type.name
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            jobTitle: user.adminUser?.jobTitle,
+            adminRole: user.adminUser?.adminRole
         });
-    }, [type, form]);
+    }, [user, form]);
 
-    function onSubmit(input: z.infer<typeof BreweryTypeSchema>) {
+    function onSubmit(input: z.infer<typeof AdminUserSchemaUpdate>) {
         startUpdateTransition(async () => {
-            const { error } = await updateBreweryType(input, type.id);
+            const { error } = await updateAdminUser(input, user.id);
 
             if (error) {
                 toast.error(error);
@@ -77,7 +82,7 @@ export const UpdateUserAdminSheet = ({
 
             form.reset();
             props.onOpenChange?.(false);
-            toast.success('Task updated');
+            toast.success('User updated');
         });
     }
 
@@ -85,7 +90,7 @@ export const UpdateUserAdminSheet = ({
         <Sheet {...props}>
             <SheetContent className="flex flex-col gap-6 sm:max-w-md">
                 <SheetHeader className="text-left">
-                    <SheetTitle>Update task</SheetTitle>
+                    <SheetTitle>Update user</SheetTitle>
                     <SheetDescription>
                         Update the type details and save the changes
                     </SheetDescription>
@@ -93,19 +98,58 @@ export const UpdateUserAdminSheet = ({
                 <Form {...form}>
                     <form
                         onSubmit={form.handleSubmit(onSubmit)}
-                        className="flex flex-col gap-4"
+                        className="flex flex-col gap-4 mx-4"
                     >
+                        <div className="flex flex-row space-x-6">
+                            <FormField
+                                control={form.control}
+                                name="firstName"
+                                render={({ field }) => (
+                                    <FormItem className={cn('w-full')}>
+                                        <FormControl>
+                                            <FormInputIcon
+                                                {...field}
+                                                name="firstName"
+                                                type="text"
+                                                icon={UserRound}
+                                                label="First Name"
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="lastName"
+                                render={({ field }) => (
+                                    <FormItem className={cn('w-full')}>
+                                        <FormControl>
+                                            <FormInputIcon
+                                                {...field}
+                                                name="lastName"
+                                                type="text"
+                                                icon={UserRound}
+                                                label="Last Name"
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
                         <FormField
                             control={form.control}
-                            name="name"
+                            name="email"
                             render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Title</FormLabel>
+                                <FormItem className={cn('w-full')}>
                                     <FormControl>
-                                        <Textarea
-                                            placeholder="Do a kickflip"
-                                            className="resize-none"
+                                        <FormInputIcon
                                             {...field}
+                                            name="email"
+                                            type="email"
+                                            icon={Mail}
+                                            label="Email"
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -114,33 +158,50 @@ export const UpdateUserAdminSheet = ({
                         />
                         <FormField
                             control={form.control}
-                            name="status"
+                            name="jobTitle"
                             render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Status</FormLabel>
-                                    <Select
-                                        onValueChange={field.onChange}
-                                        defaultValue={field.value}
-                                    >
-                                        <FormControl>
-                                            <SelectTrigger className="capitalize">
-                                                <SelectValue placeholder="Select a status" />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                {statusLabels.map((item) => (
-                                                    <SelectItem
-                                                        key={item.value}
-                                                        value={item.value}
-                                                        className="capitalize"
-                                                    >
-                                                        {item.label}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
+                                <FormItem className={cn('w-full')}>
+                                    <FormControl>
+                                        <FormInputIcon
+                                            {...field}
+                                            name="jobTitle"
+                                            type="text"
+                                            icon={Briefcase}
+                                            label="Job Title"
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="adminRole"
+                            render={({ field }) => (
+                                <FormItem className={cn('w-full')}>
+                                    <FormControl>
+                                        <MultiSelect
+                                            {...field}
+                                            name="access"
+                                            options={adminRoleOptions}
+                                            onValueChange={(selectedValues) => {
+                                                form.setValue(
+                                                    'adminRole',
+                                                    selectedValues.map(
+                                                        (key) =>
+                                                            key as AdminRole
+                                                    )
+                                                );
+                                            }}
+                                            defaultValue={
+                                                user.adminUser?.adminRole
+                                            }
+                                            placeholder="Select roles"
+                                            variant="secondary"
+                                            animation={2}
+                                            maxCount={999}
+                                        />
+                                    </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -154,10 +215,7 @@ export const UpdateUserAdminSheet = ({
                             </SheetClose>
                             <Button disabled={isUpdatePending}>
                                 {isUpdatePending && (
-                                    <Icons.spinner
-                                        className="mr-2 size-4 animate-spin"
-                                        aria-hidden="true"
-                                    />
+                                    <ReloadIcon className="mr-2 size-4 animate-spin" />
                                 )}
                                 Save
                             </Button>

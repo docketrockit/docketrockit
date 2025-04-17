@@ -14,6 +14,14 @@ export const AdminUserSchema = object({
     adminRole: array(adminRoleSchema)
 });
 
+export const AdminUserSchemaUpdate = object({
+    firstName: getStringSchema('First name'),
+    lastName: getStringSchema('Last name'),
+    email: getEmailSchema(),
+    jobTitle: getStringSchema('Job title'),
+    adminRole: array(adminRoleSchema)
+});
+
 export const UserProfileSchema = object({
     firstName: getStringSchema('First name'),
     lastName: getStringSchema('Last name'),

@@ -174,30 +174,28 @@ model State {
 }
 
 model Merchant {
-  id               String         @id @default(cuid())
-  name             String
-  status           Status
-  phoneNumber      String
-  genericEmail     String
-  invoiceEmail     String?
-  address1         String
-  address2         String
-  suburb           String
-  postcode         String
-  state            State          @relation(fields: [stateId], references: [id], onDelete: Cascade)
-  stateId          String
-  country          Country        @relation(fields: [countryId], references: [id], onDelete: Cascade)
-  countryId        String
-  formattedAddress String
-  latitude         Float
-  longitude        Float
-  abn              String
-  acn              String
-  logoUrl          String?
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
-  Brands           Brand[]
-  MerchantUser     MerchantUser[]
+  id           String         @id @default(cuid())
+  name         String
+  slug         String         @unique
+  status       Status         @default(PENDING)
+  phoneNumber  String
+  genericEmail String
+  invoiceEmail String?
+  address1     String
+  address2     String?
+  suburb       String
+  postcode     String
+  state        State          @relation(fields: [stateId], references: [id], onDelete: Cascade)
+  stateId      String
+  country      Country        @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  countryId    String
+  abn          String
+  acn          String
+  logoUrl      String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  Brands       Brand[]
+  MerchantUser MerchantUser[]
 }
 
 model Brand {

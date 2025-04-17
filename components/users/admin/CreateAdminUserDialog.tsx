@@ -40,7 +40,15 @@ export const CreateAdminUserDialog = () => {
     const isDesktop = useMediaQuery('(min-width: 640px)');
 
     const form = useForm<z.infer<typeof AdminUserSchema>>({
-        resolver: zodResolver(AdminUserSchema)
+        resolver: zodResolver(AdminUserSchema),
+        defaultValues: {
+            firstName: '',
+            lastName: '',
+            email: '',
+            password: '',
+            jobTitle: '',
+            adminRole: []
+        }
     });
 
     function onSubmit(input: z.infer<typeof AdminUserSchema>) {

@@ -2,6 +2,7 @@ import { Status } from '@prisma/client';
 
 import { Session } from '@/lib/session';
 import { User } from '@/lib/user';
+import { AdminUser } from '@/types/adminUsers';
 
 export interface SessionUserProps {
     session: Session;
@@ -19,3 +20,9 @@ export const statusLabels: { value: Status; label: string }[] = [
     { value: Status.DISABLED, label: 'Disabled' },
     { value: Status.REJECTED, label: 'Rejected' }
 ];
+
+export interface UserResetPasswordDialogProps {
+    user: AdminUser;
+    isOpen: boolean;
+    onOpenChange: (open: boolean) => void;
+}

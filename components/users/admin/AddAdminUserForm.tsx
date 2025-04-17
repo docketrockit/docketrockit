@@ -33,7 +33,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { SubmitButton } from '@/components/form/Buttons';
 import { AdminRoleLabels } from '@/types/user';
-import { createNewAdminUser } from '@/actions/user';
+import { createAdminUser } from '@/actions/adminUsers';
 
 const AddAdminUserForm = () => {
     const [error, setError] = useState<string | undefined>('');
@@ -66,12 +66,12 @@ const AddAdminUserForm = () => {
         setError('');
         setSuccess(false);
         startTransition(async () => {
-            const data = await createNewAdminUser(values);
-            if (!data.result) {
-                setError(data.message);
-            } else {
-                setSuccess(true);
-            }
+            const data = await createAdminUser(values);
+            // if (!data.result) {
+            //     setError(data.message);
+            // } else {
+            //     setSuccess(true);
+            // }
         });
     };
 

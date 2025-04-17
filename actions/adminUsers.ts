@@ -10,20 +10,13 @@ import { GetAdminUsersSchema } from '@/types/adminUsers';
 import { buildAdminUserWhere, buildOrderBy } from '@/lib/adminUserLib';
 import { authCheckRole } from '@/lib/authCheck';
 import { getErrorMessage } from '@/lib/handleError';
-
-import { AdminUserSchema } from '@/schemas/users';
+import { AdminUserSchema, AdminUserSchemaUpdate } from '@/schemas/users';
 import { checkEmailAvailability } from '@/lib/email';
 import { globalPOSTRateLimit } from '@/lib/request';
-import { ExpiringTokenBucket } from '@/lib/rate-limit';
 import { createEmailVerificationRequest } from '@/lib/email-verification';
 import { verifyPasswordStrength } from '@/lib/password';
 import { sendCreateUserAccountEmail } from '@/lib/mail';
 import { createUser } from '@/lib/user';
-
-interface ActionResult {
-    result: boolean;
-    message: string;
-}
 
 export const getAdminUsers = async (input: GetAdminUsersSchema) => {
     const {
@@ -189,6 +182,73 @@ export const createAdminUser = async (
         return {
             data: null,
             error: getErrorMessage(error)
+        };
+    }
+};
+
+export const updateAdminUser = async (
+    values: z.infer<typeof AdminUserSchemaUpdate>,
+    id: string
+) => {
+    const { user: adminUser } = await authCheckRole({
+        roles: ['ADMIN'],
+        access: ['ADMIN']
+    });
+
+    if (!adminUser)
+        return {
+            data: null,
+            error: getErrorMessage('Unauthorized')
+        };
+
+    try {
+        if (!(await globalPOSTRateLimit())) {
+            return {
+                data: null,
+                error: getErrorMessage('Too many requests')
+            };
+        }
+        const validatedFields = AdminUserSchemaUpdate.safeParse(values);
+
+        if (!validatedFields.success) {
+            return { data: null, error: getErrorMessage('Invalid fields') };
+        }
+
+        const { firstName, lastName, email, jobTitle, adminRole } =
+            validatedFields.data;
+
+        const emailAvailable = checkEmailAvailability(email);
+        if (!emailAvailable) {
+            return {
+                data: null,
+                error: getErrorMessage('Email is already used')
+            };
+        }
+        await db.user.update({
+            where: { id },
+            data: {
+                firstName,
+                lastName,
+                email,
+                adminUser: {
+                    update: {
+                        jobTitle,
+                        adminRole
+                    }
+                }
+            }
+        });
+
+        revalidatePath('/merchant/users/admin');
+
+        return {
+            data: null,
+            error: null
+        };
+    } catch (err) {
+        return {
+            data: null,
+            error: getErrorMessage(err)
         };
     }
 };
