@@ -94,11 +94,6 @@ export const AdminUsersTable = ({
                 icon: getStatusIcon(status.value),
                 withCount: true
             }))
-        },
-        {
-            label: 'Access',
-            value: 'adminRole',
-            options: adminRoleOptions
         }
     ];
 
