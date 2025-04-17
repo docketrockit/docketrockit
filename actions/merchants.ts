@@ -11,6 +11,7 @@ import { authCheckRole } from '@/lib/authCheck';
 import { globalPOSTRateLimit } from '@/lib/request';
 import { getErrorMessage } from '@/lib/handleError';
 import { MerchantSchemaCreate } from '@/schemas/merchants';
+import { GetMerchantsSchema } from '@/types/merchant';
 
 const slugger = new GithubSlugger();
 
@@ -107,5 +108,57 @@ export const createMerchant = async (
         };
     }
 
-    redirect('/merchant/merchants');
+    redirect(`/merchant/merchants/${data.slug}`);
+};
+
+export const getMerchants = async (input: GetMerchantsSchema) => {
+    const {
+        page,
+        per_page,
+        sort,
+        firstName,
+        lastName,
+        jobTitle,
+        email,
+        adminRole,
+        status,
+        operator,
+        from,
+        to
+    } = input;
+
+    try {
+        const offset = (page - 1) * per_page;
+        const orderBy = buildOrderBy(sort);
+
+        const fromDay = from ? format(new Date(from), 'yyyy-MM-dd') : undefined;
+        const toDay = to ? format(new Date(to), 'yyyy-MM-dd') : undefined;
+
+        const where = buildAdminUserWhere({
+            operator,
+            firstName,
+            lastName,
+            email,
+            jobTitle,
+            adminRole,
+            status,
+            from: fromDay,
+            to: toDay
+        });
+
+        const data = await db.user.findMany({
+            where,
+            include: { adminUser: true },
+            skip: offset,
+            take: per_page,
+            orderBy
+        });
+
+        const total = await db.user.count({ where });
+
+        const pageCount = Math.ceil(total / per_page);
+        return { data, pageCount };
+    } catch (err) {
+        return { data: [], pageCount: 0 };
+    }
 };

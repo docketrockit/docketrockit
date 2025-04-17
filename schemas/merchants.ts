@@ -1,4 +1,12 @@
-import { object, array, custom, optional, number } from 'zod';
+import {
+    object,
+    array,
+    custom,
+    optional,
+    string,
+    coerce,
+    enum as enum_
+} from 'zod';
 
 import { getStringSchema, getEmailSchema } from './schemas';
 import { isValidABN, isValidACN } from '@/utils/businessNumberValidation';
@@ -51,4 +59,19 @@ export const MerchantSchemaCreate = object({
             message: 'Invalid ACN'
         }),
     logoUrl: getStringSchema('Logo url')
+});
+
+export const merchantsSearchParamsSchema = object({
+    page: coerce.number().default(1),
+    per_page: coerce.number().default(10),
+    sort: string().optional(),
+    firstName: string().optional(),
+    lastName: string().optional(),
+    email: string().optional(),
+    jobTitle: string().optional(),
+    adminRole: string().optional(),
+    status: string().optional(),
+    from: string().optional(),
+    to: string().optional(),
+    operator: enum_(['and', 'or']).optional()
 });
