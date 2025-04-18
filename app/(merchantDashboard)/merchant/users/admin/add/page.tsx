@@ -1,5 +1,5 @@
 import PageBreadcrumb from '@/components/common/PageBreadCrumb';
-import AddAdminUserForm from '@/components/users/admin/AddAdminUserForm';
+import AddAdminUserForm from '@/components/users/admin/add/AddAdminUserForm';
 import { authCheck } from '@/lib/authCheck';
 
 export async function generateMetadata() {

@@ -16,7 +16,7 @@ import { type getAdminUsers } from '@/actions/adminUsers';
 import { getStatusIcon } from '@/lib/utils';
 import { getColumns } from './AdminUsersTableColumns';
 import { AdminUsersTableFloatingBar } from './AdminUsersTableFloatingBar';
-import { useAdminUsersTable } from '@/components/users/admin/AdminUsersTableProviders';
+import { useAdminUsersTable } from './AdminUsersTableProviders';
 import { AdminUsersTableToolbarActions } from './AdminUsersTableToolbarActions';
 
 type AdminUser = Prisma.UserGetPayload<{
@@ -49,23 +49,6 @@ export const AdminUsersTable = ({
      * @prop {React.ReactNode} [icon] - An optional icon to display next to the label.
      * @prop {boolean} [withCount] - An optional boolean to display the count of the filter option.
      */
-    // const filterFields: DataTableFilterField<User>[] = [
-    //     {
-    //         label: 'Name',
-    //         value: 'firstName',
-    //         placeholder: 'Filter names...'
-    //     },
-    //     {
-    //         label: 'Status',
-    //         value: 'status',
-    //         options: statusLabels.map((status) => ({
-    //             label: status.label,
-    //             value: status.value,
-    //             icon: getStatusIcon(status.value),
-    //             withCount: true
-    //         }))
-    //     }
-    // ];
 
     const formatRoleLabel = (role: string) =>
         role

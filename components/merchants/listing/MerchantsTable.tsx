@@ -43,23 +43,6 @@ export const MerchantsTable = ({ merchantsPromise }: MerchantsTableProps) => {
      * @prop {React.ReactNode} [icon] - An optional icon to display next to the label.
      * @prop {boolean} [withCount] - An optional boolean to display the count of the filter option.
      */
-    // const filterFields: DataTableFilterField<User>[] = [
-    //     {
-    //         label: 'Name',
-    //         value: 'firstName',
-    //         placeholder: 'Filter names...'
-    //     },
-    //     {
-    //         label: 'Status',
-    //         value: 'status',
-    //         options: statusLabels.map((status) => ({
-    //             label: status.label,
-    //             value: status.value,
-    //             icon: getStatusIcon(status.value),
-    //             withCount: true
-    //         }))
-    //     }
-    // ];
 
     const filterFields: DataTableFilterField<Merchant>[] = [
         {
