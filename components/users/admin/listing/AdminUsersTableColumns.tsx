@@ -19,8 +19,8 @@ import { DataTableColumnHeader } from '@/components/datatable/DataTableColumnHea
 
 import { getStatusIcon } from '@/lib/utils';
 import { UpdateAdminUserSheet } from './UpdateAdminUserSheet';
-import UserResetPasswordDialog from '../UserResetPasswordDialog';
-import UserResetTwoFactorDialog from '../UserResetTwoFactorDialog';
+import UserResetPasswordDialog from './UserResetPasswordDialog';
+import UserResetTwoFactorDialog from './UserResetTwoFactorDialog';
 import { useAlertDialog } from '@/hooks/useAlertDialog';
 
 type AdminUser = Prisma.UserGetPayload<{
