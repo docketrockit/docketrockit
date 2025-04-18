@@ -5,15 +5,15 @@ import { authCheck } from '@/lib/authCheck';
 import PageBreadcrumb from '@/components/common/PageBreadCrumb';
 import ComponentCard from '@/components/common/ComponentCard';
 import { SearchParams } from '@/types/global';
-import { AdminUsersTable } from '@/components/users/admin/AdminUsersTable';
-import { AdminUsersTableProvider } from '@/components/users/admin/AdminUsersTableProviders';
+import { MerchantsTable } from '@/components/merchants/listing/MerchantsTable';
+import { MerchantsTableProvider } from '@/components/merchants/listing/MerchantsTableProviders';
 import { DateRangePicker } from '@/components/datatable/DateRangePicker';
 import { DataTableSkeleton } from '@/components/datatable/DataTableSkeleton';
-import { adminUsersSearchParamsSchema } from '@/schemas/adminUsers';
-import { getAdminUsers } from '@/actions/adminUsers';
+import { merchantsSearchParamsSchema } from '@/schemas/merchants';
+import { getMerchants } from '@/actions/merchants';
 
 export async function generateMetadata() {
-    const title = 'Admin Users';
+    const title = 'Merchants';
     const description = 'The DocketRockit Merchant Admin Dashboard';
 
     return {
@@ -22,19 +22,19 @@ export async function generateMetadata() {
     };
 }
 
-const AdminUsersPage = async (props: { searchParams: SearchParams }) => {
+const MerchantsPage = async (props: { searchParams: SearchParams }) => {
     const { session, user } = await authCheck();
     const searchParams = await props.searchParams;
 
-    const search = adminUsersSearchParamsSchema.parse(searchParams);
+    const search = merchantsSearchParamsSchema.parse(searchParams);
 
-    const adminUsersPromise = getAdminUsers(search);
+    const merchantsPromise = getMerchants(search);
 
     return (
         <div>
-            <PageBreadcrumb pageTitle="Admin Users" />
+            <PageBreadcrumb pageTitle="Merchants" />
             <ComponentCard>
-                <AdminUsersTableProvider>
+                <MerchantsTableProvider>
                     <Suspense fallback={<Skeleton className="h-7 w-52" />}>
                         <DateRangePicker
                             triggerSize="sm"
@@ -59,13 +59,11 @@ const AdminUsersPage = async (props: { searchParams: SearchParams }) => {
                             />
                         }
                     >
-                        <AdminUsersTable
-                            adminUsersPromise={adminUsersPromise}
-                        />
+                        <MerchantsTable merchantsPromise={merchantsPromise} />
                     </Suspense>
-                </AdminUsersTableProvider>
+                </MerchantsTableProvider>
             </ComponentCard>
         </div>
     );
 };
-export default AdminUsersPage;
+export default MerchantsPage;

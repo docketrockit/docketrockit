@@ -67,9 +67,9 @@ model User {
   consumerUser             Consumer?
   merchantUser             MerchantUser?
   adminUser                AdminUser?
-  Session                  Session[]
-  EmailVerificationRequest EmailVerificationRequest[]
-  PasswordResetSession     PasswordResetSession[]
+  session                  Session[]
+  emailVerificationRequest EmailVerificationRequest[]
+  passwordResetSession     PasswordResetSession[]
 
   @@unique([email])
 }
@@ -155,8 +155,8 @@ model Country {
   Merchants Merchant[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
-  Store     Store[]
-  Brand     Brand[]
+  store     Store[]
+  brand     Brand[]
 }
 
 model State {
@@ -165,12 +165,12 @@ model State {
   name      String
   country   Country    @relation(fields: [countryId], references: [id], onDelete: Cascade)
   countryId String
-  Merchants Merchant[]
+  merchants Merchant[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
-  Stores    Store[]
-  Brands    Brand[]
-  Users     User[]
+  stores    Store[]
+  brands    Brand[]
+  users     User[]
 }
 
 model Merchant {
@@ -194,8 +194,8 @@ model Merchant {
   logoUrl      String?
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
-  Brands       Brand[]
-  MerchantUser MerchantUser[]
+  brands       Brand[]
+  merchantUser MerchantUser[]
 }
 
 model Brand {
@@ -222,8 +222,8 @@ model Brand {
   phoneNumber      String
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
-  Stores           Store[]
-  MerchantUsers    MerchantUser[]
+  stores           Store[]
+  merchantUsers    MerchantUser[]
 }
 
 model Store {
@@ -248,7 +248,7 @@ model Store {
   currency         String
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
-  Receipts         Receipt[]
+  receipts         Receipt[]
 }
 
 model Receipt {
@@ -263,7 +263,7 @@ model Receipt {
   otherInformation String[]
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
-  ReceiptItems     ReceiptItem[]
+  receiptItems     ReceiptItem[]
 }
 
 model ReceiptItem {

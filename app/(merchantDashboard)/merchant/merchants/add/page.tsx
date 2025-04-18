@@ -1,16 +1,13 @@
 import { redirect } from 'next/navigation';
 
 import PageBreadcrumb from '@/components/common/PageBreadCrumb';
-import AddMerchantForm from '@/components/merchants/AddMerchantForm';
+import AddMerchantForm from '@/components/merchants/add/AddMerchantForm';
 import { authCheck } from '@/lib/authCheck';
-import getCountryIDByCode from '@/utils/getCountryIDByCode';
 import {
     getAllCountries,
     getCountryByName,
     getStatesByCountry,
-    getStateById,
-    getCountryById,
-    getCountryByCode
+    getCountryById
 } from '@/data/location';
 
 export async function generateMetadata() {

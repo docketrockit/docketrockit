@@ -1,10 +1,11 @@
 'use server';
 
 import * as z from 'zod';
-import { revalidatePath } from 'next/cache';
+import { format, subDays } from 'date-fns';
 import { redirect } from 'next/navigation';
 import { Merchant } from '@prisma/client';
 import GithubSlugger from 'github-slugger';
+import { revalidatePath } from 'next/cache';
 
 import db from '@/lib/db';
 import { authCheckRole } from '@/lib/authCheck';
@@ -12,6 +13,7 @@ import { globalPOSTRateLimit } from '@/lib/request';
 import { getErrorMessage } from '@/lib/handleError';
 import { MerchantSchemaCreate } from '@/schemas/merchants';
 import { GetMerchantsSchema } from '@/types/merchant';
+import { buildMerchantWhere, buildOrderBy } from '@/lib/merchantLib';
 
 const slugger = new GithubSlugger();
 
@@ -112,20 +114,7 @@ export const createMerchant = async (
 };
 
 export const getMerchants = async (input: GetMerchantsSchema) => {
-    const {
-        page,
-        per_page,
-        sort,
-        firstName,
-        lastName,
-        jobTitle,
-        email,
-        adminRole,
-        status,
-        operator,
-        from,
-        to
-    } = input;
+    const { page, per_page, sort, name, status, operator, from, to } = input;
 
     try {
         const offset = (page - 1) * per_page;
@@ -134,31 +123,118 @@ export const getMerchants = async (input: GetMerchantsSchema) => {
         const fromDay = from ? format(new Date(from), 'yyyy-MM-dd') : undefined;
         const toDay = to ? format(new Date(to), 'yyyy-MM-dd') : undefined;
 
-        const where = buildAdminUserWhere({
+        const where = buildMerchantWhere({
             operator,
-            firstName,
-            lastName,
-            email,
-            jobTitle,
-            adminRole,
+            name,
             status,
             from: fromDay,
             to: toDay
         });
 
-        const data = await db.user.findMany({
+        const data = await db.merchant.findMany({
             where,
-            include: { adminUser: true },
+            include: {
+                _count: {
+                    select: {
+                        brands: true // Counts brands per merchant
+                    }
+                },
+                brands: {
+                    select: {
+                        id: true,
+                        _count: {
+                            select: {
+                                stores: true // Counts stores per brand
+                            }
+                        },
+                        stores: {
+                            select: {
+                                id: true,
+                                _count: {
+                                    select: {
+                                        receipts: {
+                                            where: {
+                                                createdAt: {
+                                                    gte: subDays(new Date(), 30)
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             skip: offset,
             take: per_page,
             orderBy
         });
 
-        const total = await db.user.count({ where });
+        const formatted = data.map((merchant) => {
+            const brandCount = merchant._count.brands;
+
+            let storeCount = 0;
+            let receiptCount = 0;
+
+            for (const brand of merchant.brands) {
+                storeCount += brand._count.stores;
+
+                for (const store of brand.stores) {
+                    receiptCount += store._count.receipts;
+                }
+            }
+
+            const { _count, ...rest } = merchant;
+
+            return {
+                ...rest,
+                brands: brandCount,
+                stores: storeCount,
+                receipts: receiptCount
+            };
+        });
+
+        const total = await db.merchant.count({ where });
 
         const pageCount = Math.ceil(total / per_page);
-        return { data, pageCount };
+        return { data: formatted, pageCount };
     } catch (err) {
         return { data: [], pageCount: 0 };
+    }
+};
+
+export const updateMerchants = async (input: {
+    ids: string[];
+    status?: Merchant['status'];
+}) => {
+    const { user } = await authCheckRole({
+        roles: ['ADMIN'],
+        access: ['ADMIN']
+    });
+
+    if (!user)
+        return {
+            data: null,
+            error: getErrorMessage('Unauthorized')
+        };
+
+    try {
+        await db.merchant.updateMany({
+            where: { id: { in: input.ids } },
+            data: { status: input.status }
+        });
+
+        revalidatePath('/merchant/merchants');
+
+        return {
+            data: null,
+            error: null
+        };
+    } catch (err) {
+        return {
+            data: null,
+            error: getErrorMessage(err)
+        };
     }
 };

@@ -12,11 +12,7 @@ export interface AddMerchantFormProps {
 
 export type MerchantsFilterInput = {
     operator?: 'and' | 'or';
-    firstName?: string;
-    lastName?: string;
-    jobTitle?: string;
-    email?: string;
-    adminRole?: string;
+    name?: string;
     status?: string;
     from?: string;
     to?: string;
