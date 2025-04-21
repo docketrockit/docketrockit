@@ -11,10 +11,10 @@ import { Upload } from 'lucide-react';
 import { FormControl, FormField, FormItem } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { MerchantSchema } from '@/schemas/merchants';
+import { AddMerchantSchema } from '@/schemas/merchants';
 
 const AddMerchantLogoUpload = () => {
-    const form = useFormContext<z.infer<typeof MerchantSchema>>();
+    const form = useFormContext<z.infer<typeof AddMerchantSchema>>();
     const maxFiles = 1;
     const {
         fields: imageFields,
