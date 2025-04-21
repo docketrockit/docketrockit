@@ -11,14 +11,17 @@ import db from '@/lib/db';
 import { authCheckRole } from '@/lib/authCheck';
 import { globalPOSTRateLimit } from '@/lib/request';
 import { getErrorMessage } from '@/lib/handleError';
-import { MerchantSchemaCreate } from '@/schemas/merchants';
+import {
+    AddMerchantSchemaCreate,
+    EditMerchantSchema
+} from '@/schemas/merchants';
 import { GetMerchantsSchema } from '@/types/merchant';
 import { buildMerchantWhere, buildOrderBy } from '@/lib/merchantLib';
 
 const slugger = new GithubSlugger();
 
 export const createMerchant = async (
-    values: z.infer<typeof MerchantSchemaCreate>
+    values: z.infer<typeof AddMerchantSchemaCreate>
 ) => {
     const { user: adminUser } = await authCheckRole({
         roles: ['ADMIN'],
@@ -40,7 +43,7 @@ export const createMerchant = async (
                 error: getErrorMessage('Too many requests')
             };
         }
-        const validatedFields = MerchantSchemaCreate.safeParse(values);
+        const validatedFields = AddMerchantSchemaCreate.safeParse(values);
 
         if (!validatedFields.success) {
             return {
@@ -94,6 +97,122 @@ export const createMerchant = async (
                 abn,
                 acn,
                 logoUrl
+            }
+        });
+
+        if (!data) {
+            return {
+                data: null,
+                error: getErrorMessage('Error with fields')
+            };
+        }
+    } catch (error) {
+        return {
+            data: null,
+            error: getErrorMessage(error)
+        };
+    }
+
+    redirect(`/merchant/merchants/${data.slug}`);
+};
+
+export const updateMerchant = async ({
+    id,
+    values
+}: {
+    id: string;
+    values: z.infer<typeof EditMerchantSchema>;
+}) => {
+    const { user: adminUser } = await authCheckRole({
+        roles: ['ADMIN'],
+        access: ['ADMIN']
+    });
+
+    if (!adminUser)
+        return {
+            data: null,
+            error: getErrorMessage('Unauthorized')
+        };
+
+    let data: Merchant;
+
+    try {
+        if (!(await globalPOSTRateLimit())) {
+            return {
+                data: null,
+                error: getErrorMessage('Too many requests')
+            };
+        }
+        const validatedFields = EditMerchantSchema.safeParse(values);
+
+        if (!validatedFields.success) {
+            return {
+                data: null,
+                error: getErrorMessage('Invalid fields')
+            };
+        }
+
+        const existingMerchant = await db.merchant.findUnique({
+            where: { id }
+        });
+
+        if (!existingMerchant) {
+            return {
+                data: null,
+                error: getErrorMessage('Invalid merchant id')
+            };
+        }
+
+        const {
+            name,
+            phoneNumber,
+            genericEmail,
+            invoiceEmail,
+            address1,
+            address2,
+            suburb,
+            state,
+            postcode,
+            country,
+            abn,
+            acn
+        } = validatedFields.data;
+
+        let slug = existingMerchant.slug;
+
+        if (name !== existingMerchant.name) {
+            slug = slugger.slug(name);
+            let slugExists = true;
+
+            while (slugExists) {
+                const checkSlug = await db.merchant.findUnique({
+                    where: { slug }
+                });
+                if (!checkSlug) {
+                    slugExists = false;
+                    break;
+                } else {
+                    slug = slugger.slug(name);
+                }
+            }
+        }
+
+        data = await db.merchant.update({
+            where: { id },
+            data: {
+                name,
+                slug,
+                phoneNumber,
+                genericEmail,
+                invoiceEmail,
+                address1,
+                address2,
+                suburb,
+                postcode,
+                stateId: state,
+                countryId: country,
+                abn,
+                acn
             }
         });
 
@@ -237,4 +356,18 @@ export const updateMerchants = async (input: {
             error: getErrorMessage(err)
         };
     }
+};
+
+export const getMerchant = async (slug: string) => {
+    const data = await db.merchant.findUnique({
+        where: {
+            slug
+        },
+        include: {
+            state: true,
+            country: true
+        }
+    });
+
+    return { data };
 };

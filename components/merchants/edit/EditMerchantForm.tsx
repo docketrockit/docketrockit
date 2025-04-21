@@ -29,65 +29,61 @@ import {
     PopoverTrigger
 } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
-import { AddMerchantSchema } from '@/schemas/merchants';
+import { EditMerchantSchema } from '@/schemas/merchants';
 import FormError from '@/components/form/FormError';
 import ComponentCard from '@/components/common/ComponentCard';
 import { cn } from '@/lib/utils';
 import { FormInput } from '@/components/form/FormInputs';
 import { SubmitButton } from '@/components/form/Buttons';
-import { createMerchant } from '@/actions/merchants';
-import { uploadImage } from '@/utils/supabase';
+import { updateMerchant } from '@/actions/merchants';
 import { PhoneInput } from '@/components/ui/phone-input';
 import { formatABN, formatACN } from '@/utils/businessNumberValidation';
-import AddMerchantLogoUpload from './AddMerchantLogoUpload';
-import { AddMerchantFormProps } from '@/types/merchant';
+import { EditMerchantFormProps } from '@/types/merchant';
 import { getStatesByCountry } from '@/data/location';
 
-const AddMerchantForm = ({
-    countryProp,
+const EditMerchantForm = ({
+    merchant,
     countries,
-    states
-}: AddMerchantFormProps) => {
+    states,
+    stateProp,
+    countryProp
+}: EditMerchantFormProps) => {
     const [error, setError] = useState<string | undefined>('');
-    const [success, setSuccess] = useState<boolean>(false);
     const [isPending, startTransition] = useTransition();
-    const [country, setCountry] = useState(countryProp);
     const [countriesList, setCountriesList] = useState<Country[]>(countries);
     const [statesList, setStatesList] = useState<State[]>(states);
+    const [country, setCountry] = useState(countryProp);
+    const [state, setState] = useState(stateProp);
     const [openCountry, setOpenCountry] = useState(false);
     const [openState, setOpenState] = useState(false);
 
     const errorClass = 'pl-6';
 
-    const form = useForm<z.infer<typeof AddMerchantSchema>>({
-        resolver: zodResolver(AddMerchantSchema),
+    const form = useForm<z.infer<typeof EditMerchantSchema>>({
+        resolver: zodResolver(EditMerchantSchema),
         defaultValues: {
-            name: '',
-            phoneNumber: '',
-            genericEmail: '',
-            invoiceEmail: '',
-            address1: '',
-            address2: '',
-            suburb: '',
-            postcode: '',
-            state: '',
-            country: country?.id || '',
-            abn: '',
-            acn: '',
-            logoUrl: []
+            name: merchant.name,
+            phoneNumber: merchant.phoneNumber,
+            genericEmail: merchant.genericEmail,
+            invoiceEmail: merchant.invoiceEmail || '',
+            address1: merchant.address1,
+            address2: merchant.address2 || '',
+            suburb: merchant.suburb,
+            postcode: merchant.suburb,
+            state: state?.id,
+            country: country?.id,
+            abn: merchant.abn,
+            acn: merchant.acn
         }
     });
 
     const abn = form.watch('abn');
     const acn = form.watch('acn');
 
-    const onSubmit = (values: z.infer<typeof AddMerchantSchema>) => {
+    const onSubmit = (values: z.infer<typeof EditMerchantSchema>) => {
         setError('');
-        setSuccess(false);
         startTransition(async () => {
-            const logoUrl = await uploadImage(values.logoUrl[0].value, 'logos');
-            const formData = { ...values, logoUrl: logoUrl.publicUrl };
-            const data = await createMerchant(formData);
+            const data = await updateMerchant({ id: merchant.id, values });
             if (!data.data) {
                 setError(data.error);
             }
@@ -100,7 +96,7 @@ const AddMerchantForm = ({
                 const result = await getStatesByCountry(
                     form.getValues('country')
                 );
-                form.setValue('state', '');
+                form.setValue('state', state?.id || '');
                 setStatesList(result!);
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -281,6 +277,8 @@ const AddMerchantForm = ({
                                 </div>
                             </div>
                         </ComponentCard>
+                    </div>
+                    <div className="space-y-6">
                         <ComponentCard>
                             <div className="space-y-6">
                                 <div className="flex flex-col space-y-6">
@@ -633,17 +631,12 @@ const AddMerchantForm = ({
                                     </div>
                                     <div className="flex justify-end">
                                         <SubmitButton
-                                            text="Add Merchant"
+                                            text="Update Merchant"
                                             isPending={isPending}
                                         />
                                     </div>
                                 </div>
                             </div>
-                        </ComponentCard>
-                    </div>
-                    <div className="space-y-6">
-                        <ComponentCard>
-                            <AddMerchantLogoUpload />
                         </ComponentCard>
                     </div>
                 </div>
@@ -652,4 +645,4 @@ const AddMerchantForm = ({
     );
 };
 
-export default AddMerchantForm;
+export default EditMerchantForm;

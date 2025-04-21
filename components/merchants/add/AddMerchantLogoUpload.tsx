@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { MerchantSchema } from '@/schemas/merchants';
 
-const MerchantLogoUpload = () => {
+const AddMerchantLogoUpload = () => {
     const form = useFormContext<z.infer<typeof MerchantSchema>>();
     const maxFiles = 1;
     const {
@@ -24,12 +24,6 @@ const MerchantLogoUpload = () => {
         name: 'logoUrl',
         control: form.control
     });
-
-    // const onDrop = (acceptedFiles: File[]) => {
-    //     console.log('Files dropped:', acceptedFiles);
-    //     // Handle file uploads here
-    // };
-
     const onDrop = useCallback(
         async (acceptedFiles: File[]) => {
             if (imageFields.length + acceptedFiles.length <= maxFiles) {
@@ -43,16 +37,6 @@ const MerchantLogoUpload = () => {
         },
         [form]
     );
-
-    // const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    //     onDrop,
-    //     accept: {
-    //         'image/png': [],
-    //         'image/jpeg': [],
-    //         'image/webp': [],
-    //         'image/svg+xml': []
-    //     }
-    // });
 
     const {
         getRootProps,
@@ -155,34 +139,6 @@ const MerchantLogoUpload = () => {
                                         <span className="font-medium underline text-theme-sm text-brand-500">
                                             Browse File
                                         </span>
-                                        {/* <div className="mb-2 mt-4">
-                                            Drop or{' '}
-                                            <span
-                                                onClick={() => open()}
-                                                className="cursor-pointer text-primary hover:underline"
-                                            >
-                                                select
-                                            </span>
-                                        </div>
-                                        <span
-                                            className={cn(
-                                                'absolute bottom-2 left-1/2 -translate-x-1/2 text-xs',
-                                                {
-                                                    'text-destructive':
-                                                        isDragReject ||
-                                                        fileRejections.length >
-                                                            0,
-                                                    'text-muted-foreground':
-                                                        !isDragReject &&
-                                                        !(
-                                                            fileRejections.length >
-                                                            0
-                                                        )
-                                                }
-                                            )}
-                                        >
-                                            Max size: 5MB, JPG or PNG
-                                        </span> */}
                                     </div>
                                 ) : (
                                     <div className="flex flex-col items-center justify-center py-10 mx-8">
@@ -230,4 +186,4 @@ const MerchantLogoUpload = () => {
     );
 };
 
-export default MerchantLogoUpload;
+export default AddMerchantLogoUpload;

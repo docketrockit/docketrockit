@@ -20,7 +20,7 @@ export async function generateMetadata() {
     };
 }
 
-const AddAdminUserPage = async () => {
+const AddMerchantPage = async () => {
     await authCheck();
     const countries = await getAllCountries();
     const defaultCountry = await getCountryByName('Australia');
@@ -38,4 +38,4 @@ const AddAdminUserPage = async () => {
         </div>
     );
 };
-export default AddAdminUserPage;
+export default AddMerchantPage;

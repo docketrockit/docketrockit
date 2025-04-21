@@ -26,3 +26,5 @@ export interface UserResetPasswordDialogProps {
     isOpen: boolean;
     onOpenChange: (open: boolean) => void;
 }
+
+export type ParamsSlug = Promise<{ slug: string }>;

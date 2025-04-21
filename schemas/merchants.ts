@@ -11,7 +11,7 @@ import {
 import { getStringSchema, getEmailSchema } from './schemas';
 import { isValidABN, isValidACN } from '@/utils/businessNumberValidation';
 
-export const MerchantSchema = object({
+export const AddMerchantSchema = object({
     name: getStringSchema('Name'),
     phoneNumber: getStringSchema('Phone number'),
     genericEmail: getEmailSchema(),
@@ -37,7 +37,7 @@ export const MerchantSchema = object({
         .max(1, { message: 'You can only have one logo' })
 });
 
-export const MerchantSchemaCreate = object({
+export const AddMerchantSchemaCreate = object({
     name: getStringSchema('Name'),
     phoneNumber: getStringSchema('Phone number'),
     genericEmail: getEmailSchema(),
@@ -70,4 +70,27 @@ export const merchantsSearchParamsSchema = object({
     from: string().optional(),
     to: string().optional(),
     operator: enum_(['and', 'or']).optional()
+});
+
+export const EditMerchantSchema = object({
+    name: getStringSchema('Name'),
+    phoneNumber: getStringSchema('Phone number'),
+    genericEmail: getEmailSchema(),
+    invoiceEmail: optional(getEmailSchema()),
+    address1: getStringSchema('Address line 1'),
+    address2: optional(getStringSchema('Address line 2')),
+    suburb: getStringSchema('Suburb'),
+    postcode: getStringSchema('Postcode'),
+    state: getStringSchema('State'),
+    country: getStringSchema('Country'),
+    abn: getStringSchema('ABN')
+        .transform((val) => val.replace(/\D/g, ''))
+        .refine((val) => val.length === 11, {
+            message: 'ABN must be 11 digits'
+        })
+        .refine((val) => isValidABN(val), { message: 'Invalid ABN' }),
+    acn: getStringSchema('ACN')
+        .transform((val) => val.replace(/\D/g, ''))
+        .refine((val) => val.length === 9, { message: 'ACN must be 9 digits' })
+        .refine((val) => isValidACN(val), { message: 'Invalid ACN' })
 });
