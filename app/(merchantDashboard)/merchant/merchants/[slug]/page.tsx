@@ -5,6 +5,9 @@ import { getMerchant } from '@/actions/merchants';
 import { authCheck } from '@/lib/authCheck';
 import { ParamsSlug } from '@/types/global';
 import MerchantMain from '@/components/merchants/view/MerchantMain';
+import { merchantUsersSearchParamsSchema } from '@/schemas/merchantUsers';
+import { getMerchantUsers } from '@/actions/merchantUsers';
+import { SearchParams } from '@/types/global';
 
 export async function generateMetadata({
     params
@@ -25,12 +28,20 @@ export async function generateMetadata({
     };
 }
 
-const MerchantDetailsPage = async (props: { params: ParamsSlug }) => {
+const MerchantDetailsPage = async (props: {
+    params: ParamsSlug;
+    searchParams: SearchParams;
+}) => {
     const { slug } = await props.params;
     await authCheck();
     const { data } = await getMerchant(slug);
     if (!data) redirect('/merchant/merchants');
-    const id = data.id;
+
+    const search = merchantUsersSearchParamsSchema.parse(
+        await props.searchParams
+    );
+
+    const merchantUsersPromise = getMerchantUsers(search);
 
     return (
         <div>
@@ -39,7 +50,10 @@ const MerchantDetailsPage = async (props: { params: ParamsSlug }) => {
                     Profile
                 </h3>
                 <div className="space-y-6">
-                    <MerchantMain merchant={data} />
+                    <MerchantMain
+                        merchant={data}
+                        merchantUsersPromise={merchantUsersPromise}
+                    />
                 </div>
             </div>
         </div>

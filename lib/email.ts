@@ -13,3 +13,20 @@ export const checkEmailAvailability = async (
     }
     return row === 0;
 };
+
+export const checkMerchantEmailAvailability = async (
+    email: string
+): Promise<boolean> => {
+    const row = await db.user.count({
+        where: {
+            email,
+            role: {
+                has: 'MERCHANT'
+            }
+        }
+    });
+    if (row === null) {
+        throw new Error();
+    }
+    return row === 0;
+};

@@ -3,6 +3,7 @@ import { Country, State } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 
 import { merchantsSearchParamsSchema } from '@/schemas/merchants';
+import { getMerchantUsers } from '@/actions/merchantUsers';
 
 type MerchantData = Prisma.MerchantGetPayload<{
     include: { state: true; country: true };
@@ -24,6 +25,7 @@ export interface EditMerchantFormProps {
 
 export interface MerchantMainProps {
     merchant: MerchantData;
+    merchantUsersPromise: ReturnType<typeof getMerchantUsers>;
 }
 
 export type MerchantsFilterInput = {

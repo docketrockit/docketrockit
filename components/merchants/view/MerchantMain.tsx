@@ -5,8 +5,12 @@ import { Pencil } from 'lucide-react';
 
 import { MerchantMainProps } from '@/types/merchant';
 import Link from 'next/link';
+import MerchantTabs from './MerchantTabs';
 
-const MerchantMain = ({ merchant }: MerchantMainProps) => {
+const MerchantMain = ({
+    merchant,
+    merchantUsersPromise
+}: MerchantMainProps) => {
     if (!merchant) return 'No user found';
 
     return (
@@ -29,17 +33,15 @@ const MerchantMain = ({ merchant }: MerchantMainProps) => {
                             <h4 className="mb-2 text-center text-lg font-semibold text-gray-800 xl:text-left dark:text-white/90">
                                 {merchant.name}
                             </h4>
-                            {/* <div className="flex flex-col items-center gap-1 text-center xl:flex-row xl:gap-3 xl:text-left">
+                            <div className="flex flex-col items-center gap-1 text-center xl:flex-row xl:gap-3 xl:text-left">
                                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                                    {user.adminUser
-                                        ? user.adminUser.jobTitle
-                                        : user.merchantUser?.jobTitle}
+                                    {merchant.status}
                                 </p>
                                 <div className="hidden h-3.5 w-px bg-gray-300 xl:block dark:bg-gray-700"></div>
                                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                                    {`${user.city}, ${user.state?.country.name}`}
+                                    {`${merchant.state.name}, ${merchant.country.name}`}
                                 </p>
-                            </div> */}
+                            </div>
                         </div>
                     </div>
                     <Link href={`/merchant/merchants/edit/${merchant.slug}`}>
@@ -53,100 +55,144 @@ const MerchantMain = ({ merchant }: MerchantMainProps) => {
                     </Link>
                 </div>
             </div>
-            {/* <div className="rounded-2xl border border-gray-200 p-5 lg:p-6 dark:border-gray-800">
-                <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-                    <div>
-                        <h4 className="text-lg font-semibold text-gray-800 lg:mb-6 dark:text-white/90">
-                            Personal Information
-                        </h4>
+            <div className="flex flex-row space-x-6 w-full">
+                <div className="rounded-2xl border border-gray-200 p-5 lg:p-6 dark:border-gray-800 w-full">
+                    <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+                        <div>
+                            <h4 className="text-lg font-semibold text-gray-800 lg:mb-6 dark:text-white/90">
+                                Merchant Information
+                            </h4>
 
-                        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
-                            <div>
-                                <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                                    First Name
-                                </p>
-                                <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                                    {user.firstName}
-                                </p>
-                            </div>
+                            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
+                                <div>
+                                    <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+                                        Phone Number
+                                    </p>
+                                    <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                                        {merchant.phoneNumber}
+                                    </p>
+                                </div>
 
-                            <div>
-                                <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                                    Last Name
-                                </p>
-                                <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                                    {user.lastName}
-                                </p>
-                            </div>
+                                <div>
+                                    <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+                                        &nbsp;
+                                    </p>
+                                    <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                                        &nbsp;
+                                    </p>
+                                </div>
 
-                            <div>
-                                <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                                    Email address
-                                </p>
-                                <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                                    {user.email}
-                                </p>
-                            </div>
+                                <div>
+                                    <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+                                        Email Address
+                                    </p>
+                                    <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                                        <a
+                                            href={`mailto:${merchant.genericEmail}`}
+                                        >
+                                            {merchant.genericEmail}
+                                        </a>
+                                    </p>
+                                </div>
 
-                            <div>
-                                <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                                    Phone
-                                </p>
-                                <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                                    {user.phoneNumber}
-                                </p>
-                            </div>
+                                <div>
+                                    <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+                                        Invoice Email Address
+                                    </p>
+                                    <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                                        <a
+                                            href={`mailto:${merchant.invoiceEmail}`}
+                                        >
+                                            {merchant.invoiceEmail}
+                                        </a>
+                                    </p>
+                                </div>
 
-                            <div>
-                                <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                                    Job Title
-                                </p>
-                                <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                                    {user.adminUser
-                                        ? user.adminUser.jobTitle
-                                        : user.merchantUser?.jobTitle}
-                                </p>
+                                <div>
+                                    <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+                                        ABN
+                                    </p>
+                                    <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                                        {merchant.abn}
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+                                        ACN
+                                    </p>
+                                    <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                                        {merchant.acn}
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div> */}
-            {/* <div className="rounded-2xl border border-gray-200 p-5 lg:p-6 dark:border-gray-800">
-                <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-                    <div>
-                        <h4 className="text-lg font-semibold text-gray-800 lg:mb-6 dark:text-white/90">
-                            Address
-                        </h4>
+                <div className="rounded-2xl border border-gray-200 p-5 lg:p-6 dark:border-gray-800 w-full">
+                    <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+                        <div>
+                            <h4 className="text-lg font-semibold text-gray-800 lg:mb-6 dark:text-white/90">
+                                Address
+                            </h4>
 
-                        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
-                            <div>
-                                <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                                    City/State
-                                </p>
-                                <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                                    {`${user.city}, ${user.state?.name}`}
-                                </p>
-                            </div>
-                            <div>
-                                <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                                    Country
-                                </p>
-                                <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                                    {user.state?.country?.name}
-                                </p>
-                            </div>
-                            <div>
-                                <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                                    Post Code
-                                </p>
-                                <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                                    {user.postcode}
-                                </p>
+                            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
+                                <div>
+                                    <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+                                        Address Line 1
+                                    </p>
+                                    <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                                        {merchant.address1}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+                                        Address Line 1
+                                    </p>
+                                    <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                                        {merchant.address2}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+                                        Suburb
+                                    </p>
+                                    <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                                        {merchant.suburb}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+                                        Postcode
+                                    </p>
+                                    <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                                        {merchant.postcode}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+                                        State
+                                    </p>
+                                    <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                                        {merchant.state.name}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+                                        Country
+                                    </p>
+                                    <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                                        {merchant.country.name}
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div> */}
+            </div>
+            <div className="rounded-2xl border border-gray-200 p-5 lg:p-6 dark:border-gray-800 w-full">
+                <MerchantTabs merchantUsersPromise={merchantUsersPromise} />
+            </div>
         </>
     );
 };

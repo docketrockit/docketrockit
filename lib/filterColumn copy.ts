@@ -6,46 +6,44 @@ export function filterColumn({
     isSelectable
 }: {
     column: string;
-    value: string | boolean;
+    value: string;
     isSelectable?: boolean;
 }) {
-    // Handle booleans directly
-    if (typeof value === 'boolean') {
-        return {
-            [column]: value
-        };
-    }
-
-    // Existing logic for strings
     const [filterValue, filterOperator] = (value?.split('~').filter(Boolean) ??
         []) as [
         string,
         DataTableConfig['comparisonOperators'][number]['value'] | undefined
     ];
 
+    // if (!filterValue) return;
+
     if (isSelectable) {
         switch (filterOperator) {
             case 'eq':
                 return {
-                    [column]: {
+                    [`${column}`]: {
                         in: filterValue?.split('.').filter(Boolean) ?? []
                     }
                 };
             case 'notEq':
                 return {
                     NOT: {
-                        [column]: {
+                        [`${column}`]: {
                             in: filterValue?.split('.').filter(Boolean) ?? []
                         }
                     }
                 };
             case 'isNull':
-                return { [column]: null };
+                return {
+                    [`${column}`]: null
+                };
             case 'isNotNull':
-                return { [column]: { not: null } };
+                return {
+                    [`${column}`]: { not: null }
+                };
             default:
                 return {
-                    [column]: {
+                    [`${column}`]: {
                         in: filterValue?.split('.').filter(Boolean) ?? []
                     }
                 };
@@ -55,29 +53,41 @@ export function filterColumn({
     switch (filterOperator) {
         case 'ilike':
             return {
-                [column]: { contains: filterValue, mode: 'insensitive' }
+                [`${column}`]: { contains: filterValue, mode: 'insensitive' }
             };
         case 'notIlike':
             return {
                 NOT: {
-                    [column]: { contains: filterValue }
+                    [`${column}`]: { contains: filterValue }
                 }
             };
         case 'startsWith':
-            return { [column]: { startsWith: filterValue } };
+            return {
+                [`${column}`]: { startsWith: filterValue }
+            };
         case 'endsWith':
-            return { [column]: { endsWith: filterValue } };
+            return {
+                [`${column}`]: { endsWith: filterValue }
+            };
         case 'eq':
-            return { [column]: filterValue };
+            return {
+                [`${column}`]: filterValue
+            };
         case 'notEq':
-            return { [column]: { not: filterValue } };
+            return {
+                [`${column}`]: { not: filterValue }
+            };
         case 'isNull':
-            return { [column]: null };
+            return {
+                [`${column}`]: null
+            };
         case 'isNotNull':
-            return { [column]: { not: null } };
+            return {
+                [`${column}`]: { not: null }
+            };
         default:
             return {
-                [column]: { contains: filterValue, mode: 'insensitive' }
+                [`${column}`]: { contains: filterValue, mode: 'insensitive' }
             };
     }
 }

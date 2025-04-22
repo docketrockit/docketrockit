@@ -3,6 +3,7 @@ import { Status } from '@prisma/client';
 import { Session } from '@/lib/session';
 import { User } from '@/lib/user';
 import { AdminUser } from '@/types/adminUsers';
+import { MerchantUser } from '@/types/merchantUsers';
 
 export interface SessionUserProps {
     session: Session;
@@ -22,7 +23,7 @@ export const statusLabels: { value: Status; label: string }[] = [
 ];
 
 export interface UserResetPasswordDialogProps {
-    user: AdminUser;
+    user: AdminUser | MerchantUser;
     isOpen: boolean;
     onOpenChange: (open: boolean) => void;
 }

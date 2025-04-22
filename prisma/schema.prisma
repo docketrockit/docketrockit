@@ -128,8 +128,7 @@ model MerchantUser {
   merchant       Merchant       @relation(fields: [merchantId], references: [id], onDelete: Cascade)
   merchantId     String
   merchantRole   MerchantRole[]
-  brand          Brand          @relation(fields: [brandId], references: [id], onDelete: Cascade)
-  brandId        String
+  brands         Brand[]
   user           User           @relation(fields: [userId], references: [id])
   userId         String         @unique
   createdAt      DateTime       @default(now())
