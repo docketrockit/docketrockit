@@ -32,7 +32,7 @@ import {
 
 import { createAdminUser } from '@/actions/adminUsers';
 import { AdminUserSchema } from '@/schemas/users';
-import { CreateAdminUserForm } from './CreateAdminUserForm';
+import { CreateAdminUserForm } from './CreateMerchantUserForm';
 
 export const CreateAdminUserDialog = () => {
     const [open, setOpen] = useState(false);
