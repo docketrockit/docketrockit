@@ -1,6 +1,6 @@
 'use server';
 
-import { Role, Gender, AdminRole, MerchantRole } from '@prisma/client';
+import { Role, Gender, AdminRole, MerchantRole, Brand } from '@prisma/client';
 
 import db from './db';
 import { decrypt, encrypt } from './encryption';
@@ -34,8 +34,7 @@ export interface MerchantUser {
     primaryContact: boolean;
     merchant: string;
     merchantId: string;
-    brand: string;
-    brandId: string;
+    brands: Brand[];
     merchantRole: MerchantRole[];
 }
 
@@ -187,7 +186,7 @@ export const getUserFromEmail = async (email: string): Promise<User | null> => {
             role: true,
             adminUser: true,
             phoneNumber: true,
-            merchantUser: { include: { merchant: true, brand: true } },
+            merchantUser: { include: { merchant: true, brands: true } },
             consumerUser: true
         }
     });
@@ -219,8 +218,7 @@ export const getUserFromEmail = async (email: string): Promise<User | null> => {
             primaryContact: row.merchantUser.primaryContact,
             merchant: row.merchantUser.merchant.name,
             merchantId: row.merchantUser.merchantId,
-            brand: row.merchantUser.brand.name,
-            brandId: row.merchantUser.brandId,
+            brands: row.merchantUser.brands,
             merchantRole: row.merchantUser.merchantRole
         };
     }

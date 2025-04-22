@@ -48,7 +48,7 @@ export const validateSessionToken = async (
                     role: true,
                     adminUser: true,
                     phoneNumber: true,
-                    merchantUser: { include: { merchant: true, brand: true } },
+                    merchantUser: { include: { merchant: true, brands: true } },
                     consumerUser: true
                 }
             }
@@ -91,8 +91,7 @@ export const validateSessionToken = async (
             primaryContact: row.user.merchantUser.primaryContact,
             merchant: row.user.merchantUser.merchant.name,
             merchantId: row.user.merchantUser.merchantId,
-            brand: row.user.merchantUser.brand.name,
-            brandId: row.user.merchantUser.brandId,
+            brands: row.user.merchantUser.brands,
             merchantRole: row.user.merchantUser.merchantRole
         };
     }
