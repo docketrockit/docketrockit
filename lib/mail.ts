@@ -17,7 +17,7 @@ export const sendPasswordResetEmail = async ({
         from: process.env.NEXT_PUBLIC_APP_EMAIL as string,
         to: email,
         subject: 'Reset your password',
-        html: `<p>Click <a href="${domain}/merchant/reset-password/?token=${code}">here</a> to reset password.</p>`
+        html: `<p>Click <a href="${domain}/auth/reset-password/?token=${code}">here</a> to reset password.</p>`
     });
 };
 
@@ -56,7 +56,7 @@ export const sendCreateUserAccountEmail = async ({
         <p>Please use the link below to login. Your temporary password is: ${password}</p>
         <p>You will need to change this on your first login.</p>
         <p>Your email verification code is ${code}.</p>
-        <p>Click <a href="${domain}/merchant/">here</a> to login.</p>`
+        <p>Click <a href="${domain}/auth/login">here</a> to login.</p>`
     });
 };
 
@@ -77,7 +77,7 @@ export const sendUserPasswordResetEmail = async ({
         <p>Your DocketRockit Merchant Dashboard password has been reset.</p>
         <p>Please use the link below to login. Your temporary password is: ${password}</p>
         <p>You will need to change this on your first login.</p>
-        <p>Click <a href="${domain}/merchant/">here</a> to login.</p>`
+        <p>Click <a href="${domain}/auth/login">here</a> to login.</p>`
     });
 };
 
@@ -97,6 +97,6 @@ export const sendUserTwoFactorResetEmail = async ({
         <p>Your DocketRockit Merchant Dashboard two factor authentication has been reset.</p>
         <p>Please use the link below to login.</p>
         <p>You will need to reset this when you next login.</p>
-        <p>Click <a href="${domain}/merchant/">here</a> to login.</p>`
+        <p>Click <a href="${domain}/auth/login">here</a> to login.</p>`
     });
 };

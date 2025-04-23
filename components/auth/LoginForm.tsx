@@ -23,7 +23,7 @@ import {
 import { AuthSubmitButton } from '@/components/form/Buttons';
 import { LoginSchema } from '@/schemas/auth';
 import FormError from '@/components/form/FormError';
-import { login } from '@/actions/login';
+import { login } from '@/actions/auth/login';
 
 const LoginForm = () => {
     const [error, setError] = useState<string | undefined>('');
@@ -144,7 +144,7 @@ const LoginForm = () => {
                                         />
                                     </div>
                                     <Link
-                                        href="/merchant/forgot-password"
+                                        href="/auth/forgot-password"
                                         className="text-blue-700 hover:text-blue-800 dark:text-blue-300 text-sm"
                                     >
                                         Forgot password?

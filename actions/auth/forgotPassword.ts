@@ -3,6 +3,7 @@
 import * as z from 'zod';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { Role } from '@prisma/client';
 
 import {
     createPasswordResetSession,
@@ -66,6 +67,9 @@ export const forgotPasswordAction = async (
     }
     if (!passwordResetEmailUserBucket.consume(user.id, 1)) {
         return { result: false, message: 'Too many requests' };
+    }
+    if ([Role.ADMIN, Role.MERCHANT].some((role) => user.role.includes(role))) {
+        return { result: false, message: 'Account does not exist' };
     }
     await invalidateUserPasswordResetSessions(user.id);
     const sessionToken = generateSessionToken();
@@ -161,7 +165,7 @@ export const resetPasswordAction = async (
     await updateUserPassword(passwordResetSession.userId, password);
     await deletePasswordResetSessionTokenCookie();
     await deleteSessionTokenCookie();
-    return redirect('/merchant/login');
+    return redirect('/auth/login');
 };
 
 export const updatePasswordAction = async (
@@ -192,5 +196,5 @@ export const updatePasswordAction = async (
     }
     await updateUserPassword(user.id, password);
 
-    return redirect('/merchant/verify-email');
+    return redirect('/auth/verify-email');
 };

@@ -1,4 +1,4 @@
-import { checkResetToken } from '@/actions/forgotPassword';
+import { checkResetToken } from '@/actions/auth/forgotPassword';
 import ResetPasswordForm from '@/components/auth/ResetPasswordForm';
 import { Metadata } from 'next';
 

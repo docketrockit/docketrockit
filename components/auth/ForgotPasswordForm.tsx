@@ -19,7 +19,7 @@ import { FormInputAuth } from '@/components/form/FormInputAuth';
 import { ForgotPasswordSchema } from '@/schemas/auth';
 import { AuthSubmitButton } from '@/components/form/Buttons';
 import FormError from '@/components/form/FormError';
-import { forgotPasswordAction } from '@/actions/forgotPassword';
+import { forgotPasswordAction } from '@/actions/auth/forgotPassword';
 import FormSuccess from '@/components/form/FormSuccess';
 
 const ForgotPasswordForm = () => {
@@ -101,7 +101,7 @@ const ForgotPasswordForm = () => {
                                         />
                                     </div>
                                     <Link
-                                        href="/merchant/login"
+                                        href="/auth/login"
                                         className="text-blue-700 hover:text-blue-800 dark:text-blue-300 text-sm"
                                     >
                                         Back to login

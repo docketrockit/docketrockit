@@ -20,7 +20,7 @@ import { ResetPasswordSchema } from '@/schemas/auth';
 import { AuthSubmitButton } from '@/components/form/Buttons';
 import FormError from '@/components/form/FormError';
 import { ResetPasswordFormProps } from '@/types/auth';
-import { resetPasswordAction } from '@/actions/forgotPassword';
+import { resetPasswordAction } from '@/actions/auth/forgotPassword';
 
 const ResetPasswordForm = ({ token, tokenError }: ResetPasswordFormProps) => {
     const [error, setError] = useState<string | undefined>('');
@@ -59,7 +59,7 @@ const ResetPasswordForm = ({ token, tokenError }: ResetPasswordFormProps) => {
                             <FormError message={tokenError} />
                         </div>
                         <Link
-                            href="/merchant/login"
+                            href="/auth/login"
                             className="text-blue-700 hover:text-blue-800 dark:text-blue-300 text-sm"
                         >
                             Back to login
