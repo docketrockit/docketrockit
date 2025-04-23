@@ -20,7 +20,7 @@ import FormError from '@/components/form/FormError';
 import {
     resendEmailVerificationCodeAction,
     verifyEmailAction
-} from '@/actions/login';
+} from '@/actions/auth/login';
 
 const VerifyEmailForm = ({ email }: { email: string }) => {
     const [error, setError] = useState<string | undefined>('');

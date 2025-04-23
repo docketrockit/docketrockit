@@ -7,7 +7,7 @@ import { ChevronDown, CircleUser, Settings, Info, LogOut } from 'lucide-react';
 
 import { Dropdown } from '@/components/ui/dropdown/Dropdown';
 import { DropdownItem } from '@/components/ui/dropdown/DropdownItem';
-import { logoutAction } from '@/actions/logout';
+import { logoutAction } from '@/actions/auth/logout';
 import { SessionUserProps } from '@/types/global';
 
 const UserDropdown = ({ session, user }: SessionUserProps) => {

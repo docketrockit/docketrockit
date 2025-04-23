@@ -8,7 +8,7 @@ import {
     enum as enum_
 } from 'zod';
 
-import { getStringSchema, getEmailSchema } from './schemas';
+import { getStringSchema, getEmailSchema } from '@/schemas/schemas';
 import { isValidABN, isValidACN } from '@/utils/businessNumberValidation';
 
 export const AddMerchantSchema = object({

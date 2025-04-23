@@ -29,13 +29,13 @@ import {
     PopoverTrigger
 } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
-import { AddMerchantSchema } from '@/schemas/merchants';
+import { AddMerchantSchema } from '@/schemas/admin/merchants';
 import FormError from '@/components/form/FormError';
 import ComponentCard from '@/components/common/ComponentCard';
 import { cn } from '@/lib/utils';
 import { FormInput } from '@/components/form/FormInputs';
 import { SubmitButton } from '@/components/form/Buttons';
-import { createMerchant } from '@/actions/merchants';
+import { createMerchant } from '@/actions/admin/merchants';
 import { uploadImage } from '@/utils/supabase';
 import { PhoneInput } from '@/components/ui/phone-input';
 import { formatABN, formatACN } from '@/utils/businessNumberValidation';
