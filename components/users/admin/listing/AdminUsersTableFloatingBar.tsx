@@ -26,7 +26,7 @@ import {
 } from '@/components/ui/tooltip';
 import { Kbd } from '@/components/common/kbd';
 import { statusLabels } from '@/types/global';
-import { updateAdminUsers } from '@/actions/adminUsers';
+import { updateAdminUsers } from '@/actions/admin/adminUsers';
 
 type AdminUser = Prisma.UserGetPayload<{
     include: { adminUser: true };

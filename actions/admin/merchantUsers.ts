@@ -7,18 +7,24 @@ import { type User as UserType } from '@prisma/client';
 
 import db from '@/lib/db';
 import { GetMerchantUsersSchema } from '@/types/merchantUsers';
-import { authCheckRole } from '@/lib/authCheck';
+import { authCheckAdmin } from '@/lib/authCheck';
 import { getErrorMessage } from '@/lib/handleError';
 import { checkMerchantEmailAvailability } from '@/lib/email';
 import { globalPOSTRateLimit } from '@/lib/request';
 import { createEmailVerificationRequest } from '@/lib/email-verification';
 import { verifyPasswordStrength } from '@/lib/password';
-import { sendCreateUserAccountEmail } from '@/lib/mail';
+import { sendCreateAdminUserAccountEmail } from '@/lib/mail';
 import { createUser } from '@/lib/user';
 import { MerchantUserSchema, MerchantUserSchemaUpdate } from '@/schemas/users';
 import { buildMerchantUserWhere, buildOrderBy } from '@/lib/merchantUserLib';
 
 export const getMerchantUsers = async (input: GetMerchantUsersSchema) => {
+    const { user } = await authCheckAdmin();
+
+    if (!user)
+        return {
+            data: null
+        };
     const {
         page,
         per_page,
@@ -76,10 +82,7 @@ export const updateMerchantUsers = async (input: {
     ids: string[];
     status?: UserType['status'];
 }) => {
-    const { user } = await authCheckRole({
-        roles: ['ADMIN'],
-        access: ['ADMIN']
-    });
+    const { user } = await authCheckAdmin(['ADMIN']);
 
     if (!user)
         return {
@@ -110,10 +113,7 @@ export const createAdminUser = async (
     adminCreate: boolean,
     merchantId: string
 ) => {
-    const { user: adminUser } = await authCheckRole({
-        roles: ['ADMIN'],
-        access: ['ADMIN']
-    });
+    const { user: adminUser } = await authCheckAdmin(['ADMIN']);
 
     if (!adminUser)
         return {
@@ -176,7 +176,7 @@ export const createAdminUser = async (
             user.id,
             user.email
         );
-        await sendCreateUserAccountEmail({
+        await sendCreateAdminUserAccountEmail({
             email,
             firstName,
             password,

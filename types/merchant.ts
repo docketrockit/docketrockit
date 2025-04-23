@@ -2,8 +2,10 @@ import * as z from 'zod';
 import { Country, State } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 
-import { merchantsSearchParamsSchema } from '@/schemas/merchants';
-import { getMerchantUsers } from '@/actions/merchantUsers';
+import { merchantsSearchParamsSchema } from '@/schemas/admin/merchants';
+import { getMerchantUsers } from '@/actions/admin/merchantUsers';
+import { User } from '@/lib/user';
+import { type getMerchants } from '@/actions/admin/merchants';
 
 type MerchantData = Prisma.MerchantGetPayload<{
     include: { state: true; country: true };
@@ -26,6 +28,7 @@ export interface EditMerchantFormProps {
 export interface MerchantMainProps {
     merchant: MerchantData;
     merchantUsersPromise: ReturnType<typeof getMerchantUsers>;
+    user: User;
 }
 
 export type MerchantsFilterInput = {
@@ -37,3 +40,8 @@ export type MerchantsFilterInput = {
 };
 
 export type GetMerchantsSchema = z.infer<typeof merchantsSearchParamsSchema>;
+
+export interface MerchantsTableProps {
+    merchantsPromise: ReturnType<typeof getMerchants>;
+    user: User;
+}

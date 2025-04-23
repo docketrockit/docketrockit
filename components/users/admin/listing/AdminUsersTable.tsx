@@ -12,7 +12,7 @@ import { DataTableAdvancedToolbar } from '@/components/datatable/advanced/DataTa
 import { DataTable } from '@/components/datatable/DataTable';
 import { DataTableToolbar } from '@/components/datatable/DataTableToolbar';
 
-import { type getAdminUsers } from '@/actions/adminUsers';
+import { type getAdminUsers } from '@/actions/admin/adminUsers';
 import { getStatusIcon } from '@/lib/utils';
 import { getColumns } from './AdminUsersTableColumns';
 import { AdminUsersTableFloatingBar } from './AdminUsersTableFloatingBar';

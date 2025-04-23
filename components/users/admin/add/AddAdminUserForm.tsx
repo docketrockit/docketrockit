@@ -33,7 +33,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { SubmitButton } from '@/components/form/Buttons';
 import { AdminRoleLabels } from '@/types/user';
-import { createAdminUser } from '@/actions/adminUsers';
+import { createAdminUser } from '@/actions/admin/adminUsers';
 
 const AddAdminUserForm = () => {
     const [error, setError] = useState<string | undefined>('');

@@ -8,7 +8,7 @@ import GithubSlugger from 'github-slugger';
 import { revalidatePath } from 'next/cache';
 
 import db from '@/lib/db';
-import { authCheckRole } from '@/lib/authCheck';
+import { authCheckAdmin } from '@/lib/authCheck';
 import { globalPOSTRateLimit } from '@/lib/request';
 import { getErrorMessage } from '@/lib/handleError';
 import {
@@ -23,10 +23,7 @@ const slugger = new GithubSlugger();
 export const createMerchant = async (
     values: z.infer<typeof AddMerchantSchemaCreate>
 ) => {
-    const { user: adminUser } = await authCheckRole({
-        roles: ['ADMIN'],
-        access: ['ADMIN']
-    });
+    const { user: adminUser } = await authCheckAdmin(['ADMIN']);
 
     if (!adminUser)
         return {
@@ -123,10 +120,7 @@ export const updateMerchant = async ({
     id: string;
     values: z.infer<typeof EditMerchantSchema>;
 }) => {
-    const { user: adminUser } = await authCheckRole({
-        roles: ['ADMIN'],
-        access: ['ADMIN']
-    });
+    const { user: adminUser } = await authCheckAdmin(['ADMIN']);
 
     if (!adminUser)
         return {
@@ -327,10 +321,7 @@ export const updateMerchants = async (input: {
     ids: string[];
     status?: Merchant['status'];
 }) => {
-    const { user } = await authCheckRole({
-        roles: ['ADMIN'],
-        access: ['ADMIN']
-    });
+    const { user } = await authCheckAdmin(['ADMIN']);
 
     if (!user)
         return {

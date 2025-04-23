@@ -2,7 +2,7 @@
 'use memo';
 
 import { use, useMemo } from 'react';
-import { Prisma, Merchant } from '@prisma/client';
+import { Merchant } from '@prisma/client';
 
 import { type DataTableFilterField } from '@/types/data-table';
 import { statusLabels } from '@/types/global';
@@ -12,25 +12,24 @@ import { DataTableAdvancedToolbar } from '@/components/datatable/advanced/DataTa
 import { DataTable } from '@/components/datatable/DataTable';
 import { DataTableToolbar } from '@/components/datatable/DataTableToolbar';
 
-import { type getMerchants } from '@/actions/merchants';
 import { getStatusIcon } from '@/lib/utils';
 import { getColumns } from '@/components/merchants/listing/MerchantsTableColumns';
 import { MerchantsTableFloatingBar } from '@/components/merchants/listing/MerchantsTableFloatingBar';
 import { useMerchantsTable } from '@/components/merchants/listing/MerchantsTableProviders';
 import { MerchantsTableToolbarActions } from '@/components/merchants/listing/MerchantsTableToolbarActions';
+import { MerchantsTableProps } from '@/types/merchant';
 
-interface MerchantsTableProps {
-    merchantsPromise: ReturnType<typeof getMerchants>;
-}
-
-export const MerchantsTable = ({ merchantsPromise }: MerchantsTableProps) => {
+export const MerchantsTable = ({
+    merchantsPromise,
+    user
+}: MerchantsTableProps) => {
     // Feature flags for showcasing some additional features. Feel free to remove them.
     const { featureFlags } = useMerchantsTable();
 
     const { data, pageCount } = use(merchantsPromise);
 
     // Memoize the columns so they don't re-render on every render
-    const columns = useMemo(() => getColumns(), []);
+    const columns = useMemo(() => getColumns({ user }), []);
 
     /**
      * This component can render either a faceted filter or a search filter based on the `options` prop.
@@ -84,7 +83,7 @@ export const MerchantsTable = ({ merchantsPromise }: MerchantsTableProps) => {
             table={table}
             floatingBar={
                 featureFlags.includes('floatingBar') ? (
-                    <MerchantsTableFloatingBar table={table} />
+                    <MerchantsTableFloatingBar table={table} user={user} />
                 ) : null
             }
         >
@@ -93,11 +92,11 @@ export const MerchantsTable = ({ merchantsPromise }: MerchantsTableProps) => {
                     table={table}
                     filterFields={filterFields}
                 >
-                    <MerchantsTableToolbarActions table={table} />
+                    <MerchantsTableToolbarActions table={table} user={user} />
                 </DataTableAdvancedToolbar>
             ) : (
                 <DataTableToolbar table={table} filterFields={filterFields}>
-                    <MerchantsTableToolbarActions table={table} />
+                    <MerchantsTableToolbarActions table={table} user={user} />
                 </DataTableToolbar>
             )}
         </DataTable>

@@ -25,17 +25,20 @@ import {
 } from '@/components/ui/tooltip';
 import { Kbd } from '@/components/common/kbd';
 import { statusLabels } from '@/types/global';
-import { updateMerchants, getMerchants } from '@/actions/merchants';
+import { updateMerchants, getMerchants } from '@/actions/admin/merchants';
+import { User } from '@/lib/user';
 
 type GetMerchantsResponse = Awaited<ReturnType<typeof getMerchants>>;
 type Merchant = GetMerchantsResponse['data'][number];
 
 interface MerchantsTableFloatingBarProps {
     table: Table<Merchant>;
+    user: User;
 }
 
 export const MerchantsTableFloatingBar = ({
-    table
+    table,
+    user
 }: MerchantsTableFloatingBarProps) => {
     const rows = table.getFilteredSelectedRowModel().rows;
 
@@ -95,67 +98,73 @@ export const MerchantsTableFloatingBar = ({
                         className="hidden h-5 sm:block"
                     />
                     <div className="flex items-center gap-1.5">
-                        <Select
-                            onValueChange={(value: Merchant['status']) => {
-                                setMethod('update-status');
+                        {user.adminUser?.adminRole.includes('ADMIN') && (
+                            <Select
+                                onValueChange={(value: Merchant['status']) => {
+                                    setMethod('update-status');
 
-                                startTransition(async () => {
-                                    const { error } = await updateMerchants({
-                                        ids: rows.map((row) => row.original.id),
-                                        status: value
+                                    startTransition(async () => {
+                                        const { error } = await updateMerchants(
+                                            {
+                                                ids: rows.map(
+                                                    (row) => row.original.id
+                                                ),
+                                                status: value
+                                            }
+                                        );
+
+                                        if (error) {
+                                            toast.error(error);
+                                            return;
+                                        }
+
+                                        toast.success('Merchants updated');
                                     });
-
-                                    if (error) {
-                                        toast.error(error);
-                                        return;
-                                    }
-
-                                    toast.success('Merchants updated');
-                                });
-                            }}
-                        >
-                            <Tooltip delayDuration={250}>
-                                <SelectTrigger asChild>
-                                    <TooltipTrigger asChild>
-                                        <Button
-                                            variant="secondary"
-                                            size="icon"
-                                            className="size-7 border data-[state=open]:bg-accent data-[state=open]:text-accent-foreground"
-                                            disabled={isPending}
-                                        >
-                                            {isPending &&
-                                            method === 'update-status' ? (
-                                                <ReloadIcon
-                                                    className="size-3.5 animate-spin"
-                                                    aria-hidden="true"
-                                                />
-                                            ) : (
-                                                <CheckCircledIcon
-                                                    className="size-3.5"
-                                                    aria-hidden="true"
-                                                />
-                                            )}
-                                        </Button>
-                                    </TooltipTrigger>
-                                </SelectTrigger>
-                                <TooltipContent className="border bg-accent font-semibold text-foreground dark:bg-zinc-900">
-                                    <p>Update status</p>
-                                </TooltipContent>
-                            </Tooltip>
-                            <SelectContent align="center">
-                                <SelectGroup>
-                                    {statusLabels.map((status) => (
-                                        <SelectItem
-                                            key={status.value}
-                                            value={status.value}
-                                            className="capitalize"
-                                        >
-                                            {status.label}
-                                        </SelectItem>
-                                    ))}
-                                </SelectGroup>
-                            </SelectContent>
-                        </Select>
+                                }}
+                            >
+                                <Tooltip delayDuration={250}>
+                                    <SelectTrigger asChild>
+                                        <TooltipTrigger asChild>
+                                            <Button
+                                                variant="secondary"
+                                                size="icon"
+                                                className="size-7 border data-[state=open]:bg-accent data-[state=open]:text-accent-foreground"
+                                                disabled={isPending}
+                                            >
+                                                {isPending &&
+                                                method === 'update-status' ? (
+                                                    <ReloadIcon
+                                                        className="size-3.5 animate-spin"
+                                                        aria-hidden="true"
+                                                    />
+                                                ) : (
+                                                    <CheckCircledIcon
+                                                        className="size-3.5"
+                                                        aria-hidden="true"
+                                                    />
+                                                )}
+                                            </Button>
+                                        </TooltipTrigger>
+                                    </SelectTrigger>
+                                    <TooltipContent className="border bg-accent font-semibold text-foreground dark:bg-zinc-900">
+                                        <p>Update status</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                                <SelectContent align="center">
+                                    <SelectGroup>
+                                        {statusLabels.map((status) => (
+                                            <SelectItem
+                                                key={status.value}
+                                                value={status.value}
+                                                className="capitalize"
+                                            >
+                                                {status.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectGroup>
+                                </SelectContent>
+                            </Select>
+                        )}
                         <Tooltip delayDuration={250}>
                             <TooltipTrigger asChild>
                                 <Button

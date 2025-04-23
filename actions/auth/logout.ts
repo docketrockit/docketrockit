@@ -19,13 +19,14 @@ export const logoutAction = async (): Promise<ActionResult> => {
             message: 'Too many requests'
         };
     }
-    const { session } = await getCurrentSession();
+    const { session, user } = await getCurrentSession();
     if (session === null) {
         return {
             message: 'Not authenticated'
         };
     }
+    const urlLocation = user.adminUser ? 'admin' : 'merchant';
     invalidateSession(session.id);
     deleteSessionTokenCookie();
-    return redirect('/merchant/login');
+    return redirect(`/${urlLocation}/login`);
 };

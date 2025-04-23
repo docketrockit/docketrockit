@@ -5,27 +5,39 @@ import { type Table } from '@tanstack/react-table';
 
 import { exportTableToCSV } from '@/lib/export';
 import { Button } from '@/components/ui/button';
-import { getMerchants } from '@/actions/merchants';
+import { getMerchants } from '@/actions/admin/merchants';
 import Link from 'next/link';
+import { AdminRole } from '@prisma/client';
+import { User } from '@/lib/user';
 
 type GetMerchantsResponse = Awaited<ReturnType<typeof getMerchants>>;
 type Merchant = GetMerchantsResponse['data'][number];
 
 interface MerchantsTableToolbarActionsProps {
     table: Table<Merchant>;
+    user: User;
 }
 
 export const MerchantsTableToolbarActions = ({
-    table
+    table,
+    user
 }: MerchantsTableToolbarActionsProps) => {
     return (
         <div className="flex items-center gap-2">
-            <Link href="/merchant/merchants/add">
-                <Button variant="outline" size="sm" className="cursor-pointer">
-                    <PlusIcon className="mr-2 size-4" aria-hidden="true" />
-                    New merchant
-                </Button>
-            </Link>
+            {[AdminRole.ADMIN, AdminRole.SALES].some((role) =>
+                user.adminUser?.adminRole.includes(role)
+            ) && (
+                <Link href="/merchant/merchants/add">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        className="cursor-pointer"
+                    >
+                        <PlusIcon className="mr-2 size-4" aria-hidden="true" />
+                        New merchant
+                    </Button>
+                </Link>
+            )}
             <Button
                 variant="outline"
                 className="cursor-pointer"

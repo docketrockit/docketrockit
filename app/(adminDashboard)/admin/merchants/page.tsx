@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 
 import { Skeleton } from '@/components/ui/skeleton';
-import { authCheck } from '@/lib/authCheck';
+import { authCheckAdmin } from '@/lib/authCheck';
 import PageBreadcrumb from '@/components/common/PageBreadCrumb';
 import ComponentCard from '@/components/common/ComponentCard';
 import { SearchParams } from '@/types/global';
@@ -9,8 +9,8 @@ import { MerchantsTable } from '@/components/merchants/listing/MerchantsTable';
 import { MerchantsTableProvider } from '@/components/merchants/listing/MerchantsTableProviders';
 import { DateRangePicker } from '@/components/datatable/DateRangePicker';
 import { DataTableSkeleton } from '@/components/datatable/DataTableSkeleton';
-import { merchantsSearchParamsSchema } from '@/schemas/merchants';
-import { getMerchants } from '@/actions/merchants';
+import { merchantsSearchParamsSchema } from '@/schemas/admin/merchants';
+import { getMerchants } from '@/actions/admin/merchants';
 
 export async function generateMetadata() {
     const title = 'Merchants';
@@ -23,7 +23,7 @@ export async function generateMetadata() {
 }
 
 const MerchantsPage = async (props: { searchParams: SearchParams }) => {
-    const { session, user } = await authCheck();
+    const { user } = await authCheckAdmin();
     const searchParams = await props.searchParams;
 
     const search = merchantsSearchParamsSchema.parse(searchParams);
@@ -59,7 +59,10 @@ const MerchantsPage = async (props: { searchParams: SearchParams }) => {
                             />
                         }
                     >
-                        <MerchantsTable merchantsPromise={merchantsPromise} />
+                        <MerchantsTable
+                            merchantsPromise={merchantsPromise}
+                            user={user}
+                        />
                     </Suspense>
                 </MerchantsTableProvider>
             </ComponentCard>

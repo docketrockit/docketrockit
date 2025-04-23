@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { Pencil } from 'lucide-react';
+import { AdminRole } from '@prisma/client';
 
 import { MerchantMainProps } from '@/types/merchant';
 import Link from 'next/link';
@@ -9,7 +10,8 @@ import MerchantTabs from './MerchantTabs';
 
 const MerchantMain = ({
     merchant,
-    merchantUsersPromise
+    merchantUsersPromise,
+    user
 }: MerchantMainProps) => {
     if (!merchant) return 'No user found';
 
@@ -44,15 +46,19 @@ const MerchantMain = ({
                             </div>
                         </div>
                     </div>
-                    <Link href={`/merchant/merchants/edit/${merchant.slug}`}>
-                        <button
-                            type="button"
-                            className="shadow-theme-xs flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-800 lg:inline-flex lg:w-auto dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 cursor-pointer"
-                        >
-                            <Pencil className="size-[18px]" />
-                            Edit
-                        </button>
-                    </Link>
+                    {[AdminRole.ADMIN, AdminRole.SALES].some((role) =>
+                        user.adminUser?.adminRole.includes(role)
+                    ) && (
+                        <Link href={`/admin/merchants/edit/${merchant.slug}`}>
+                            <button
+                                type="button"
+                                className="shadow-theme-xs flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-800 lg:inline-flex lg:w-auto dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 cursor-pointer"
+                            >
+                                <Pencil className="size-[18px]" />
+                                Edit
+                            </button>
+                        </Link>
+                    )}
                 </div>
             </div>
             <div className="flex flex-row space-x-6 w-full">

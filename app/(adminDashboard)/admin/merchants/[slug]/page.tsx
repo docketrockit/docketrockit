@@ -1,12 +1,12 @@
 import { Suspense } from 'react';
 import { redirect } from 'next/navigation';
 
-import { getMerchant } from '@/actions/merchants';
-import { authCheck } from '@/lib/authCheck';
+import { getMerchant } from '@/actions/admin/merchants';
+import { authCheckAdmin } from '@/lib/authCheck';
 import { ParamsSlug } from '@/types/global';
 import MerchantMain from '@/components/merchants/view/MerchantMain';
-import { merchantUsersSearchParamsSchema } from '@/schemas/merchantUsers';
-import { getMerchantUsers } from '@/actions/merchantUsers';
+import { merchantUsersSearchParamsSchema } from '@/schemas/admin/merchantUsers';
+import { getMerchantUsers } from '@/actions/admin/merchantUsers';
 import { SearchParams } from '@/types/global';
 
 export async function generateMetadata({
@@ -33,7 +33,7 @@ const MerchantDetailsPage = async (props: {
     searchParams: SearchParams;
 }) => {
     const { slug } = await props.params;
-    await authCheck();
+    const { user } = await authCheckAdmin();
     const { data } = await getMerchant(slug);
     if (!data) redirect('/merchant/merchants');
 
@@ -53,6 +53,7 @@ const MerchantDetailsPage = async (props: {
                     <MerchantMain
                         merchant={data}
                         merchantUsersPromise={merchantUsersPromise}
+                        user={user}
                     />
                 </div>
             </div>

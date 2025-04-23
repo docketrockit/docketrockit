@@ -16,7 +16,7 @@ import {
     AlertDialogTitle
 } from '@/components/ui/alert-dialog';
 import { UserResetPasswordDialogProps } from '@/types/global';
-import { resetUserPassword } from '@/actions/user';
+import { resetUserPassword } from '@/actions/auth/dashboardUser';
 import { cn } from '@/lib/utils';
 
 const UserResetPasswordDialog = ({

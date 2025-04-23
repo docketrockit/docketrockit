@@ -1,7 +1,7 @@
 'use client';
 
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
-import { type ColumnDef } from '@tanstack/react-table';
+import { type ColumnDef, type Row } from '@tanstack/react-table';
 import Link from 'next/link';
 
 import { formatDate } from '@/lib/utils';
@@ -15,12 +15,16 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { DataTableColumnHeader } from '@/components/datatable/DataTableColumnHeader';
 import { getStatusIcon } from '@/lib/utils';
-import { getMerchants } from '@/actions/merchants';
+import { getMerchants } from '@/actions/admin/merchants';
+import { User } from '@/lib/user';
 
 type GetMerchantsResponse = Awaited<ReturnType<typeof getMerchants>>;
 type Merchant = GetMerchantsResponse['data'][number];
 
-export const getColumns = (): ColumnDef<Merchant>[] => {
+export const getColumns = ({ user }: { user: User }): ColumnDef<Merchant>[] => {
+    const hasAccessToActions =
+        user.adminUser?.adminRole.includes('ADMIN') ||
+        user.adminUser?.adminRole.includes('ACCOUNTS');
     return [
         {
             id: 'select',
@@ -58,7 +62,7 @@ export const getColumns = (): ColumnDef<Merchant>[] => {
                 return (
                     <div className="flex space-x-2">
                         <Link
-                            href={`/merchant/merchants/${row.original.slug}`}
+                            href={`/admin/merchants/${row.original.slug}`}
                             className="max-w-[31.25rem] truncate font-medium hover:underline"
                         >
                             {row.original.name}
@@ -148,39 +152,46 @@ export const getColumns = (): ColumnDef<Merchant>[] => {
             ),
             cell: ({ cell }) => formatDate(cell.getValue() as Date)
         },
-        {
-            id: 'actions',
-            cell: function Cell({ row }) {
-                return (
-                    <>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button
-                                    aria-label="Open menu"
-                                    variant="ghost"
-                                    className="flex size-8 p-0 data-[state=open]:bg-muted"
-                                >
-                                    <DotsHorizontalIcon
-                                        className="size-4"
-                                        aria-hidden="true"
-                                    />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-40">
-                                <DropdownMenuItem>
-                                    <Link
-                                        href={`/merchant/merchants/edit/${row.original.slug}`}
-                                        className="cursor-pointer"
-                                    >
-                                        Edit
-                                    </Link>
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    </>
-                );
-            },
-            size: 40
-        }
+        ...(hasAccessToActions
+            ? [
+                  {
+                      id: 'actions',
+                      cell: function Cell({ row }: { row: Row<Merchant> }) {
+                          return (
+                              <>
+                                  <DropdownMenu>
+                                      <DropdownMenuTrigger asChild>
+                                          <Button
+                                              aria-label="Open menu"
+                                              variant="ghost"
+                                              className="flex size-8 p-0 data-[state=open]:bg-muted"
+                                          >
+                                              <DotsHorizontalIcon
+                                                  className="size-4"
+                                                  aria-hidden="true"
+                                              />
+                                          </Button>
+                                      </DropdownMenuTrigger>
+                                      <DropdownMenuContent
+                                          align="end"
+                                          className="w-40"
+                                      >
+                                          <DropdownMenuItem>
+                                              <Link
+                                                  href={`/admin/merchants/edit/${row.original.slug}`}
+                                                  className="cursor-pointer"
+                                              >
+                                                  Edit
+                                              </Link>
+                                          </DropdownMenuItem>
+                                      </DropdownMenuContent>
+                                  </DropdownMenu>
+                              </>
+                          );
+                      },
+                      size: 40
+                  }
+              ]
+            : [])
     ];
 };
