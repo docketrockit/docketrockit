@@ -21,7 +21,7 @@ import {
 import { AuthSubmitButton } from '@/components/form/Buttons';
 import { TwoFactorVerficationSchema } from '@/schemas/auth';
 import FormError from '@/components/form/FormError';
-import { verifyTwoFactorAction } from '@/actions/login';
+import { verifyTwoFactorAction } from '@/actions/auth/login';
 import Link from 'next/link';
 
 export interface TwoFactorVerificationFormProps {
@@ -125,7 +125,7 @@ const TwoFactorVerificationForm = () => {
                     </div>
                     <div className="mt-3">
                         <Link
-                            href="/merchant/twofactor/recovery"
+                            href="/auth/twofactor/recovery"
                             className="cursor-pointer text-blue-700 hover:text-blue-800 dark:text-blue-300 text-sm"
                         >
                             Use recovery code

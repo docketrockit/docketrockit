@@ -16,16 +16,20 @@ const TwoFactorAuthenticationPage = async () => {
     }
     const { session, user } = await getCurrentSession();
     if (session === null) {
-        return redirect('/merchant/login');
+        return redirect('/auth/login');
     }
     if (!user.emailVerified) {
-        return redirect('/merchant/verify-email');
+        return redirect('/auth/verify-email');
     }
     if (!user.registered2FA) {
-        return redirect('/merchant/twofactor/setup');
+        return redirect('/auth/twofactor/setup');
     }
     if (session.twoFactorVerified) {
-        return redirect('/merchant');
+        if (user.role.includes('ADMIN')) {
+            return redirect('/admin');
+        } else {
+            return redirect('/merchant');
+        }
     }
 
     return <TwoFactorVerificationForm />;

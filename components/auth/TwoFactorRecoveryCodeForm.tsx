@@ -18,7 +18,7 @@ import { FormInputAuth } from '@/components/form/FormInputAuth';
 import { AuthSubmitButton } from '@/components/form/Buttons';
 import { RecoveryCodeSchema } from '@/schemas/auth';
 import FormError from '@/components/form/FormError';
-import { verifyRecoveryCode } from '@/actions/login';
+import { verifyRecoveryCode } from '@/actions/auth/login';
 
 const TwoFactorRecoveryCodeForm = () => {
     const [error, setError] = useState<string | undefined>('');
@@ -93,7 +93,7 @@ const TwoFactorRecoveryCodeForm = () => {
                                 </div>
                                 <div className="flex items-center justify-between">
                                     <Link
-                                        href="/merchant/twofactor"
+                                        href="/auth/twofactor"
                                         className="cursor-pointer text-blue-700 hover:text-blue-800 dark:text-blue-300 text-sm"
                                     >
                                         Found app?

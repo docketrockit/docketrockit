@@ -1,6 +1,6 @@
-import { getUserProfileDetailsAdmin } from '@/actions/user';
+import { getUserProfileDetailsAdmin } from '@/actions/auth/dashboardUser';
 import UserDetailsCard from '@/components/profile/UserDetailsCard';
-import { authCheck } from '@/lib/authCheck';
+import { authCheckAdmin } from '@/lib/authCheck';
 
 export async function generateMetadata() {
     const title = 'Profile Page';
@@ -13,7 +13,7 @@ export async function generateMetadata() {
 }
 
 const ProfilePage = async () => {
-    const { user } = await authCheck();
+    const { user } = await authCheckAdmin();
 
     const userDetails = await getUserProfileDetailsAdmin(user.id);
 

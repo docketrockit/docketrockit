@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { Pencil } from 'lucide-react';
 
-import { UserProfileDetailsAdmin } from '@/actions/user';
+import { UserProfileDetailsAdmin } from '@/actions/auth/dashboardUser';
 import { useModal } from '@/hooks/useModal';
 import EditProfileModal from './EditProfileModal';
 

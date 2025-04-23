@@ -26,7 +26,7 @@ import {
     sendUserPasswordResetEmail,
     sendUserTwoFactorResetEmail
 } from '@/lib/mail';
-import { authCheckRole } from '@/lib/authCheck';
+import { authCheckAdmin } from '@/lib/authCheck';
 import { getErrorMessage } from '@/lib/handleError';
 import { updateUserEmailAndSetEmailAsVerified } from '@/lib/user';
 import generatePassword from '@/utils/generatePassword';
@@ -59,6 +59,15 @@ export const getUserProfileDetailsAdmin = async (
                 adminUser: true
             }
         });
+        const hasAdminMerchant = user?.role.some((role) =>
+            ['MERCHANT', 'ADMIN'].includes(role)
+        );
+
+        if (!hasAdminMerchant)
+            return {
+                data: null,
+                error: new Error(String('Not authorised'))
+            };
         return { data: user, error: null };
     } catch (error) {
         const typedError =
@@ -81,6 +90,15 @@ export const updateUserProfileAdmin = async (
     if (session === null) {
         return { result: false, message: 'Not authenticated' };
     }
+    const hasAdminMerchant = user.role.some((role) =>
+        ['MERCHANT', 'ADMIN'].includes(role)
+    );
+
+    if (!hasAdminMerchant)
+        return {
+            result: false,
+            message: 'Not authorised'
+        };
     const validatedFields = UserProfileSchema.safeParse(values);
 
     if (!validatedFields.success) {
@@ -128,8 +146,12 @@ export const updateUserProfileAdmin = async (
     }
 
     await getCurrentSession();
+    if (user.role.includes('ADMIN')) {
+        revalidatePath('/admin/profile');
+    } else {
+        revalidatePath('/merchant/profile');
+    }
 
-    revalidatePath('/merchant/profile');
     return { result: true, message: 'Profile Updated' };
 };
 
@@ -146,6 +168,15 @@ export const verifyEmailUpdateCode = async (
     if (!sendVerificationEmailBucket.consume(user.id, 1)) {
         return { result: false, message: 'Too many requests' };
     }
+    const hasAdminMerchant = user.role.some((role) =>
+        ['MERCHANT', 'ADMIN'].includes(role)
+    );
+
+    if (!hasAdminMerchant)
+        return {
+            result: false,
+            message: 'Not authorised'
+        };
     const validatedFields = EmailSchema.safeParse(values);
 
     if (!validatedFields.success) {
@@ -182,6 +213,15 @@ export const verifyEmailCode = async (
     if (!bucket.check(user.id, 1)) {
         return { result: false, message: 'Too many requests' };
     }
+    const hasAdminMerchant = user.role.some((role) =>
+        ['MERCHANT', 'ADMIN'].includes(role)
+    );
+
+    if (!hasAdminMerchant)
+        return {
+            result: false,
+            message: 'Not authorised'
+        };
 
     let verificationRequest =
         await getUserEmailVerificationRequestFromRequest();
@@ -229,10 +269,7 @@ export const verifyEmailCode = async (
 };
 
 export const resetUserPassword = async (id: string): Promise<ActionResult> => {
-    const { user: adminUser } = await authCheckRole({
-        roles: ['ADMIN'],
-        access: ['ADMIN']
-    });
+    const { user: adminUser } = await authCheckAdmin(['ADMIN']);
 
     if (!adminUser)
         return {
@@ -277,10 +314,7 @@ export const resetUserPassword = async (id: string): Promise<ActionResult> => {
 };
 
 export const resetUserTwoFactor = async (id: string): Promise<ActionResult> => {
-    const { user: adminUser } = await authCheckRole({
-        roles: ['ADMIN'],
-        access: ['ADMIN']
-    });
+    const { user: adminUser } = await authCheckAdmin(['ADMIN']);
 
     if (!adminUser)
         return {

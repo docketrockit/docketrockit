@@ -284,6 +284,15 @@ export const setupTwoFactorAction = async (
     if (!totpUpdateBucket.check(user.id, 1)) {
         return { result: false, message: 'Too many requests' };
     }
+    const hasAdminMerchant = user.role.some((role) =>
+        ['MERCHANT', 'ADMIN'].includes(role)
+    );
+
+    if (!hasAdminMerchant)
+        return {
+            result: false,
+            message: 'Not authorised'
+        };
 
     const validatedFields = TwoFactorSetupSchema.safeParse(values);
 
@@ -334,6 +343,16 @@ export const verifyTwoFactorAction = async (
         return { result: false, message: 'Too many requests' };
     }
 
+    const hasAdminMerchant = user.role.some((role) =>
+        ['MERCHANT', 'ADMIN'].includes(role)
+    );
+
+    if (!hasAdminMerchant)
+        return {
+            result: false,
+            message: 'Not authorised'
+        };
+
     const validatedFields = TwoFactorVerficationSchema.safeParse(values);
 
     if (!validatedFields.success) {
@@ -353,7 +372,11 @@ export const verifyTwoFactorAction = async (
     }
     totpBucket.reset(user.id);
     await setSessionAs2FAVerified(session.id);
-    return redirect('/merchant');
+    if (user.role.includes('ADMIN')) {
+        return redirect('/admin');
+    } else {
+        return redirect('/merchant');
+    }
 };
 
 export const verifyRecoveryCode = async (
@@ -377,6 +400,16 @@ export const verifyRecoveryCode = async (
         return { result: false, message: 'Too many requests' };
     }
 
+    const hasAdminMerchant = user.role.some((role) =>
+        ['MERCHANT', 'ADMIN'].includes(role)
+    );
+
+    if (!hasAdminMerchant)
+        return {
+            result: false,
+            message: 'Not authorised'
+        };
+
     const validatedFields = TwoFactorVerficationSchema.safeParse(values);
 
     if (!validatedFields.success) {
@@ -396,5 +429,5 @@ export const verifyRecoveryCode = async (
 
     if (!verified) return { result: false, message: "Backup code didn't work" };
 
-    return redirect('/merchant/twofactor/setup');
+    return redirect('/auth/twofactor/setup');
 };

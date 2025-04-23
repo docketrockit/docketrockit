@@ -4,7 +4,7 @@ import * as z from 'zod';
 import { useForm } from 'react-hook-form';
 import { useState, useTransition } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { toast } from 'sonner';
+import { Role } from '@prisma/client';
 
 import {
     Form,
@@ -22,7 +22,7 @@ import {
 import { AuthSubmitButton } from '@/components/form/Buttons';
 import { TwoFactorSetupSchema } from '@/schemas/auth';
 import FormError from '@/components/form/FormError';
-import { setupTwoFactorAction } from '@/actions/login';
+import { setupTwoFactorAction } from '@/actions/auth/login';
 import { resetUserRecoveryCode } from '@/lib/user';
 import Link from 'next/link';
 
@@ -30,12 +30,14 @@ export interface TwoFactorSetupFormProps {
     encodedTOTPKey: string;
     qrcode: string;
     userId: string;
+    role: Role[];
 }
 
 const TwoFactorSetupForm = ({
     encodedTOTPKey,
     qrcode,
-    userId
+    userId,
+    role
 }: TwoFactorSetupFormProps) => {
     const [error, setError] = useState<string | undefined>('');
     const [success, setSuccess] = useState<boolean>(false);
@@ -173,7 +175,11 @@ const TwoFactorSetupForm = ({
                             </div>
                             <div className="flex items-center justify-between">
                                 <Link
-                                    href="/merchant"
+                                    href={
+                                        role.includes('ADMIN')
+                                            ? '/admin'
+                                            : '/merchant'
+                                    }
                                     className="cursor-pointer text-blue-700 hover:text-blue-800 dark:text-blue-300 text-sm"
                                 >
                                     Dashboard

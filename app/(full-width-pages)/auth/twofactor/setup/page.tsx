@@ -19,13 +19,13 @@ const TwoFactorSetupPage = async () => {
     }
     const { session, user } = await getCurrentSession();
     if (session === null) {
-        return redirect('/merchant/login');
+        return redirect('/auth/login');
     }
     if (!user.emailVerified) {
-        return redirect('/merchant/verify-email');
+        return redirect('/auth/verify-email');
     }
     if (user.registered2FA && !session.twoFactorVerified) {
-        return redirect('/merchant/twofactor');
+        return redirect('/auth/twofactor');
     }
 
     const totpKey = new Uint8Array(20);
@@ -38,6 +38,7 @@ const TwoFactorSetupPage = async () => {
             encodedTOTPKey={encodedTOTPKey}
             qrcode={qrcode}
             userId={user.id}
+            role={user.role}
         />
     );
 };

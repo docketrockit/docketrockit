@@ -4,7 +4,6 @@ import * as z from 'zod';
 import { useForm } from 'react-hook-form';
 import { useState, useTransition } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import Link from 'next/link';
 import { toast } from 'sonner';
 
 import {
@@ -19,7 +18,7 @@ import { PasswordInputAuth } from '@/components/form/FormInputAuth';
 import { ResetPasswordSchema } from '@/schemas/auth';
 import { AuthSubmitButton } from '@/components/form/Buttons';
 import FormError from '@/components/form/FormError';
-import { updatePasswordAction } from '@/actions/forgotPassword';
+import { updatePasswordAction } from '@/actions/auth/forgotPassword';
 
 const UpdatePasswordForm = () => {
     const [error, setError] = useState<string | undefined>('');

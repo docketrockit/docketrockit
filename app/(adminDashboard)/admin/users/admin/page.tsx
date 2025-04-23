@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 
 import { Skeleton } from '@/components/ui/skeleton';
-import { authCheck } from '@/lib/authCheck';
+import { authCheckAdmin } from '@/lib/authCheck';
 import PageBreadcrumb from '@/components/common/PageBreadCrumb';
 import ComponentCard from '@/components/common/ComponentCard';
 import { SearchParams } from '@/types/global';
@@ -9,8 +9,8 @@ import { AdminUsersTable } from '@/components/users/admin/listing/AdminUsersTabl
 import { AdminUsersTableProvider } from '@/components/users/admin/listing/AdminUsersTableProviders';
 import { DateRangePicker } from '@/components/datatable/DateRangePicker';
 import { DataTableSkeleton } from '@/components/datatable/DataTableSkeleton';
-import { adminUsersSearchParamsSchema } from '@/schemas/adminUsers';
-import { getAdminUsers } from '@/actions/adminUsers';
+import { adminUsersSearchParamsSchema } from '@/schemas/admin/adminUsers';
+import { getAdminUsers } from '@/actions/admin/adminUsers';
 
 export async function generateMetadata() {
     const title = 'Admin Users';
@@ -23,7 +23,7 @@ export async function generateMetadata() {
 }
 
 const AdminUsersPage = async (props: { searchParams: SearchParams }) => {
-    const { session, user } = await authCheck();
+    await authCheckAdmin(['ADMIN']);
     const searchParams = await props.searchParams;
 
     const search = adminUsersSearchParamsSchema.parse(searchParams);

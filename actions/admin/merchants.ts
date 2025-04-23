@@ -14,7 +14,7 @@ import { getErrorMessage } from '@/lib/handleError';
 import {
     AddMerchantSchemaCreate,
     EditMerchantSchema
-} from '@/schemas/merchants';
+} from '@/schemas/admin/merchants';
 import { GetMerchantsSchema } from '@/types/merchant';
 import { buildMerchantWhere, buildOrderBy } from '@/lib/merchantLib';
 

@@ -1,4 +1,4 @@
-import { authCheck } from '@/lib/authCheck';
+import { authCheckAdmin } from '@/lib/authCheck';
 
 export async function generateMetadata() {
     const title = 'Dashboard';
@@ -11,7 +11,7 @@ export async function generateMetadata() {
 }
 
 const AdminDashboardMainPage = async () => {
-    const { session, user } = await authCheck();
+    const { user } = await authCheckAdmin();
 
     return <div>page {user.firstName}</div>;
 };

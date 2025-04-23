@@ -1,4 +1,4 @@
-import { object, string, boolean } from 'zod';
+import { string } from 'zod';
 
 export const getPasswordSchema = (type: 'Password' | 'Confirm Password') =>
     string({ required_error: `${type} is required` })

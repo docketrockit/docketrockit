@@ -36,7 +36,7 @@ export const sendVerificationEmail = async ({
     });
 };
 
-export const sendCreateUserAccountEmail = async ({
+export const sendCreateAdminUserAccountEmail = async ({
     email,
     firstName,
     password,
@@ -50,9 +50,9 @@ export const sendCreateUserAccountEmail = async ({
     await resend.emails.send({
         from: process.env.NEXT_PUBLIC_APP_EMAIL as string,
         to: email,
-        subject: 'DocketRockit - Merchant Dashboard - Account Created',
+        subject: 'DocketRockit - Admin Dashboard - Account Created',
         html: `<p>Hi ${firstName},</p>
-        <p>An account for the DocketRockit Merchant Dashboard has been created for you.</p>
+        <p>An account for the DocketRockit Admin Dashboard has been created for you.</p>
         <p>Please use the link below to login. Your temporary password is: ${password}</p>
         <p>You will need to change this on your first login.</p>
         <p>Your email verification code is ${code}.</p>

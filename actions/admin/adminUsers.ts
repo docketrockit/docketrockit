@@ -8,14 +8,14 @@ import { type User as UserType } from '@prisma/client';
 import db from '@/lib/db';
 import { GetAdminUsersSchema } from '@/types/adminUsers';
 import { buildAdminUserWhere, buildOrderBy } from '@/lib/adminUserLib';
-import { authCheckRole } from '@/lib/authCheck';
+import { authCheckAdmin } from '@/lib/authCheck';
 import { getErrorMessage } from '@/lib/handleError';
 import { AdminUserSchema, AdminUserSchemaUpdate } from '@/schemas/users';
 import { checkEmailAvailability } from '@/lib/email';
 import { globalPOSTRateLimit } from '@/lib/request';
 import { createEmailVerificationRequest } from '@/lib/email-verification';
 import { verifyPasswordStrength } from '@/lib/password';
-import { sendCreateUserAccountEmail } from '@/lib/mail';
+import { sendCreateAdminUserAccountEmail } from '@/lib/mail';
 import { createUser } from '@/lib/user';
 
 export const getAdminUsers = async (input: GetAdminUsersSchema) => {
@@ -74,10 +74,7 @@ export const updateAdminUsers = async (input: {
     ids: string[];
     status?: UserType['status'];
 }) => {
-    const { user } = await authCheckRole({
-        roles: ['ADMIN'],
-        access: ['ADMIN']
-    });
+    const { user } = await authCheckAdmin(['ADMIN']);
 
     if (!user)
         return {
@@ -91,7 +88,7 @@ export const updateAdminUsers = async (input: {
             data: { status: input.status }
         });
 
-        revalidatePath('/merchant/users/admin');
+        revalidatePath('/admin/users/admin');
 
         return {
             data: null,
@@ -108,10 +105,7 @@ export const updateAdminUsers = async (input: {
 export const createAdminUser = async (
     values: z.infer<typeof AdminUserSchema>
 ) => {
-    const { user: adminUser } = await authCheckRole({
-        roles: ['ADMIN'],
-        access: ['ADMIN']
-    });
+    const { user: adminUser } = await authCheckAdmin(['ADMIN']);
 
     if (!adminUser)
         return {
@@ -165,14 +159,14 @@ export const createAdminUser = async (
             user.id,
             user.email
         );
-        await sendCreateUserAccountEmail({
+        await sendCreateAdminUserAccountEmail({
             email,
             firstName,
             password,
             code: emailVerificationRequest.code
         });
 
-        revalidatePath('/merchant/users/admin');
+        revalidatePath('/admin/users/admin');
 
         return {
             data: null,
@@ -190,10 +184,7 @@ export const updateAdminUser = async (
     values: z.infer<typeof AdminUserSchemaUpdate>,
     id: string
 ) => {
-    const { user: adminUser } = await authCheckRole({
-        roles: ['ADMIN'],
-        access: ['ADMIN']
-    });
+    const { user: adminUser } = await authCheckAdmin(['ADMIN']);
 
     if (!adminUser)
         return {
@@ -239,7 +230,7 @@ export const updateAdminUser = async (
             }
         });
 
-        revalidatePath('/merchant/users/admin');
+        revalidatePath('/admin/users/admin');
 
         return {
             data: null,

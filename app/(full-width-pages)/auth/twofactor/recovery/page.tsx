@@ -25,7 +25,11 @@ const RecoveryCodePage = async () => {
         return redirect('/merchant/twofactor/setup');
     }
     if (session.twoFactorVerified) {
-        return redirect('/merchant');
+        if (user.role.includes('ADMIN')) {
+            return redirect('/admin');
+        } else {
+            return redirect('/merchant');
+        }
     }
     return <TwoFactorRecoveryCodeForm />;
 };

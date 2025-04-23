@@ -1,6 +1,6 @@
 import NotificationsCard from '@/components/settings/NotificationsCard';
-import { getUserProfileDetailsAdmin } from '@/actions/user';
-import { authCheck } from '@/lib/authCheck';
+import { getUserProfileDetailsAdmin } from '@/actions/auth/dashboardUser';
+import { authCheckAdmin } from '@/lib/authCheck';
 
 export async function generateMetadata() {
     const title = 'Settings';
@@ -13,7 +13,7 @@ export async function generateMetadata() {
 }
 
 const ProfilePage = async () => {
-    const { user } = await authCheck();
+    const { user } = await authCheckAdmin();
 
     const userDetails = await getUserProfileDetailsAdmin(user.id);
 

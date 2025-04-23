@@ -17,12 +17,16 @@ const VerifyEmailPage = async () => {
     }
     const { session, user } = await getCurrentSession();
     if (session === null) {
-        return redirect('/merchant/login');
+        return redirect('/auth/login');
     }
 
     const passwordVerifiedCheck = await checkPasswordUpdate(user.id);
     if (passwordVerifiedCheck) {
-        return redirect('/merchant');
+        if (user.role.includes('ADMIN')) {
+            return redirect('/admin');
+        } else {
+            return redirect('/merchant');
+        }
     }
     return <UpdatePasswordForm />;
 };

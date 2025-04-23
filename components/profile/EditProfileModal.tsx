@@ -20,11 +20,13 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Modal } from '@/components/ui/modal';
 import { UserProfileSchema } from '@/schemas/users';
-import { UserProfileDetailsAdmin } from '@/actions/user';
+import {
+    UserProfileDetailsAdmin,
+    updateUserProfileAdmin
+} from '@/actions/auth/dashboardUser';
 import FormError from '@/components/form/FormError';
 import PostcodeSearch from './PostcodeSearch';
 import { cn } from '@/lib/utils';
-import { updateUserProfileAdmin } from '@/actions/user';
 
 interface EditProfileModelProps {
     isOpen: boolean;

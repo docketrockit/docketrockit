@@ -27,18 +27,18 @@ export const authCheckLayout = async (): Promise<AuthCheckLayoutReturn> => {
     }
     const { session, user } = await getCurrentSession();
     if (session === null) {
-        return redirect('/merchant/login');
+        return redirect('/auth/login');
     }
     if (!user.emailVerified) {
-        return redirect('/merchant/verify-email');
+        return redirect('/auth/verify-email');
     }
     if (!user.registered2FA) {
-        return redirect('/merchant/twofactor/setup');
+        return redirect('/auth/twofactor/setup');
     }
     if (!session.twoFactorVerified) {
-        return redirect('/merchant/twofactor');
+        return redirect('/auth/twofactor');
     }
-    if (!session) redirect('/merchant/login');
+    if (!session) redirect('/auth/login');
 
     return { result: true, session, user };
 };
@@ -46,41 +46,29 @@ export const authCheckLayout = async (): Promise<AuthCheckLayoutReturn> => {
 export const authCheck = async (): Promise<AuthCheckReturn> => {
     const { session, user } = await getCurrentSession();
 
-    if (!session || !user) redirect('/merchant/login');
+    if (!session || !user) redirect('/auth/login');
 
     return { session, user };
 };
 
-export const authCheckRole = async ({
-    roles,
-    access
-}: {
-    roles: string[];
-    access: string[];
-}): Promise<AuthCheckLayoutReturn> => {
+export const authCheckAdmin = async (
+    access: string[] = []
+): Promise<AuthCheckReturn> => {
     const { session, user } = await getCurrentSession();
 
-    if (!session || !user) return { result: false, session, user };
+    if (!session || !user) redirect('/auth/login');
 
-    const hasRole = user.role.some((role) => roles.includes(role));
+    if (!user.role.includes('ADMIN')) redirect('/auth/login');
 
-    if (!hasRole) return { result: false, session, user };
+    if (!user.adminUser) redirect('/auth/login');
 
-    let hasAccess = false;
-
-    if (user.adminUser) {
-        hasAccess = user.adminUser.adminRole.some((role) =>
+    if (access.length !== 0) {
+        const hasAccess = user.adminUser.adminRole.some((role) =>
             access.includes(role)
         );
+
+        if (!hasAccess) redirect('/admin');
     }
 
-    if (user.merchantUser) {
-        hasAccess = user.merchantUser.merchantRole.some((role) =>
-            access.includes(role)
-        );
-    }
-
-    if (!hasAccess) return { result: false, session, user };
-
-    return { result: true, session, user };
+    return { session, user };
 };

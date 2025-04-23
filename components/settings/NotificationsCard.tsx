@@ -12,7 +12,7 @@ import {
     UserProfileDetailsAdmin,
     verifyEmailUpdateCode,
     verifyEmailCode
-} from '@/actions/user';
+} from '@/actions/auth/dashboardUser';
 import { EmailSchema, VerifyEmailSchema } from '@/schemas/users';
 import { Input } from '@/components/ui/input';
 import FormError from '@/components/form/FormError';
