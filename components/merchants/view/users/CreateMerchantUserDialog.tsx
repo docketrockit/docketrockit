@@ -30,7 +30,7 @@ import {
     DrawerTrigger
 } from '@/components/ui/drawer';
 
-import { createAdminUser } from '@/actions/adminUsers';
+import { createAdminUser } from '@/actions/admin/adminUsers';
 import { AdminUserSchema } from '@/schemas/users';
 import { CreateAdminUserForm } from './CreateMerchantUserForm';
 

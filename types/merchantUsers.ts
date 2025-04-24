@@ -1,10 +1,10 @@
 import * as z from 'zod';
 
-import { merchantUsersSearchParamsSchema } from '@/schemas/merchantUsers';
+import { merchantUsersSearchParamsSchema } from '@/schemas/admin/merchantUsers';
 import { Prisma } from '@prisma/client';
 import { type Table } from '@tanstack/react-table';
 
-import { getMerchantUsers } from '@/actions/merchantUsers';
+import { getMerchantUsers } from '@/actions/admin/merchantUsers';
 
 export type GetMerchantUsersSchema = z.infer<
     typeof merchantUsersSearchParamsSchema

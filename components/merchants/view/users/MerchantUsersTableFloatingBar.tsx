@@ -24,7 +24,7 @@ import {
 } from '@/components/ui/tooltip';
 import { Kbd } from '@/components/common/kbd';
 import { statusLabels } from '@/types/global';
-import { updateAdminUsers } from '@/actions/adminUsers';
+import { updateAdminUsers } from '@/actions/admin/adminUsers';
 import {
     MerchantUsersTableFloatingBarProps,
     MerchantUser

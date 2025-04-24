@@ -17,14 +17,13 @@ import { sendCreateAdminUserAccountEmail } from '@/lib/mail';
 import { createUser } from '@/lib/user';
 import { MerchantUserSchema, MerchantUserSchemaUpdate } from '@/schemas/users';
 import { buildMerchantUserWhere, buildOrderBy } from '@/lib/merchantUserLib';
+import { error } from 'console';
 
 export const getMerchantUsers = async (input: GetMerchantUsersSchema) => {
     const { user } = await authCheckAdmin();
 
-    if (!user)
-        return {
-            data: null
-        };
+    if (!user) return { data: [], pageCount: 0 };
+
     const {
         page,
         per_page,
