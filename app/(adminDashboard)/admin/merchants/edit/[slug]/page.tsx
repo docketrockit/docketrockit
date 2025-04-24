@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 
-import { getMerchant } from '@/actions/merchants';
+import { getMerchant } from '@/actions/admin/merchants';
 import PageBreadcrumb from '@/components/common/PageBreadCrumb';
 import EditMerchantForm from '@/components/merchants/edit/EditMerchantForm';
 import { authCheck } from '@/lib/authCheck';

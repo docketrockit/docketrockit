@@ -11,7 +11,7 @@ import { Upload } from 'lucide-react';
 import { FormControl, FormField, FormItem } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { AddMerchantSchema } from '@/schemas/merchants';
+import { AddMerchantSchema } from '@/schemas/admin/merchants';
 
 const AddMerchantLogoUpload = () => {
     const form = useFormContext<z.infer<typeof AddMerchantSchema>>();
