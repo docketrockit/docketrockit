@@ -15,7 +15,8 @@ export const buildMerchantUserWhere = (
         primaryContact,
         status,
         from,
-        to
+        to,
+        merchantId
     } = input;
 
     const whereFilter: Prisma.UserWhereInput[] = [];
@@ -73,6 +74,10 @@ export const buildMerchantUserWhere = (
                 isSelectable: true
             })
         );
+    }
+
+    if (merchantId) {
+        merchantWhereFilter.push({ merchantId });
     }
 
     const userFilter =

@@ -1,4 +1,5 @@
 import db from './db';
+import { MerchantUser } from '@/types/merchantUsers';
 
 export const verifyEmailInput = (email: string): boolean => {
     return /^.+@.+\..+$/.test(email) && email.length < 256;
@@ -16,17 +17,18 @@ export const checkEmailAvailability = async (
 
 export const checkMerchantEmailAvailability = async (
     email: string
-): Promise<boolean> => {
-    const row = await db.user.count({
+): Promise<'No' | 'New' | MerchantUser> => {
+    const user = await db.user.findUnique({
         where: {
-            email,
-            role: {
-                has: 'MERCHANT'
-            }
-        }
+            email
+        },
+        include: { merchantUser: true }
     });
-    if (row === null) {
-        throw new Error();
+    if (!user) {
+        return 'New';
     }
-    return row === 0;
+    if (user.role.includes('ADMIN') || user.role.includes('MERCHANT')) {
+        return 'No';
+    }
+    return user;
 };

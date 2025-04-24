@@ -20,7 +20,9 @@ import { MerchantUsersTableToolbarActions } from './MerchantUsersTableToolbarAct
 import { MerchantUsersTableProps, MerchantUser } from '@/types/merchantUsers';
 
 export const MerchantUsersTable = ({
-    merchantUsersPromise
+    merchantUsersPromise,
+    merchant,
+    user
 }: MerchantUsersTableProps) => {
     // Feature flags for showcasing some additional features. Feel free to remove them.
     const { featureFlags } = useMerchantUsersTable();
@@ -28,7 +30,10 @@ export const MerchantUsersTable = ({
     const { data, pageCount } = use(merchantUsersPromise);
 
     // Memoize the columns so they don't re-render on every render
-    const columns = useMemo(() => getColumns(), []);
+    const columns = useMemo(
+        () => getColumns({ merchantSlug: merchant.slug, user }),
+        []
+    );
 
     /**
      * This component can render either a faceted filter or a search filter based on the `options` prop.
@@ -41,7 +46,6 @@ export const MerchantUsersTable = ({
      * @prop {React.ReactNode} [icon] - An optional icon to display next to the label.
      * @prop {boolean} [withCount] - An optional boolean to display the count of the filter option.
      */
-
     const formatRoleLabel = (role: string) =>
         role
             .toLowerCase()
@@ -103,11 +107,17 @@ export const MerchantUsersTable = ({
                     table={table}
                     filterFields={filterFields}
                 >
-                    <MerchantUsersTableToolbarActions table={table} />
+                    <MerchantUsersTableToolbarActions
+                        table={table}
+                        merchant={merchant}
+                    />
                 </DataTableAdvancedToolbar>
             ) : (
                 <DataTableToolbar table={table} filterFields={filterFields}>
-                    <MerchantUsersTableToolbarActions table={table} />
+                    <MerchantUsersTableToolbarActions
+                        table={table}
+                        merchant={merchant}
+                    />
                 </DataTableToolbar>
             )}
         </DataTable>

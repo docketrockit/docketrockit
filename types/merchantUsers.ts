@@ -1,10 +1,11 @@
 import * as z from 'zod';
 
 import { merchantUsersSearchParamsSchema } from '@/schemas/admin/merchantUsers';
-import { Prisma } from '@prisma/client';
+import { Prisma, Merchant } from '@prisma/client';
 import { type Table } from '@tanstack/react-table';
 
 import { getMerchantUsers } from '@/actions/admin/merchantUsers';
+import { User } from '@/lib/user';
 
 export type GetMerchantUsersSchema = z.infer<
     typeof merchantUsersSearchParamsSchema
@@ -21,6 +22,7 @@ export type MerchantUsersFilterInput = {
     status?: string;
     from?: string;
     to?: string;
+    merchantId?: string;
 };
 
 export type MerchantUser = Prisma.UserGetPayload<{
@@ -29,6 +31,8 @@ export type MerchantUser = Prisma.UserGetPayload<{
 
 export interface MerchantUsersTableProps {
     merchantUsersPromise: ReturnType<typeof getMerchantUsers>;
+    merchant: Merchant;
+    user: User;
 }
 
 export interface MerchantUsersTableFloatingBarProps {
@@ -37,4 +41,5 @@ export interface MerchantUsersTableFloatingBarProps {
 
 export interface MerchantUsersTableToolbarActionsProps {
     table: Table<MerchantUser>;
+    merchant: Merchant;
 }

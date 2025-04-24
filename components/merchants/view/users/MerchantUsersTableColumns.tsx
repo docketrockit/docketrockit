@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
-import { type ColumnDef } from '@tanstack/react-table';
+import { type ColumnDef, type Row } from '@tanstack/react-table';
 import { MerchantRole } from '@prisma/client';
 
 import { formatDate } from '@/lib/utils';
@@ -23,8 +23,18 @@ import UserResetPasswordDialog from './UserResetPasswordDialog';
 import UserResetTwoFactorDialog from './UserResetTwoFactorDialog';
 import { useAlertDialog } from '@/hooks/useAlertDialog';
 import { MerchantUser } from '@/types/merchantUsers';
+import { User } from '@/lib/user';
 
-export const getColumns = (): ColumnDef<MerchantUser>[] => {
+export const getColumns = ({
+    merchantSlug,
+    user
+}: {
+    merchantSlug: string;
+    user: User;
+}): ColumnDef<MerchantUser>[] => {
+    const hasAccessToActions =
+        user.adminUser?.adminRole.includes('ADMIN') ||
+        user.adminUser?.adminRole.includes('ACCOUNTS');
     return [
         {
             id: 'select',
@@ -174,77 +184,93 @@ export const getColumns = (): ColumnDef<MerchantUser>[] => {
             ),
             cell: ({ cell }) => formatDate(cell.getValue() as Date)
         },
-        {
-            id: 'actions',
-            cell: function Cell({ row }) {
-                const [showUpdateAdminUserSheet, setShowUpdateAdminUserSheet] =
-                    useState(false);
+        ...(hasAccessToActions
+            ? [
+                  {
+                      id: 'actions',
+                      cell: function Cell({ row }: { row: Row<MerchantUser> }) {
+                          const [
+                              showUpdateAdminUserSheet,
+                              setShowUpdateAdminUserSheet
+                          ] = useState(false);
 
-                const {
-                    isOpen: isResetPasswordDialogOpen,
-                    openDialog: openResetPasswordDialog,
-                    setIsOpen: setResetPasswordDialogOpen
-                } = useAlertDialog();
-                const {
-                    isOpen: isResetTwoFactorDialogOpen,
-                    openDialog: openResetTwoFactorDialog,
-                    setIsOpen: setResetTwoFactorDialogOpen
-                } = useAlertDialog();
-                return (
-                    <>
-                        <UpdateMerchantUserSheet
-                            open={showUpdateAdminUserSheet}
-                            onOpenChange={setShowUpdateAdminUserSheet}
-                            user={row.original}
-                        />
-                        <UserResetPasswordDialog
-                            isOpen={isResetPasswordDialogOpen}
-                            onOpenChange={setResetPasswordDialogOpen}
-                            user={row.original}
-                        />
-                        <UserResetTwoFactorDialog
-                            isOpen={isResetTwoFactorDialogOpen}
-                            onOpenChange={setResetTwoFactorDialogOpen}
-                            user={row.original}
-                        />
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button
-                                    aria-label="Open menu"
-                                    variant="ghost"
-                                    className="flex size-8 p-0 data-[state=open]:bg-muted"
-                                >
-                                    <DotsHorizontalIcon
-                                        className="size-4"
-                                        aria-hidden="true"
-                                    />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-40">
-                                <DropdownMenuItem
-                                    onSelect={() =>
-                                        setShowUpdateAdminUserSheet(true)
-                                    }
-                                >
-                                    Edit
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem
-                                    onSelect={() => openResetPasswordDialog()}
-                                >
-                                    Reset Password
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                    onSelect={() => openResetTwoFactorDialog()}
-                                >
-                                    Reset Two Factor
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    </>
-                );
-            },
-            size: 40
-        }
+                          const {
+                              isOpen: isResetPasswordDialogOpen,
+                              openDialog: openResetPasswordDialog,
+                              setIsOpen: setResetPasswordDialogOpen
+                          } = useAlertDialog();
+                          const {
+                              isOpen: isResetTwoFactorDialogOpen,
+                              openDialog: openResetTwoFactorDialog,
+                              setIsOpen: setResetTwoFactorDialogOpen
+                          } = useAlertDialog();
+                          return (
+                              <>
+                                  <UpdateMerchantUserSheet
+                                      open={showUpdateAdminUserSheet}
+                                      onOpenChange={setShowUpdateAdminUserSheet}
+                                      user={row.original}
+                                      merchantSlug={merchantSlug}
+                                  />
+                                  <UserResetPasswordDialog
+                                      isOpen={isResetPasswordDialogOpen}
+                                      onOpenChange={setResetPasswordDialogOpen}
+                                      user={row.original}
+                                  />
+                                  <UserResetTwoFactorDialog
+                                      isOpen={isResetTwoFactorDialogOpen}
+                                      onOpenChange={setResetTwoFactorDialogOpen}
+                                      user={row.original}
+                                  />
+                                  <DropdownMenu>
+                                      <DropdownMenuTrigger asChild>
+                                          <Button
+                                              aria-label="Open menu"
+                                              variant="ghost"
+                                              className="flex size-8 p-0 data-[state=open]:bg-muted"
+                                          >
+                                              <DotsHorizontalIcon
+                                                  className="size-4"
+                                                  aria-hidden="true"
+                                              />
+                                          </Button>
+                                      </DropdownMenuTrigger>
+                                      <DropdownMenuContent
+                                          align="end"
+                                          className="w-40"
+                                      >
+                                          <DropdownMenuItem
+                                              onSelect={() =>
+                                                  setShowUpdateAdminUserSheet(
+                                                      true
+                                                  )
+                                              }
+                                          >
+                                              Edit
+                                          </DropdownMenuItem>
+                                          <DropdownMenuSeparator />
+                                          <DropdownMenuItem
+                                              onSelect={() =>
+                                                  openResetPasswordDialog()
+                                              }
+                                          >
+                                              Reset Password
+                                          </DropdownMenuItem>
+                                          <DropdownMenuItem
+                                              onSelect={() =>
+                                                  openResetTwoFactorDialog()
+                                              }
+                                          >
+                                              Reset Two Factor
+                                          </DropdownMenuItem>
+                                      </DropdownMenuContent>
+                                  </DropdownMenu>
+                              </>
+                          );
+                      },
+                      size: 40
+                  }
+              ]
+            : [])
     ];
 };

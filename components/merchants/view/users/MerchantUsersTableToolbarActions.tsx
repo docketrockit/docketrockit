@@ -5,18 +5,19 @@ import { DownloadIcon } from '@radix-ui/react-icons';
 import { exportTableToCSV } from '@/lib/export';
 import { Button } from '@/components/ui/button';
 
-import { CreateAdminUserDialog } from './CreateMerchantUserDialog';
-import {
-    MerchantUsersTableToolbarActionsProps,
-    MerchantUser
-} from '@/types/merchantUsers';
+import { CreateMerchantUserDialog } from './CreateMerchantUserDialog';
+import { MerchantUsersTableToolbarActionsProps } from '@/types/merchantUsers';
 
 export const MerchantUsersTableToolbarActions = ({
-    table
+    table,
+    merchant
 }: MerchantUsersTableToolbarActionsProps) => {
     return (
         <div className="flex items-center gap-2">
-            <CreateAdminUserDialog />
+            <CreateMerchantUserDialog
+                merchantId={merchant.id}
+                merchantSlug={merchant.slug}
+            />
             <Button
                 variant="outline"
                 size="sm"

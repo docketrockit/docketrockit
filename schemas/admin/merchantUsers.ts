@@ -10,6 +10,7 @@ export const merchantUsersSearchParamsSchema = z.object({
     jobTitle: z.string().optional(),
     primaryContact: z.boolean().optional(),
     merchantRole: z.string().optional(),
+    merchantId: z.string().optional(),
     status: z.string().optional(),
     from: z.string().optional(),
     to: z.string().optional(),

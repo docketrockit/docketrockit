@@ -9,9 +9,14 @@ import {
 } from '@/components/ui/sliding-underline-tabs';
 import { motion } from 'framer-motion';
 import { MerchantUsersTableProps } from '@/types/merchantUsers';
+import { MerchantUsersTable } from './users/MerchantUsersTable';
 
-const MerchantTabs = ({ merchantUsersPromise }: MerchantUsersTableProps) => {
-    const [activeTab, setActiveTab] = useState('account');
+const MerchantTabs = ({
+    merchantUsersPromise,
+    merchant,
+    user
+}: MerchantUsersTableProps) => {
+    const [activeTab, setActiveTab] = useState('users');
     const [underlineWidth, setUnderlineWidth] = useState(0);
     const [underlineLeft, setUnderlineLeft] = useState(0);
     const tabsRef = useRef<(HTMLButtonElement | null)[]>([]);
@@ -31,7 +36,7 @@ const MerchantTabs = ({ merchantUsersPromise }: MerchantUsersTableProps) => {
             defaultValue="account"
             value={activeTab}
             onValueChange={setActiveTab}
-            className="w-[400px]"
+            className="w-full"
         >
             <TabsList className="w-full justify-start border-b border-border">
                 <TabsTrigger
@@ -67,12 +72,11 @@ const MerchantTabs = ({ merchantUsersPromise }: MerchantUsersTableProps) => {
                 />
             </TabsList>
             <TabsContent value="users" className="mt-4">
-                <div className="space-y-2">
-                    <h3 className="text-lg font-medium">Account Settings</h3>
-                    <p className="text-sm text-muted-foreground">
-                        Manage your account settings and preferences.
-                    </p>
-                </div>
+                <MerchantUsersTable
+                    merchantUsersPromise={merchantUsersPromise}
+                    merchant={merchant}
+                    user={user}
+                />
             </TabsContent>
             <TabsContent value="brands" className="mt-4">
                 <div className="space-y-2">

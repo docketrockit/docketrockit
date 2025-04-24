@@ -60,6 +60,24 @@ export const sendCreateAdminUserAccountEmail = async ({
     });
 };
 
+export const sendUpdatedUserToAdminEmail = async ({
+    email,
+    firstName
+}: {
+    email: string;
+    firstName: string;
+}) => {
+    await resend.emails.send({
+        from: process.env.NEXT_PUBLIC_APP_EMAIL as string,
+        to: email,
+        subject: 'DocketRockit - Admin Dashboard - Account Created',
+        html: `<p>Hi ${firstName},</p>
+        <p>An account for the DocketRockit Admin Dashboard has been created for you.</p>
+        <p>Please use the link below to login. Your login is your DocketRockit login and password.</p>
+        <p>Click <a href="${domain}/auth/login">here</a> to login.</p>`
+    });
+};
+
 export const sendUserPasswordResetEmail = async ({
     email,
     firstName,

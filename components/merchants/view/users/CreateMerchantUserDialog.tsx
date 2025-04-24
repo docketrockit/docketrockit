@@ -2,7 +2,7 @@
 
 import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useEffect } from 'react';
 import { PlusIcon, ReloadIcon } from '@radix-ui/react-icons';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -30,30 +30,42 @@ import {
     DrawerTrigger
 } from '@/components/ui/drawer';
 
-import { createAdminUser } from '@/actions/admin/adminUsers';
-import { AdminUserSchema } from '@/schemas/users';
-import { CreateAdminUserForm } from './CreateMerchantUserForm';
+import { createMerchantUser } from '@/actions/admin/merchantUsers';
+import { MerchantUserSchema } from '@/schemas/users';
+import { CreateMerchantUserForm } from './CreateMerchantUserForm';
 
-export const CreateAdminUserDialog = () => {
+export const CreateMerchantUserDialog = ({
+    merchantId,
+    merchantSlug
+}: {
+    merchantId: string;
+    merchantSlug: string;
+}) => {
     const [open, setOpen] = useState(false);
     const [isCreatePending, startCreateTransition] = useTransition();
     const isDesktop = useMediaQuery('(min-width: 640px)');
 
-    const form = useForm<z.infer<typeof AdminUserSchema>>({
-        resolver: zodResolver(AdminUserSchema),
+    const form = useForm<z.infer<typeof MerchantUserSchema>>({
+        resolver: zodResolver(MerchantUserSchema),
         defaultValues: {
             firstName: '',
             lastName: '',
             email: '',
             password: '',
             jobTitle: '',
-            adminRole: []
+            merchantRole: [],
+            primaryContact: false
         }
     });
 
-    function onSubmit(input: z.infer<typeof AdminUserSchema>) {
+    function onSubmit(input: z.infer<typeof MerchantUserSchema>) {
         startCreateTransition(async () => {
-            const { error } = await createAdminUser(input);
+            const { error } = await createMerchantUser(
+                input,
+                'merchant',
+                merchantId,
+                merchantSlug
+            );
 
             if (error) {
                 toast.error(error);
@@ -82,13 +94,18 @@ export const CreateAdminUserDialog = () => {
                             Fill in the form below to create a new admin user.
                         </DialogDescription>
                     </DialogHeader>
-                    <CreateAdminUserForm form={form} onSubmit={onSubmit}>
+                    <CreateMerchantUserForm form={form} onSubmit={onSubmit}>
                         <DialogFooter className="gap-2 pt-2 sm:space-x-0">
-                            <DialogClose asChild>
-                                <Button type="button" variant="outline">
-                                    Cancel
-                                </Button>
-                            </DialogClose>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => {
+                                    form.reset();
+                                    setOpen(false);
+                                }}
+                            >
+                                Cancel
+                            </Button>
                             <Button disabled={isCreatePending}>
                                 {isCreatePending && (
                                     <ReloadIcon
@@ -99,7 +116,7 @@ export const CreateAdminUserDialog = () => {
                                 Create
                             </Button>
                         </DialogFooter>
-                    </CreateAdminUserForm>
+                    </CreateMerchantUserForm>
                 </DialogContent>
             </Dialog>
         );
@@ -121,10 +138,23 @@ export const CreateAdminUserDialog = () => {
                     </DrawerDescription>
                 </DrawerHeader>
                 <DrawerFooter className="gap-2 sm:space-x-0">
-                    <DrawerClose asChild>
-                        <Button variant="outline">Cancel</Button>
-                    </DrawerClose>
-                    <Button disabled={isCreatePending}>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => {
+                            form.reset();
+                            setOpen(false);
+                        }}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        disabled={isCreatePending}
+                        onClick={() => {
+                            form.reset();
+                            setOpen(false);
+                        }}
+                    >
                         {isCreatePending && (
                             <ReloadIcon
                                 className="mr-2 size-4 animate-spin"

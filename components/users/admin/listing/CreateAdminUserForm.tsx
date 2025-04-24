@@ -2,6 +2,7 @@
 
 import * as z from 'zod';
 import { type UseFormReturn } from 'react-hook-form';
+import { useEffect } from 'react';
 import { AdminRole } from '@prisma/client';
 import {
     UserRound,
@@ -161,7 +162,7 @@ export const CreateAdminUserForm = ({
                             <FormControl>
                                 <MultiSelect
                                     {...field}
-                                    name="access"
+                                    name="adminRole"
                                     options={adminRoleOptions}
                                     onValueChange={(selectedValues) => {
                                         form.setValue(

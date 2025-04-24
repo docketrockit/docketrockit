@@ -4,9 +4,10 @@ import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTransition, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { MerchantRole } from '@prisma/client';
+import { MerchantRole, Status } from '@prisma/client';
 import { UserRound, Mail, Briefcase } from 'lucide-react';
 import { ReloadIcon } from '@radix-ui/react-icons';
+import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -25,23 +26,34 @@ import {
     SheetHeader,
     SheetTitle
 } from '@/components/ui/sheet';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue
+} from '@/components/ui/select';
 import { FormInputIcon } from '@/components/form/FormInputs';
 import { MultiSelect } from '@/components/ui/multi-select';
 import { MerchantRoleLabels } from '@/types/user';
 import { MerchantUserSchemaUpdate } from '@/schemas/users';
 import { cn } from '@/lib/utils';
 import { MerchantUser } from '@/types/merchantUsers';
+import { updateMerchantUser } from '@/actions/admin/merchantUsers';
 
 interface UpdateMerchantUserSheetProps
     extends React.ComponentPropsWithRef<typeof Sheet> {
     user: MerchantUser;
+    merchantSlug: string;
 }
 
 export const UpdateMerchantUserSheet = ({
     user,
+    merchantSlug,
     ...props
 }: UpdateMerchantUserSheetProps) => {
     const [isUpdatePending, startUpdateTransition] = useTransition();
+    const statusValues = Object.values(Status);
 
     const merchantRoleOptions = Object.values(MerchantRole).map((value) => ({
         value,
@@ -55,7 +67,9 @@ export const UpdateMerchantUserSheet = ({
             lastName: user.lastName,
             email: user.email,
             jobTitle: user.merchantUser?.jobTitle,
-            merchantRole: user.merchantUser?.merchantRole
+            merchantRole: user.merchantUser?.merchantRole,
+            primaryContact: user.merchantUser?.primaryContact,
+            status: user.status
         }
     });
 
@@ -65,20 +79,26 @@ export const UpdateMerchantUserSheet = ({
             lastName: user.lastName,
             email: user.email,
             jobTitle: user.merchantUser?.jobTitle,
-            merchantRole: user.merchantUser?.merchantRole
+            merchantRole: user.merchantUser?.merchantRole,
+            primaryContact: user.merchantUser?.primaryContact,
+            status: user.status
         });
     }, [user, form]);
 
     function onSubmit(input: z.infer<typeof MerchantUserSchemaUpdate>) {
         startUpdateTransition(async () => {
-            // const { error } = await updateAdminUser(input, user.id);
-            // if (error) {
-            //     toast.error(error);
-            //     return;
-            // }
-            // form.reset();
-            // props.onOpenChange?.(false);
-            // toast.success('User updated');
+            const { error } = await updateMerchantUser(
+                input,
+                user.id,
+                merchantSlug
+            );
+            if (error) {
+                toast.error(error);
+                return;
+            }
+            form.reset();
+            props.onOpenChange?.(false);
+            toast.success('User updated');
         });
     }
 
@@ -88,7 +108,7 @@ export const UpdateMerchantUserSheet = ({
                 <SheetHeader className="text-left">
                     <SheetTitle>Update user</SheetTitle>
                     <SheetDescription>
-                        Update the type details and save the changes
+                        Update the user details and save the changes
                     </SheetDescription>
                 </SheetHeader>
                 <Form {...form}>
@@ -198,6 +218,38 @@ export const UpdateMerchantUserSheet = ({
                                             maxCount={999}
                                         />
                                     </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="status"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <Select
+                                        {...field}
+                                        onValueChange={field.onChange}
+                                        defaultValue={field.value}
+                                    >
+                                        <FormControl>
+                                            <SelectTrigger className="w-full">
+                                                <SelectValue placeholder="Select a status" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {statusValues.map(
+                                                (value, index) => (
+                                                    <SelectItem
+                                                        key={index}
+                                                        value={value}
+                                                    >
+                                                        {value}
+                                                    </SelectItem>
+                                                )
+                                            )}
+                                        </SelectContent>
+                                    </Select>
                                     <FormMessage />
                                 </FormItem>
                             )}

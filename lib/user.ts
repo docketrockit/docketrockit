@@ -6,6 +6,7 @@ import db from './db';
 import { decrypt, encrypt } from './encryption';
 import { hashPassword } from './password';
 import { generateRandomRecoveryCodes } from './utils';
+import { User as PrismaUser } from '@prisma/client';
 
 export interface User {
     id: string;
@@ -50,6 +51,23 @@ interface CreateUserProps {
     lastName: string;
     role: Role;
 }
+export const createUserFromUser = async ({
+    user
+}: {
+    user: PrismaUser;
+}): Promise<User> => {
+    const createdUser: User = {
+        id: user.id,
+        email: user.email,
+        emailVerified: user.emailVerified,
+        registered2FA: true,
+        passwordVerified: user.passwordVerified,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role
+    };
+    return createdUser;
+};
 
 export const createUser = async ({
     email,
@@ -64,7 +82,8 @@ export const createUser = async ({
             email,
             password: passwordHash,
             firstName,
-            lastName
+            lastName,
+            role: [role]
         }
     });
     if (!row) {

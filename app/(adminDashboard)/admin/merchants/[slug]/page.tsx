@@ -37,9 +37,11 @@ const MerchantDetailsPage = async (props: {
     const { data } = await getMerchant(slug);
     if (!data) redirect('/merchant/merchants');
 
-    const search = merchantUsersSearchParamsSchema.parse(
+    let search = merchantUsersSearchParamsSchema.parse(
         await props.searchParams
     );
+
+    search = { ...search, merchantId: data.id };
 
     const merchantUsersPromise = getMerchantUsers(search);
 

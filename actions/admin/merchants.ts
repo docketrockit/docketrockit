@@ -350,6 +350,12 @@ export const updateMerchants = async (input: {
 };
 
 export const getMerchant = async (slug: string) => {
+    const { user } = await authCheckAdmin();
+
+    if (!user)
+        return {
+            data: null
+        };
     const data = await db.merchant.findUnique({
         where: {
             slug

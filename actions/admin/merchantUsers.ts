@@ -9,15 +9,20 @@ import db from '@/lib/db';
 import { GetMerchantUsersSchema } from '@/types/merchantUsers';
 import { authCheckAdmin } from '@/lib/authCheck';
 import { getErrorMessage } from '@/lib/handleError';
-import { checkMerchantEmailAvailability } from '@/lib/email';
+import {
+    checkMerchantEmailAvailability,
+    checkEmailAvailability
+} from '@/lib/email';
 import { globalPOSTRateLimit } from '@/lib/request';
 import { createEmailVerificationRequest } from '@/lib/email-verification';
 import { verifyPasswordStrength } from '@/lib/password';
-import { sendCreateAdminUserAccountEmail } from '@/lib/mail';
-import { createUser } from '@/lib/user';
+import {
+    sendCreateAdminUserAccountEmail,
+    sendUpdatedUserToAdminEmail
+} from '@/lib/mail';
+import { createUser, createUserFromUser, User } from '@/lib/user';
 import { MerchantUserSchema, MerchantUserSchemaUpdate } from '@/schemas/users';
 import { buildMerchantUserWhere, buildOrderBy } from '@/lib/merchantUserLib';
-import { error } from 'console';
 
 export const getMerchantUsers = async (input: GetMerchantUsersSchema) => {
     const { user } = await authCheckAdmin();
@@ -37,7 +42,8 @@ export const getMerchantUsers = async (input: GetMerchantUsersSchema) => {
         status,
         operator,
         from,
-        to
+        to,
+        merchantId
     } = input;
 
     try {
@@ -57,7 +63,8 @@ export const getMerchantUsers = async (input: GetMerchantUsersSchema) => {
             primaryContact,
             status,
             from: fromDay,
-            to: toDay
+            to: toDay,
+            merchantId
         });
 
         const data = await db.user.findMany({
@@ -107,10 +114,11 @@ export const updateMerchantUsers = async (input: {
     }
 };
 
-export const createAdminUser = async (
+export const createMerchantUser = async (
     values: z.infer<typeof MerchantUserSchema>,
-    adminCreate: boolean,
-    merchantId: string
+    page: string,
+    merchantId: string,
+    merchantSlug: string
 ) => {
     const { user: adminUser } = await authCheckAdmin(['ADMIN']);
 
@@ -143,46 +151,75 @@ export const createAdminUser = async (
             primaryContact
         } = validatedFields.data;
 
-        const emailAvailable = checkMerchantEmailAvailability(email);
-        if (!emailAvailable) {
+        const emailAvailable = await checkMerchantEmailAvailability(email);
+
+        if (emailAvailable === 'No') {
             return {
                 data: null,
-                error: getErrorMessage('Email is already used')
+                error: 'Email is already used on a merchant account'
             };
         }
 
-        const strongPassword = await verifyPasswordStrength(password);
-        if (!strongPassword) {
-            return { data: null, error: getErrorMessage('Weak password') };
+        let userId: string;
+        let user: User;
+
+        if (emailAvailable === 'New') {
+            const strongPassword = await verifyPasswordStrength(password);
+            if (!strongPassword) {
+                return { data: null, error: getErrorMessage('Weak password') };
+            }
+            user = await createUser({
+                email,
+                password,
+                firstName,
+                lastName,
+                role: 'MERCHANT'
+            });
+            userId = user.id;
+            const emailVerificationRequest =
+                await createEmailVerificationRequest(user.id, user.email);
+            await sendCreateAdminUserAccountEmail({
+                email,
+                firstName,
+                password,
+                code: emailVerificationRequest.code
+            });
+        } else {
+            userId = emailAvailable.id;
+            await db.user.update({
+                where: { id: userId },
+                data: {
+                    role: { push: 'MERCHANT' }
+                }
+            });
+            user = await createUserFromUser({ user: emailAvailable });
+            await sendUpdatedUserToAdminEmail({
+                email,
+                firstName: user.firstName
+            });
         }
-        const user = await createUser({
-            email,
-            password,
-            firstName,
-            lastName,
-            role: 'ADMIN'
-        });
+
         await db.merchantUser.create({
             data: {
                 jobTitle,
                 merchantRole,
                 primaryContact,
-                userId: user.id,
+                userId,
                 merchantId
             }
         });
-        const emailVerificationRequest = await createEmailVerificationRequest(
-            user.id,
-            user.email
-        );
-        await sendCreateAdminUserAccountEmail({
-            email,
-            firstName,
-            password,
-            code: emailVerificationRequest.code
-        });
 
-        if (adminCreate) revalidatePath('/merchant/users/merchant');
+        switch (page) {
+            case 'admin':
+                revalidatePath('/admin/users/merchant');
+                break;
+            case 'merchant':
+                revalidatePath(`/admin/merchants/${merchantSlug}`);
+                break;
+            default:
+                revalidatePath('/admin/users/merchant');
+                break;
+        }
 
         return {
             data: user,
@@ -192,6 +229,72 @@ export const createAdminUser = async (
         return {
             data: null,
             error: getErrorMessage(error)
+        };
+    }
+};
+
+export const updateMerchantUser = async (
+    values: z.infer<typeof MerchantUserSchemaUpdate>,
+    id: string,
+    merchantSlug: string
+) => {
+    const { user: adminUser } = await authCheckAdmin(['ADMIN']);
+
+    if (!adminUser)
+        return {
+            data: null,
+            error: getErrorMessage('Unauthorized')
+        };
+
+    try {
+        if (!(await globalPOSTRateLimit())) {
+            return {
+                data: null,
+                error: getErrorMessage('Too many requests')
+            };
+        }
+        const validatedFields = MerchantUserSchemaUpdate.safeParse(values);
+
+        if (!validatedFields.success) {
+            return { data: null, error: getErrorMessage('Invalid fields') };
+        }
+
+        const { firstName, lastName, email, jobTitle, merchantRole, status } =
+            validatedFields.data;
+
+        const emailAvailable = checkEmailAvailability(email);
+        if (!emailAvailable) {
+            return {
+                data: null,
+                error: getErrorMessage('Email is already used')
+            };
+        }
+        await db.user.update({
+            where: { id },
+            data: {
+                firstName,
+                lastName,
+                email,
+                status,
+                merchantUser: {
+                    update: {
+                        jobTitle,
+                        merchantRole
+                    }
+                }
+            }
+        });
+
+        revalidatePath(`/admin/merchants/${merchantSlug}`);
+
+        return {
+            data: null,
+            error: null
+        };
+    } catch (err) {
+        return {
+            data: null,
+            error: getErrorMessage(err)
         };
     }
 };
