@@ -25,6 +25,6 @@ const AuthPage = async () => {
         }
     }
 
-    return redirect('/auth/login');
+    redirect('/auth/login');
 };
 export default AuthPage;
