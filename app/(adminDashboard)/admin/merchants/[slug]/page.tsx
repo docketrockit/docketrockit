@@ -1,7 +1,9 @@
-import { Suspense } from 'react';
 import { redirect } from 'next/navigation';
 
-import { getMerchant } from '@/actions/admin/merchants';
+import {
+    getMerchant,
+    getMerchantPrimaryContact
+} from '@/actions/admin/merchants';
 import { authCheckAdmin } from '@/lib/authCheck';
 import { ParamsSlug } from '@/types/global';
 import MerchantMain from '@/components/merchants/view/MerchantMain';
@@ -36,7 +38,7 @@ const MerchantDetailsPage = async (props: {
     const { user } = await authCheckAdmin();
     const { data } = await getMerchant(slug);
     if (!data) redirect('/merchant/merchants');
-
+    const { data: primaryContact } = await getMerchantPrimaryContact(data.id);
     let search = merchantUsersSearchParamsSchema.parse(
         await props.searchParams
     );
@@ -56,6 +58,7 @@ const MerchantDetailsPage = async (props: {
                         merchant={data}
                         merchantUsersPromise={merchantUsersPromise}
                         user={user}
+                        primaryContact={primaryContact}
                     />
                 </div>
             </div>

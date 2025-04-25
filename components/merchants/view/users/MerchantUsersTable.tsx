@@ -31,7 +31,12 @@ export const MerchantUsersTable = ({
 
     // Memoize the columns so they don't re-render on every render
     const columns = useMemo(
-        () => getColumns({ merchantSlug: merchant.slug, user }),
+        () =>
+            getColumns({
+                merchantId: merchant.id,
+                merchantSlug: merchant.slug,
+                user
+            }),
         []
     );
 

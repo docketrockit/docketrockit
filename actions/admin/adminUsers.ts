@@ -126,8 +126,15 @@ export const createAdminUser = async (
             return { data: null, error: getErrorMessage('Invalid fields') };
         }
 
-        const { firstName, lastName, email, password, jobTitle, adminRole } =
-            validatedFields.data;
+        const {
+            firstName,
+            lastName,
+            email,
+            password,
+            jobTitle,
+            adminRole,
+            phoneNumber
+        } = validatedFields.data;
 
         const emailAvailable = checkEmailAvailability(email);
         if (!emailAvailable) {
@@ -148,6 +155,7 @@ export const createAdminUser = async (
             lastName,
             role: 'ADMIN'
         });
+        await db.user.update({ where: { id: user.id }, data: { phoneNumber } });
         await db.adminUser.create({
             data: {
                 jobTitle,
@@ -205,7 +213,7 @@ export const updateAdminUser = async (
             return { data: null, error: getErrorMessage('Invalid fields') };
         }
 
-        const { firstName, lastName, email, jobTitle, adminRole } =
+        const { firstName, lastName, email, jobTitle, adminRole, phoneNumber } =
             validatedFields.data;
 
         const emailAvailable = checkEmailAvailability(email);
@@ -221,6 +229,7 @@ export const updateAdminUser = async (
                 firstName,
                 lastName,
                 email,
+                phoneNumber,
                 adminUser: {
                     update: {
                         jobTitle,

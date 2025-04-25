@@ -33,6 +33,7 @@ import { updateAdminUser } from '@/actions/admin/adminUsers';
 import { AdminUserSchemaUpdate } from '@/schemas/users';
 import { cn } from '@/lib/utils';
 import { AdminUser } from '@/types/adminUsers';
+import { PhoneInput } from '@/components/ui/phone-input';
 
 interface UpdateTaskSheetProps
     extends React.ComponentPropsWithRef<typeof Sheet> {
@@ -57,6 +58,7 @@ export const UpdateAdminUserSheet = ({
             lastName: user.lastName,
             email: user.email,
             jobTitle: user.adminUser?.jobTitle,
+            phoneNumber: user.phoneNumber || '',
             adminRole: user.adminUser?.adminRole
         }
     });
@@ -67,6 +69,7 @@ export const UpdateAdminUserSheet = ({
             lastName: user.lastName,
             email: user.email,
             jobTitle: user.adminUser?.jobTitle,
+            phoneNumber: user.phoneNumber || '',
             adminRole: user.adminUser?.adminRole
         });
     }, [user, form]);
@@ -150,6 +153,21 @@ export const UpdateAdminUserSheet = ({
                                             type="email"
                                             icon={Mail}
                                             label="Email"
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="phoneNumber"
+                            render={({ field }) => (
+                                <FormItem className={cn('w-full space-y-2')}>
+                                    <FormControl>
+                                        <PhoneInput
+                                            defaultCountry="AU"
+                                            {...field}
                                         />
                                     </FormControl>
                                     <FormMessage />

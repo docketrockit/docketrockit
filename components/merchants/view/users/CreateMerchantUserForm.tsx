@@ -16,18 +16,22 @@ import {
     FormControl,
     FormField,
     FormItem,
-    FormMessage
+    FormMessage,
+    FormLabel,
+    FormDescription
 } from '@/components/ui/form';
 import {
     FormInputIcon,
     FormInputIconPassword
 } from '@/components/form/FormInputs';
+import { Switch } from '@/components/ui/switch';
 import { MultiSelect } from '@/components/ui/multi-select';
 import { MerchantRoleLabels } from '@/types/user';
 import { MerchantUserSchema } from '@/schemas/users';
 import { Button } from '@/components/ui/button';
 import generatePassword from '@/utils/generatePassword';
 import { cn } from '@/lib/utils';
+import { PhoneInput } from '@/components/ui/phone-input';
 
 interface CreateTypeFormProps
     extends Omit<React.ComponentPropsWithRef<'form'>, 'onSubmit'> {
@@ -112,6 +116,18 @@ export const CreateMerchantUserForm = ({
                         </FormItem>
                     )}
                 />
+                <FormField
+                    control={form.control}
+                    name="phoneNumber"
+                    render={({ field }) => (
+                        <FormItem className={cn('w-full space-y-2')}>
+                            <FormControl>
+                                <PhoneInput defaultCountry="AU" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
                 <div className="flex flex-row space-x-6">
                     <FormField
                         control={form.control}
@@ -150,6 +166,28 @@ export const CreateMerchantUserForm = ({
                                 />
                             </FormControl>
                             <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="primaryContact"
+                    render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-xs">
+                            <div className="space-y-0.5">
+                                <FormLabel>Primary Contact?</FormLabel>
+                                <FormDescription>
+                                    Checking this user as the primarary contact
+                                    will remove the previous user as the primary
+                                    contact
+                                </FormDescription>
+                            </div>
+                            <FormControl>
+                                <Switch
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                />
+                            </FormControl>
                         </FormItem>
                     )}
                 />

@@ -47,6 +47,7 @@ export const CreateAdminUserDialog = () => {
             email: '',
             password: '',
             jobTitle: '',
+            phoneNumber: '',
             adminRole: []
         }
     });

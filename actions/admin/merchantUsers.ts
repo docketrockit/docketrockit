@@ -148,7 +148,8 @@ export const createMerchantUser = async (
             password,
             jobTitle,
             merchantRole,
-            primaryContact
+            primaryContact,
+            phoneNumber
         } = validatedFields.data;
 
         const emailAvailable = await checkMerchantEmailAvailability(email);
@@ -198,6 +199,14 @@ export const createMerchantUser = async (
                 firstName: user.firstName
             });
         }
+        if (primaryContact) {
+            await db.merchantUser.updateMany({
+                where: { merchantId, primaryContact: true },
+                data: { primaryContact: false }
+            });
+        }
+
+        await db.user.update({ where: { id: userId }, data: { phoneNumber } });
 
         await db.merchantUser.create({
             data: {
@@ -236,6 +245,7 @@ export const createMerchantUser = async (
 export const updateMerchantUser = async (
     values: z.infer<typeof MerchantUserSchemaUpdate>,
     id: string,
+    merchantId: string,
     merchantSlug: string
 ) => {
     const { user: adminUser } = await authCheckAdmin(['ADMIN']);
@@ -259,8 +269,16 @@ export const updateMerchantUser = async (
             return { data: null, error: getErrorMessage('Invalid fields') };
         }
 
-        const { firstName, lastName, email, jobTitle, merchantRole, status } =
-            validatedFields.data;
+        const {
+            firstName,
+            lastName,
+            email,
+            jobTitle,
+            merchantRole,
+            status,
+            primaryContact,
+            phoneNumber
+        } = validatedFields.data;
 
         const emailAvailable = checkEmailAvailability(email);
         if (!emailAvailable) {
@@ -269,6 +287,12 @@ export const updateMerchantUser = async (
                 error: getErrorMessage('Email is already used')
             };
         }
+        if (primaryContact) {
+            await db.merchantUser.updateMany({
+                where: { merchantId, primaryContact: true },
+                data: { primaryContact: false }
+            });
+        }
         await db.user.update({
             where: { id },
             data: {
@@ -276,10 +300,12 @@ export const updateMerchantUser = async (
                 lastName,
                 email,
                 status,
+                phoneNumber,
                 merchantUser: {
                     update: {
                         jobTitle,
-                        merchantRole
+                        merchantRole,
+                        primaryContact
                     }
                 }
             }

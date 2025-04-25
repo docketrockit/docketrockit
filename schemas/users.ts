@@ -12,6 +12,7 @@ export const AdminUserSchema = object({
     lastName: getStringSchema('Last name'),
     email: getEmailSchema(),
     password: getPasswordSchema('Password'),
+    phoneNumber: getStringSchema('Phone number'),
     jobTitle: getStringSchema('Job title'),
     adminRole: array(adminRoleSchema)
 });
@@ -20,6 +21,7 @@ export const AdminUserSchemaUpdate = object({
     firstName: getStringSchema('First name'),
     lastName: getStringSchema('Last name'),
     email: getEmailSchema(),
+    phoneNumber: getStringSchema('Phone number'),
     jobTitle: getStringSchema('Job title'),
     adminRole: array(adminRoleSchema)
 });
@@ -29,6 +31,7 @@ export const MerchantUserSchema = object({
     lastName: getStringSchema('Last name'),
     email: getEmailSchema(),
     password: getPasswordSchema('Password'),
+    phoneNumber: getStringSchema('Phone number'),
     jobTitle: getStringSchema('Job title'),
     merchantRole: array(merchantRoleSchema),
     primaryContact: boolean()
@@ -39,6 +42,7 @@ export const MerchantUserSchemaUpdate = object({
     lastName: getStringSchema('Last name'),
     email: getEmailSchema(),
     jobTitle: getStringSchema('Job title'),
+    phoneNumber: getStringSchema('Phone number'),
     merchantRole: array(merchantRoleSchema),
     primaryContact: boolean(),
     status: statusSchema

@@ -11,6 +11,16 @@ type MerchantData = Prisma.MerchantGetPayload<{
     include: { state: true; country: true };
 }>;
 
+type PrimaryContact = Prisma.UserGetPayload<{
+    select: {
+        id: true;
+        firstName: true;
+        lastName: true;
+        email: true;
+        phoneNumber: true;
+    };
+}>;
+
 export interface AddMerchantFormProps {
     countryProp?: Country;
     countries: Country[];
@@ -29,6 +39,7 @@ export interface MerchantMainProps {
     merchant: MerchantData;
     merchantUsersPromise: ReturnType<typeof getMerchantUsers>;
     user: User;
+    primaryContact: PrimaryContact | null;
 }
 
 export type MerchantsFilterInput = {

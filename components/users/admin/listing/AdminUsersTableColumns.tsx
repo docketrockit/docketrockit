@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import { type ColumnDef } from '@tanstack/react-table';
 import { AdminRole, Prisma } from '@prisma/client';
+import parsePhoneNumber from 'libphonenumber-js';
 
 import { formatDate } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -84,6 +85,26 @@ export const getColumns = (): ColumnDef<AdminUser>[] => {
                         </span>
                     </div>
                 );
+            }
+        },
+        {
+            accessorKey: 'phoneNumber',
+            header: ({ column }) => (
+                <DataTableColumnHeader column={column} title="Phone Number" />
+            ),
+            cell: ({ row }) => {
+                if (row.original.phoneNumber) {
+                    const phoneNumber = parsePhoneNumber(
+                        row.original.phoneNumber
+                    );
+                    return (
+                        <div className="flex space-x-2">
+                            <span className="max-w-[31.25rem] truncate font-medium">
+                                {phoneNumber?.formatNational()}
+                            </span>
+                        </div>
+                    );
+                }
             }
         },
         {

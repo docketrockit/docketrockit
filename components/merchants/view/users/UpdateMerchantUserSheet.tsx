@@ -15,7 +15,9 @@ import {
     FormControl,
     FormField,
     FormItem,
-    FormMessage
+    FormMessage,
+    FormLabel,
+    FormDescription
 } from '@/components/ui/form';
 import {
     Sheet,
@@ -33,6 +35,7 @@ import {
     SelectTrigger,
     SelectValue
 } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import { FormInputIcon } from '@/components/form/FormInputs';
 import { MultiSelect } from '@/components/ui/multi-select';
 import { MerchantRoleLabels } from '@/types/user';
@@ -40,16 +43,19 @@ import { MerchantUserSchemaUpdate } from '@/schemas/users';
 import { cn } from '@/lib/utils';
 import { MerchantUser } from '@/types/merchantUsers';
 import { updateMerchantUser } from '@/actions/admin/merchantUsers';
+import { PhoneInput } from '@/components/ui/phone-input';
 
 interface UpdateMerchantUserSheetProps
     extends React.ComponentPropsWithRef<typeof Sheet> {
     user: MerchantUser;
+    merchantId: string;
     merchantSlug: string;
 }
 
 export const UpdateMerchantUserSheet = ({
     user,
     merchantSlug,
+    merchantId,
     ...props
 }: UpdateMerchantUserSheetProps) => {
     const [isUpdatePending, startUpdateTransition] = useTransition();
@@ -69,6 +75,7 @@ export const UpdateMerchantUserSheet = ({
             jobTitle: user.merchantUser?.jobTitle,
             merchantRole: user.merchantUser?.merchantRole,
             primaryContact: user.merchantUser?.primaryContact,
+            phoneNumber: user.phoneNumber || '',
             status: user.status
         }
     });
@@ -81,6 +88,7 @@ export const UpdateMerchantUserSheet = ({
             jobTitle: user.merchantUser?.jobTitle,
             merchantRole: user.merchantUser?.merchantRole,
             primaryContact: user.merchantUser?.primaryContact,
+            phoneNumber: user.phoneNumber || '',
             status: user.status
         });
     }, [user, form]);
@@ -90,6 +98,7 @@ export const UpdateMerchantUserSheet = ({
             const { error } = await updateMerchantUser(
                 input,
                 user.id,
+                merchantId,
                 merchantSlug
             );
             if (error) {
@@ -174,6 +183,21 @@ export const UpdateMerchantUserSheet = ({
                         />
                         <FormField
                             control={form.control}
+                            name="phoneNumber"
+                            render={({ field }) => (
+                                <FormItem className={cn('w-full space-y-2')}>
+                                    <FormControl>
+                                        <PhoneInput
+                                            defaultCountry="AU"
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
                             name="jobTitle"
                             render={({ field }) => (
                                 <FormItem className={cn('w-full')}>
@@ -187,6 +211,28 @@ export const UpdateMerchantUserSheet = ({
                                         />
                                     </FormControl>
                                     <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="primaryContact"
+                            render={({ field }) => (
+                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-xs">
+                                    <div className="space-y-0.5">
+                                        <FormLabel>Primary Contact?</FormLabel>
+                                        <FormDescription>
+                                            Checking this user as the primarary
+                                            contact will remove the previous
+                                            user as the primary contact
+                                        </FormDescription>
+                                    </div>
+                                    <FormControl>
+                                        <Switch
+                                            checked={field.value}
+                                            onCheckedChange={field.onChange}
+                                        />
+                                    </FormControl>
                                 </FormItem>
                             )}
                         />

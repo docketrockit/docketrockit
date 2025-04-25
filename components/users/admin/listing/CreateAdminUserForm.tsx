@@ -2,7 +2,6 @@
 
 import * as z from 'zod';
 import { type UseFormReturn } from 'react-hook-form';
-import { useEffect } from 'react';
 import { AdminRole } from '@prisma/client';
 import {
     UserRound,
@@ -29,6 +28,7 @@ import { AdminUserSchema } from '@/schemas/users';
 import { Button } from '@/components/ui/button';
 import generatePassword from '@/utils/generatePassword';
 import { cn } from '@/lib/utils';
+import { PhoneInput } from '@/components/ui/phone-input';
 
 interface CreateTypeFormProps
     extends Omit<React.ComponentPropsWithRef<'form'>, 'onSubmit'> {
@@ -108,6 +108,18 @@ export const CreateAdminUserForm = ({
                                     icon={Mail}
                                     label="Email"
                                 />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="phoneNumber"
+                    render={({ field }) => (
+                        <FormItem className={cn('w-full space-y-2')}>
+                            <FormControl>
+                                <PhoneInput defaultCountry="AU" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>

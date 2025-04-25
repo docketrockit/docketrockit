@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { DotsHorizontalIcon } from '@radix-ui/react-icons';
+import { DotsHorizontalIcon, CheckCircledIcon } from '@radix-ui/react-icons';
 import { type ColumnDef, type Row } from '@tanstack/react-table';
 import { MerchantRole } from '@prisma/client';
+import parsePhoneNumber from 'libphonenumber-js';
 
 import { formatDate } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -26,9 +27,11 @@ import { MerchantUser } from '@/types/merchantUsers';
 import { User } from '@/lib/user';
 
 export const getColumns = ({
+    merchantId,
     merchantSlug,
     user
 }: {
+    merchantId: string;
     merchantSlug: string;
     user: User;
 }): ColumnDef<MerchantUser>[] => {
@@ -91,6 +94,47 @@ export const getColumns = ({
                         </span>
                     </div>
                 );
+            }
+        },
+        {
+            accessorKey: 'phoneNumber',
+            header: ({ column }) => (
+                <DataTableColumnHeader column={column} title="Phone Number" />
+            ),
+            cell: ({ row }) => {
+                if (row.original.phoneNumber) {
+                    const phoneNumber = parsePhoneNumber(
+                        row.original.phoneNumber
+                    );
+                    return (
+                        <div className="flex space-x-2">
+                            <span className="max-w-[31.25rem] truncate font-medium">
+                                {phoneNumber?.formatNational()}
+                            </span>
+                        </div>
+                    );
+                }
+            }
+        },
+        {
+            accessorKey: 'primaryContact',
+            header: ({ column }) => (
+                <DataTableColumnHeader
+                    column={column}
+                    title="Primary Contact?"
+                />
+            ),
+            cell: ({ row }) => {
+                if (row.original.merchantUser?.primaryContact) {
+                    return (
+                        <div className="flex w-[6.25rem] items-center">
+                            <CheckCircledIcon
+                                className="mr-2 size-4 text-muted-foreground"
+                                aria-hidden="true"
+                            />
+                        </div>
+                    );
+                }
             }
         },
         {
@@ -210,6 +254,7 @@ export const getColumns = ({
                                       open={showUpdateAdminUserSheet}
                                       onOpenChange={setShowUpdateAdminUserSheet}
                                       user={row.original}
+                                      merchantId={merchantId}
                                       merchantSlug={merchantSlug}
                                   />
                                   <UserResetPasswordDialog

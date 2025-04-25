@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { Pencil } from 'lucide-react';
 import { AdminRole } from '@prisma/client';
+import parsePhoneNumber, { PhoneNumber } from 'libphonenumber-js';
 
 import { MerchantMainProps } from '@/types/merchant';
 import Link from 'next/link';
@@ -11,9 +12,16 @@ import MerchantTabs from './MerchantTabs';
 const MerchantMain = ({
     merchant,
     merchantUsersPromise,
-    user
+    user,
+    primaryContact
 }: MerchantMainProps) => {
-    if (!merchant) return 'No user found';
+    if (!merchant) return 'No merchant found';
+
+    let phoneNumber: PhoneNumber | undefined;
+
+    if (primaryContact && primaryContact.phoneNumber) {
+        phoneNumber = parsePhoneNumber(primaryContact.phoneNumber);
+    }
 
     return (
         <>
@@ -131,6 +139,35 @@ const MerchantMain = ({
                                         {merchant.acn}
                                     </p>
                                 </div>
+                                {primaryContact && (
+                                    <>
+                                        <div>
+                                            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+                                                Primary Contact
+                                            </p>
+                                            <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                                                {`${primaryContact.firstName} ${primaryContact.lastName}`}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+                                                Primary Contact Email
+                                            </p>
+                                            <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                                                {primaryContact.email}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+                                                Primary Contact Phone
+                                            </p>
+                                            <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                                                {phoneNumber &&
+                                                    phoneNumber.formatNational()}
+                                            </p>
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         </div>
                     </div>

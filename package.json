@@ -51,6 +51,7 @@
         "export-to-csv": "^1.4.0",
         "github-slugger": "^2.0.0",
         "input-otp": "^1.4.2",
+        "libphonenumber-js": "^1.12.7",
         "lodash.debounce": "^4.0.8",
         "lucide-react": "^0.503.0",
         "motion": "^12.7.4",

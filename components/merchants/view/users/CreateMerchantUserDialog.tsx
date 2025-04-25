@@ -53,6 +53,7 @@ export const CreateMerchantUserDialog = ({
             email: '',
             password: '',
             jobTitle: '',
+            phoneNumber: '',
             merchantRole: [],
             primaryContact: false
         }
