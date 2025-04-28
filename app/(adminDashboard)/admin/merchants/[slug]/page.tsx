@@ -1,15 +1,14 @@
 import { redirect } from 'next/navigation';
 
-import {
-    getMerchant,
-    getMerchantPrimaryContact
-} from '@/actions/admin/merchants';
+import { getMerchant } from '@/actions/admin/merchants';
 import { authCheckAdmin } from '@/lib/authCheck';
 import { ParamsSlug } from '@/types/global';
 import MerchantMain from '@/components/merchants/view/MerchantMain';
 import { merchantUsersSearchParamsSchema } from '@/schemas/admin/merchantUsers';
+import { merchantBrandsSearchParamsSchema } from '@/schemas/admin/merchantBrands';
 import { getMerchantUsers } from '@/actions/admin/merchantUsers';
 import { SearchParams } from '@/types/global';
+import { getMerchantBrands } from '@/actions/admin/merchantBrands';
 
 export async function generateMetadata({
     params
@@ -38,14 +37,18 @@ const MerchantDetailsPage = async (props: {
     const { user } = await authCheckAdmin();
     const { data } = await getMerchant(slug);
     if (!data) redirect('/merchant/merchants');
-    const { data: primaryContact } = await getMerchantPrimaryContact(data.id);
-    let search = merchantUsersSearchParamsSchema.parse(
+    let searchUsers = merchantUsersSearchParamsSchema.parse(
+        await props.searchParams
+    );
+    let searchBrands = merchantBrandsSearchParamsSchema.parse(
         await props.searchParams
     );
 
-    search = { ...search, merchantId: data.id };
+    searchUsers = { ...searchUsers, merchantId: data.id };
+    searchBrands = { ...searchBrands, merchantId: data.id };
 
-    const merchantUsersPromise = getMerchantUsers(search);
+    const merchantUsersPromise = getMerchantUsers(searchUsers);
+    const merchantBrandsPromise = getMerchantBrands(searchBrands);
 
     return (
         <div>
@@ -58,7 +61,7 @@ const MerchantDetailsPage = async (props: {
                         merchant={data}
                         merchantUsersPromise={merchantUsersPromise}
                         user={user}
-                        primaryContact={primaryContact}
+                        merchantBrandsPromise={merchantBrandsPromise}
                     />
                 </div>
             </div>

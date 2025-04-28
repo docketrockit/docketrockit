@@ -6,7 +6,7 @@ import { revalidatePath } from 'next/cache';
 import { type User as UserType } from '@prisma/client';
 
 import db from '@/lib/db';
-import { GetAdminUsersSchema } from '@/types/adminUsers';
+import { GetAdminUsersSchema } from '@/types/adminUser';
 import { buildAdminUserWhere, buildOrderBy } from '@/lib/adminUserLib';
 import { authCheckAdmin } from '@/lib/authCheck';
 import { getErrorMessage } from '@/lib/handleError';

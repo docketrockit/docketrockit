@@ -362,30 +362,31 @@ export const getMerchant = async (slug: string) => {
         },
         include: {
             state: true,
-            country: true
+            country: true,
+            primaryContact: true
         }
     });
 
     return { data };
 };
 
-export const getMerchantPrimaryContact = async (merchantId: string) => {
-    const { user } = await authCheckAdmin();
-    if (!user)
-        return {
-            data: null
-        };
+// export const getMerchantPrimaryContact = async (merchantId: string) => {
+//     const { user } = await authCheckAdmin();
+//     if (!user)
+//         return {
+//             data: null
+//         };
 
-    const data = await db.user.findFirst({
-        where: { merchantUser: { merchantId, primaryContact: true } },
-        select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            email: true,
-            phoneNumber: true
-        }
-    });
+//     const data = await db.user.findFirst({
+//         where: { merchantUser: { merchantId, primaryContact: true } },
+//         select: {
+//             id: true,
+//             firstName: true,
+//             lastName: true,
+//             email: true,
+//             phoneNumber: true
+//         }
+//     });
 
-    return { data };
-};
+//     return { data };
+// };

@@ -8,14 +8,16 @@ import {
     TabsTrigger
 } from '@/components/ui/sliding-underline-tabs';
 import { motion } from 'framer-motion';
-import { MerchantUsersTableProps } from '@/types/merchantUsers';
+import { MerchantTabsProps } from '@/types/merchant';
 import { MerchantUsersTable } from './users/MerchantUsersTable';
+import { MerchantBrandsTable } from './brands/MerchantBrandsTable';
 
 const MerchantTabs = ({
     merchantUsersPromise,
+    merchantBrandsPromise,
     merchant,
     user
-}: MerchantUsersTableProps) => {
+}: MerchantTabsProps) => {
     const [activeTab, setActiveTab] = useState('users');
     const [underlineWidth, setUnderlineWidth] = useState(0);
     const [underlineLeft, setUnderlineLeft] = useState(0);
@@ -79,12 +81,10 @@ const MerchantTabs = ({
                 />
             </TabsContent>
             <TabsContent value="brands" className="mt-4">
-                <div className="space-y-2">
-                    <h3 className="text-lg font-medium">Password Settings</h3>
-                    <p className="text-sm text-muted-foreground">
-                        Change your password and security preferences.
-                    </p>
-                </div>
+                <MerchantBrandsTable
+                    merchantBrandsPromise={merchantBrandsPromise}
+                    user={user}
+                />
             </TabsContent>
         </Tabs>
     );

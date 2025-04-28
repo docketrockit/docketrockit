@@ -1,10 +1,9 @@
 'use client';
 
-import { useState } from 'react';
 import { DotsHorizontalIcon, CheckCircledIcon } from '@radix-ui/react-icons';
 import { type ColumnDef, type Row } from '@tanstack/react-table';
-import { MerchantRole } from '@prisma/client';
 import parsePhoneNumber from 'libphonenumber-js';
+import Link from 'next/link';
 
 import { formatDate } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -13,28 +12,19 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuTrigger,
-    DropdownMenuSeparator
+    DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import { DataTableColumnHeader } from '@/components/datatable/DataTableColumnHeader';
 
 import { getStatusIcon } from '@/lib/utils';
-import { UpdateMerchantUserSheet } from './UpdateMerchantUserSheet';
-import UserResetPasswordDialog from './UserResetPasswordDialog';
-import UserResetTwoFactorDialog from './UserResetTwoFactorDialog';
-import { useAlertDialog } from '@/hooks/useAlertDialog';
-import { MerchantUser } from '@/types/merchantUser';
+import { MerchantBrand } from '@/types/merchantBrand';
 import { User } from '@/lib/user';
 
 export const getColumns = ({
-    merchantId,
-    merchantSlug,
     user
 }: {
-    merchantId: string;
-    merchantSlug: string;
     user: User;
-}): ColumnDef<MerchantUser>[] => {
+}): ColumnDef<MerchantBrand>[] => {
     const hasAccessToActions =
         user.adminUser?.adminRole.includes('ADMIN') ||
         user.adminUser?.adminRole.includes('ACCOUNTS');
@@ -67,7 +57,7 @@ export const getColumns = ({
             enableHiding: false
         },
         {
-            accessorKey: 'firstName',
+            accessorKey: 'name',
             header: ({ column }) => (
                 <DataTableColumnHeader column={column} title="Name" />
             ),
@@ -75,14 +65,14 @@ export const getColumns = ({
                 return (
                     <div className="flex space-x-2">
                         <span className="max-w-[31.25rem] truncate font-medium">
-                            {`${row.original.firstName} ${row.original.lastName}`}
+                            {row.original.name}
                         </span>
                     </div>
                 );
             }
         },
         {
-            accessorKey: 'email',
+            accessorKey: 'tradingAsName',
             header: ({ column }) => (
                 <DataTableColumnHeader column={column} title="Email" />
             ),
@@ -90,7 +80,7 @@ export const getColumns = ({
                 return (
                     <div className="flex space-x-2">
                         <span className="max-w-[31.25rem] truncate font-medium">
-                            {row.original.email}
+                            {row.original.tradingAsName}
                         </span>
                     </div>
                 );
@@ -125,7 +115,7 @@ export const getColumns = ({
                 />
             ),
             cell: ({ row }) => {
-                if (row.original.primaryContactMerchant) {
+                if (row.original.primaryContact) {
                     return (
                         <div className="flex w-[6.25rem] items-center">
                             <CheckCircledIcon
@@ -136,64 +126,6 @@ export const getColumns = ({
                     );
                 }
             }
-        },
-        {
-            accessorKey: 'jobTitle',
-            header: ({ column }) => (
-                <DataTableColumnHeader column={column} title="Job Title" />
-            ),
-            cell: ({ row }) => {
-                return (
-                    <div className="flex space-x-2">
-                        <span className="max-w-[31.25rem] truncate font-medium">
-                            {row.original.merchantUser?.jobTitle}
-                        </span>
-                    </div>
-                );
-            }
-        },
-        {
-            id: 'merchantRole',
-            accessorFn: (row) => row.merchantUser?.merchantRole ?? [],
-            header: ({ column }) => (
-                <DataTableColumnHeader column={column} title="Access" />
-            ),
-            cell: ({ row }) => {
-                const merchantRoles = row.original.merchantUser
-                    ?.merchantRole as MerchantRole[];
-
-                if (!merchantRoles || !Array.isArray(merchantRoles))
-                    return null;
-
-                return (
-                    <>
-                        {merchantRoles.map((role) => (
-                            <div
-                                key={role}
-                                className="flex w-[6.25rem] items-center"
-                            >
-                                <span className="capitalize">{role}</span>
-                            </div>
-                        ))}
-                    </>
-                );
-            },
-            // filterFn: (row, id, value) => {
-            //     return Array.isArray(value) && value.includes(row.getValue(id));
-            // }
-            filterFn: (row, columnId, filterValue: string[]) => {
-                const userRoles = row.original.merchantUser?.merchantRole ?? [];
-                const rolesToFilter = Array.isArray(filterValue)
-                    ? filterValue
-                    : [filterValue];
-                return rolesToFilter.some((role) =>
-                    userRoles.includes(role as MerchantRole)
-                );
-                // return filterValue.some((role) =>
-                //     userRoles.includes(role as AdminRole)
-                // );
-            },
-            enableColumnFilter: true
         },
         {
             accessorKey: 'status',
@@ -232,41 +164,13 @@ export const getColumns = ({
             ? [
                   {
                       id: 'actions',
-                      cell: function Cell({ row }: { row: Row<MerchantUser> }) {
-                          const [
-                              showUpdateAdminUserSheet,
-                              setShowUpdateAdminUserSheet
-                          ] = useState(false);
-
-                          const {
-                              isOpen: isResetPasswordDialogOpen,
-                              openDialog: openResetPasswordDialog,
-                              setIsOpen: setResetPasswordDialogOpen
-                          } = useAlertDialog();
-                          const {
-                              isOpen: isResetTwoFactorDialogOpen,
-                              openDialog: openResetTwoFactorDialog,
-                              setIsOpen: setResetTwoFactorDialogOpen
-                          } = useAlertDialog();
+                      cell: function Cell({
+                          row
+                      }: {
+                          row: Row<MerchantBrand>;
+                      }) {
                           return (
                               <>
-                                  <UpdateMerchantUserSheet
-                                      open={showUpdateAdminUserSheet}
-                                      onOpenChange={setShowUpdateAdminUserSheet}
-                                      user={row.original}
-                                      merchantId={merchantId}
-                                      merchantSlug={merchantSlug}
-                                  />
-                                  <UserResetPasswordDialog
-                                      isOpen={isResetPasswordDialogOpen}
-                                      onOpenChange={setResetPasswordDialogOpen}
-                                      user={row.original}
-                                  />
-                                  <UserResetTwoFactorDialog
-                                      isOpen={isResetTwoFactorDialogOpen}
-                                      onOpenChange={setResetTwoFactorDialogOpen}
-                                      user={row.original}
-                                  />
                                   <DropdownMenu>
                                       <DropdownMenuTrigger asChild>
                                           <Button
@@ -284,29 +188,13 @@ export const getColumns = ({
                                           align="end"
                                           className="w-40"
                                       >
-                                          <DropdownMenuItem
-                                              onSelect={() =>
-                                                  setShowUpdateAdminUserSheet(
-                                                      true
-                                                  )
-                                              }
-                                          >
-                                              Edit
-                                          </DropdownMenuItem>
-                                          <DropdownMenuSeparator />
-                                          <DropdownMenuItem
-                                              onSelect={() =>
-                                                  openResetPasswordDialog()
-                                              }
-                                          >
-                                              Reset Password
-                                          </DropdownMenuItem>
-                                          <DropdownMenuItem
-                                              onSelect={() =>
-                                                  openResetTwoFactorDialog()
-                                              }
-                                          >
-                                              Reset Two Factor
+                                          <DropdownMenuItem>
+                                              <Link
+                                                  href={`/admin/merchants/brands/edit/${row.original.slug}`}
+                                                  className="cursor-pointer hover:underline"
+                                              >
+                                                  Edit
+                                              </Link>
                                           </DropdownMenuItem>
                                       </DropdownMenuContent>
                                   </DropdownMenu>

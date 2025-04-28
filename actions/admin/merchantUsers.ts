@@ -6,7 +6,7 @@ import { revalidatePath } from 'next/cache';
 import { type User as UserType } from '@prisma/client';
 
 import db from '@/lib/db';
-import { GetMerchantUsersSchema } from '@/types/merchantUsers';
+import { GetMerchantUsersSchema } from '@/types/merchantUser';
 import { authCheckAdmin } from '@/lib/authCheck';
 import { getErrorMessage } from '@/lib/handleError';
 import {
@@ -69,7 +69,7 @@ export const getMerchantUsers = async (input: GetMerchantUsersSchema) => {
 
         const data = await db.user.findMany({
             where,
-            include: { merchantUser: true },
+            include: { primaryContactMerchant: true, merchantUser: true },
             skip: offset,
             take: per_page,
             orderBy
@@ -200,9 +200,9 @@ export const createMerchantUser = async (
             });
         }
         if (primaryContact) {
-            await db.merchantUser.updateMany({
-                where: { merchantId, primaryContact: true },
-                data: { primaryContact: false }
+            await db.merchant.updateMany({
+                where: { id: merchantId },
+                data: { primaryContactId: userId }
             });
         }
 
@@ -212,7 +212,6 @@ export const createMerchantUser = async (
             data: {
                 jobTitle,
                 merchantRole,
-                primaryContact,
                 userId,
                 merchantId
             }
@@ -263,6 +262,12 @@ export const updateMerchantUser = async (
                 error: getErrorMessage('Too many requests')
             };
         }
+        const merchant = await db.merchant.findUnique({
+            where: { id: merchantId }
+        });
+        if (!merchant) {
+            return { data: null, error: getErrorMessage('Invalid fields') };
+        }
         const validatedFields = MerchantUserSchemaUpdate.safeParse(values);
 
         if (!validatedFields.success) {
@@ -288,10 +293,17 @@ export const updateMerchantUser = async (
             };
         }
         if (primaryContact) {
-            await db.merchantUser.updateMany({
-                where: { merchantId, primaryContact: true },
-                data: { primaryContact: false }
+            await db.merchant.updateMany({
+                where: { id: merchantId },
+                data: { primaryContactId: id }
             });
+        } else {
+            if (id === merchant.primaryContactId) {
+                await db.merchant.updateMany({
+                    where: { id: merchantId },
+                    data: { primaryContactId: null }
+                });
+            }
         }
         await db.user.update({
             where: { id },
@@ -304,8 +316,7 @@ export const updateMerchantUser = async (
                 merchantUser: {
                     update: {
                         jobTitle,
-                        merchantRole,
-                        primaryContact
+                        merchantRole
                     }
                 }
             }

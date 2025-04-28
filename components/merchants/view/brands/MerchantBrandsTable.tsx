@@ -2,7 +2,6 @@
 'use memo';
 
 import { use, useMemo } from 'react';
-import { MerchantRole } from '@prisma/client';
 
 import { type DataTableFilterField } from '@/types/data-table';
 import { statusLabels } from '@/types/global';
@@ -13,28 +12,25 @@ import { DataTable } from '@/components/datatable/DataTable';
 import { DataTableToolbar } from '@/components/datatable/DataTableToolbar';
 
 import { getStatusIcon } from '@/lib/utils';
-import { getColumns } from './MerchantUsersTableColumns';
-import { MerchantUsersTableFloatingBar } from './MerchantUsersTableFloatingBar';
-import { useMerchantUsersTable } from './MerchantUsersTableProviders';
-import { MerchantUsersTableToolbarActions } from './MerchantUsersTableToolbarActions';
-import { MerchantUsersTableProps, MerchantUser } from '@/types/merchantUser';
+import { getColumns } from './MerchantBrandsTableColumns';
+import { MerchantBrandsTableFloatingBar } from './MerchantBrandsTableFloatingBar';
+import { useMerchantBrandsTable } from './MerchantBrandsTableProviders';
+import { MerchantBrandsTableToolbarActions } from './MerchantBrandsTableToolbarActions';
+import { MerchantBrandsTableProps, MerchantBrand } from '@/types/merchantBrand';
 
-export const MerchantUsersTable = ({
-    merchantUsersPromise,
-    merchant,
+export const MerchantBrandsTable = ({
+    merchantBrandsPromise,
     user
-}: MerchantUsersTableProps) => {
+}: MerchantBrandsTableProps) => {
     // Feature flags for showcasing some additional features. Feel free to remove them.
-    const { featureFlags } = useMerchantUsersTable();
+    const { featureFlags } = useMerchantBrandsTable();
 
-    const { data, pageCount } = use(merchantUsersPromise);
+    const { data, pageCount } = use(merchantBrandsPromise);
 
     // Memoize the columns so they don't re-render on every render
     const columns = useMemo(
         () =>
             getColumns({
-                merchantId: merchant.id,
-                merchantSlug: merchant.slug,
                 user
             }),
         []
@@ -57,17 +53,16 @@ export const MerchantUsersTable = ({
             .replace(/_/g, ' ')
             .replace(/\b\w/g, (c) => c.toUpperCase());
 
-    const merchantRoleOptions = Object.values(MerchantRole).map((role) => ({
-        label: formatRoleLabel(role),
-        value: role,
-        withCount: true
-    }));
-
-    const filterFields: DataTableFilterField<MerchantUser>[] = [
+    const filterFields: DataTableFilterField<MerchantBrand>[] = [
         {
             label: 'Search Names...',
-            value: 'firstName',
+            value: 'name',
             placeholder: 'Search names...'
+        },
+        {
+            label: 'Search Trading Names...',
+            value: 'tradingAsName',
+            placeholder: 'Search trading names...'
         },
         {
             label: 'Status',
@@ -89,7 +84,7 @@ export const MerchantUsersTable = ({
         filterFields,
         enableAdvancedFilter: featureFlags.includes('advancedFilter'),
         initialState: {
-            sorting: [{ id: 'firstName', desc: false }],
+            sorting: [{ id: 'name', desc: false }],
             columnPinning: { right: ['actions'] }
         },
         // For remembering the previous row selection on page change
@@ -103,7 +98,7 @@ export const MerchantUsersTable = ({
             table={table}
             floatingBar={
                 featureFlags.includes('floatingBar') ? (
-                    <MerchantUsersTableFloatingBar table={table} />
+                    <MerchantBrandsTableFloatingBar table={table} />
                 ) : null
             }
         >
@@ -112,16 +107,16 @@ export const MerchantUsersTable = ({
                     table={table}
                     filterFields={filterFields}
                 >
-                    <MerchantUsersTableToolbarActions
+                    <MerchantBrandsTableToolbarActions
                         table={table}
-                        merchant={merchant}
+                        user={user}
                     />
                 </DataTableAdvancedToolbar>
             ) : (
                 <DataTableToolbar table={table} filterFields={filterFields}>
-                    <MerchantUsersTableToolbarActions
+                    <MerchantBrandsTableToolbarActions
                         table={table}
-                        merchant={merchant}
+                        user={user}
                     />
                 </DataTableToolbar>
             )}

@@ -6,7 +6,7 @@ import { exportTableToCSV } from '@/lib/export';
 import { Button } from '@/components/ui/button';
 
 import { CreateMerchantUserDialog } from './CreateMerchantUserDialog';
-import { MerchantUsersTableToolbarActionsProps } from '@/types/merchantUsers';
+import { MerchantUsersTableToolbarActionsProps } from '@/types/merchantUser';
 
 export const MerchantUsersTableToolbarActions = ({
     table,

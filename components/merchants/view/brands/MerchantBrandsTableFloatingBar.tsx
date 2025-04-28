@@ -24,15 +24,15 @@ import {
 } from '@/components/ui/tooltip';
 import { Kbd } from '@/components/common/kbd';
 import { statusLabels } from '@/types/global';
-import { updateMerchantUsers } from '@/actions/admin/merchantUsers';
+import { updateMerchantBrands } from '@/actions/admin/merchantBrands';
 import {
-    MerchantUsersTableFloatingBarProps,
-    MerchantUser
-} from '@/types/merchantUser';
+    MerchantBrandsTableFloatingBarProps,
+    MerchantBrand
+} from '@/types/merchantBrand';
 
-export const MerchantUsersTableFloatingBar = ({
+export const MerchantBrandsTableFloatingBar = ({
     table
-}: MerchantUsersTableFloatingBarProps) => {
+}: MerchantBrandsTableFloatingBarProps) => {
     const rows = table.getFilteredSelectedRowModel().rows;
 
     const [isPending, startTransition] = useTransition();
@@ -92,25 +92,24 @@ export const MerchantUsersTableFloatingBar = ({
                     />
                     <div className="flex items-center gap-1.5">
                         <Select
-                            onValueChange={(value: MerchantUser['status']) => {
+                            onValueChange={(value: MerchantBrand['status']) => {
                                 setMethod('update-status');
 
                                 startTransition(async () => {
-                                    const { error } = await updateMerchantUsers(
-                                        {
+                                    const { error } =
+                                        await updateMerchantBrands({
                                             ids: rows.map(
                                                 (row) => row.original.id
                                             ),
                                             status: value
-                                        }
-                                    );
+                                        });
 
                                     if (error) {
                                         toast.error(error);
                                         return;
                                     }
 
-                                    toast.success('Users updated');
+                                    toast.success('Brands updated');
                                 });
                             }}
                         >
@@ -191,7 +190,7 @@ export const MerchantUsersTableFloatingBar = ({
                                 </Button>
                             </TooltipTrigger>
                             <TooltipContent className="border bg-accent font-semibold text-foreground dark:bg-zinc-900">
-                                <p>Export users</p>
+                                <p>Export brands</p>
                             </TooltipContent>
                         </Tooltip>
                     </div>

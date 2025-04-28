@@ -1,24 +1,15 @@
 import * as z from 'zod';
 import { Country, State } from '@prisma/client';
-import { Prisma } from '@prisma/client';
+import { Prisma, Merchant } from '@prisma/client';
 
 import { merchantsSearchParamsSchema } from '@/schemas/admin/merchants';
 import { getMerchantUsers } from '@/actions/admin/merchantUsers';
 import { User } from '@/lib/user';
 import { type getMerchants } from '@/actions/admin/merchants';
+import { getMerchantBrands } from '@/actions/admin/merchantBrands';
 
 type MerchantData = Prisma.MerchantGetPayload<{
-    include: { state: true; country: true };
-}>;
-
-type PrimaryContact = Prisma.UserGetPayload<{
-    select: {
-        id: true;
-        firstName: true;
-        lastName: true;
-        email: true;
-        phoneNumber: true;
-    };
+    include: { state: true; country: true; primaryContact: true };
 }>;
 
 export interface AddMerchantFormProps {
@@ -38,8 +29,8 @@ export interface EditMerchantFormProps {
 export interface MerchantMainProps {
     merchant: MerchantData;
     merchantUsersPromise: ReturnType<typeof getMerchantUsers>;
+    merchantBrandsPromise: ReturnType<typeof getMerchantBrands>;
     user: User;
-    primaryContact: PrimaryContact | null;
 }
 
 export type MerchantsFilterInput = {
@@ -54,5 +45,12 @@ export type GetMerchantsSchema = z.infer<typeof merchantsSearchParamsSchema>;
 
 export interface MerchantsTableProps {
     merchantsPromise: ReturnType<typeof getMerchants>;
+    user: User;
+}
+
+export interface MerchantTabsProps {
+    merchantUsersPromise: ReturnType<typeof getMerchantUsers>;
+    merchantBrandsPromise: ReturnType<typeof getMerchantBrands>;
+    merchant: Merchant;
     user: User;
 }

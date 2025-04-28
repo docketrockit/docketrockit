@@ -70,6 +70,8 @@ model User {
   session                  Session[]
   emailVerificationRequest EmailVerificationRequest[]
   passwordResetSession     PasswordResetSession[]
+  primaryContactMerchant   Merchant?
+  primaryContactBrand      Brand[]
 
   @@unique([email])
 }
@@ -122,17 +124,16 @@ model Consumer {
 }
 
 model MerchantUser {
-  id             String         @id @default(cuid())
-  jobTitle       String
-  primaryContact Boolean
-  merchant       Merchant       @relation(fields: [merchantId], references: [id], onDelete: Cascade)
-  merchantId     String
-  merchantRole   MerchantRole[]
-  brands         Brand[]
-  user           User           @relation(fields: [userId], references: [id])
-  userId         String         @unique
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
+  id           String         @id @default(cuid())
+  jobTitle     String
+  merchant     Merchant       @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  merchantId   String
+  merchantRole MerchantRole[]
+  brands       Brand[]
+  user         User           @relation(fields: [userId], references: [id])
+  userId       String         @unique
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
 }
 
 model AdminUser {
@@ -173,28 +174,30 @@ model State {
 }
 
 model Merchant {
-  id           String         @id @default(cuid())
-  name         String
-  slug         String         @unique
-  status       Status         @default(PENDING)
-  phoneNumber  String
-  genericEmail String
-  invoiceEmail String?
-  address1     String
-  address2     String?
-  suburb       String
-  postcode     String
-  state        State          @relation(fields: [stateId], references: [id], onDelete: Cascade)
-  stateId      String
-  country      Country        @relation(fields: [countryId], references: [id], onDelete: Cascade)
-  countryId    String
-  abn          String
-  acn          String
-  logoUrl      String?
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  brands       Brand[]
-  merchantUser MerchantUser[]
+  id               String         @id @default(cuid())
+  name             String
+  slug             String         @unique
+  status           Status         @default(PENDING)
+  phoneNumber      String
+  genericEmail     String
+  invoiceEmail     String?
+  address1         String
+  address2         String?
+  suburb           String
+  postcode         String
+  state            State          @relation(fields: [stateId], references: [id], onDelete: Cascade)
+  stateId          String
+  country          Country        @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  countryId        String
+  abn              String
+  acn              String
+  logoUrl          String?
+  primaryContact   User?          @relation(fields: [primaryContactId], references: [id]) // references `id` of `Profile`
+  primaryContactId String?        @unique
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  brands           Brand[]
+  merchantUser     MerchantUser[]
 }
 
 model Brand {
@@ -203,6 +206,7 @@ model Brand {
   merchant         Merchant       @relation(fields: [merchantId], references: [id], onDelete: Cascade)
   merchantId       String
   name             String
+  slug             String         @unique
   tradingAsName    String
   logoUrl          String
   address1         String
@@ -213,14 +217,13 @@ model Brand {
   stateId          String
   country          Country        @relation(fields: [countryId], references: [id], onDelete: Cascade)
   countryId        String
-  formattedAddress String
-  latitude         Float
-  longitude        Float
   abn              String?
   acn              String?
   phoneNumber      String
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
+  primaryContact   User?          @relation(fields: [primaryContactId], references: [id]) // references `id` of `Profile`
+  primaryContactId String?        @unique
   stores           Store[]
   merchantUsers    MerchantUser[]
 }

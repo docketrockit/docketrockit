@@ -12,10 +12,12 @@ import MerchantTabs from './MerchantTabs';
 const MerchantMain = ({
     merchant,
     merchantUsersPromise,
-    user,
-    primaryContact
+    merchantBrandsPromise,
+    user
 }: MerchantMainProps) => {
     if (!merchant) return 'No merchant found';
+
+    const primaryContact = merchant.primaryContact;
 
     let phoneNumber: PhoneNumber | undefined;
 
@@ -236,6 +238,7 @@ const MerchantMain = ({
             <div className="rounded-2xl border border-gray-200 p-5 lg:p-6 dark:border-gray-800 w-full">
                 <MerchantTabs
                     merchantUsersPromise={merchantUsersPromise}
+                    merchantBrandsPromise={merchantBrandsPromise}
                     merchant={merchant}
                     user={user}
                 />

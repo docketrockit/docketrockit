@@ -41,7 +41,7 @@ import { MultiSelect } from '@/components/ui/multi-select';
 import { MerchantRoleLabels } from '@/types/user';
 import { MerchantUserSchemaUpdate } from '@/schemas/users';
 import { cn } from '@/lib/utils';
-import { MerchantUser } from '@/types/merchantUsers';
+import { MerchantUser } from '@/types/merchantUser';
 import { updateMerchantUser } from '@/actions/admin/merchantUsers';
 import { PhoneInput } from '@/components/ui/phone-input';
 
@@ -74,7 +74,7 @@ export const UpdateMerchantUserSheet = ({
             email: user.email,
             jobTitle: user.merchantUser?.jobTitle,
             merchantRole: user.merchantUser?.merchantRole,
-            primaryContact: user.merchantUser?.primaryContact,
+            primaryContact: user.primaryContactMerchant !== null,
             phoneNumber: user.phoneNumber || '',
             status: user.status
         }
@@ -87,7 +87,7 @@ export const UpdateMerchantUserSheet = ({
             email: user.email,
             jobTitle: user.merchantUser?.jobTitle,
             merchantRole: user.merchantUser?.merchantRole,
-            primaryContact: user.merchantUser?.primaryContact,
+            primaryContact: user.primaryContactMerchant !== null,
             phoneNumber: user.phoneNumber || '',
             status: user.status
         });

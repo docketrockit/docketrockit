@@ -1,27 +1,18 @@
 'use client';
 
 import { DownloadIcon, PlusIcon } from '@radix-ui/react-icons';
-import { type Table } from '@tanstack/react-table';
-import { AdminRole } from '@prisma/client';
 import Link from 'next/link';
+import { AdminRole } from '@prisma/client';
 
 import { exportTableToCSV } from '@/lib/export';
 import { Button } from '@/components/ui/button';
-import { getMerchants } from '@/actions/admin/merchants';
-import { User } from '@/lib/user';
 
-type GetMerchantsResponse = Awaited<ReturnType<typeof getMerchants>>;
-type Merchant = GetMerchantsResponse['data'][number];
+import { MerchantBrandsTableToolbarActionsProps } from '@/types/merchantBrand';
 
-interface MerchantsTableToolbarActionsProps {
-    table: Table<Merchant>;
-    user: User;
-}
-
-export const MerchantsTableToolbarActions = ({
+export const MerchantBrandsTableToolbarActions = ({
     table,
     user
-}: MerchantsTableToolbarActionsProps) => {
+}: MerchantBrandsTableToolbarActionsProps) => {
     return (
         <div className="flex items-center gap-2">
             {[AdminRole.ADMIN, AdminRole.SALES].some((role) =>
@@ -34,17 +25,16 @@ export const MerchantsTableToolbarActions = ({
                         className="cursor-pointer"
                     >
                         <PlusIcon className="mr-2 size-4" aria-hidden="true" />
-                        New merchant
+                        New brand
                     </Button>
                 </Link>
             )}
             <Button
                 variant="outline"
-                className="cursor-pointer"
                 size="sm"
                 onClick={() =>
                     exportTableToCSV(table, {
-                        filename: 'merchants',
+                        filename: 'merchantbrands',
                         excludeColumns: ['select', 'actions']
                     })
                 }

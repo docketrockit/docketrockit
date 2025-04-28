@@ -2,8 +2,8 @@ import { Status } from '@prisma/client';
 
 import { Session } from '@/lib/session';
 import { User } from '@/lib/user';
-import { AdminUser } from '@/types/adminUsers';
-import { MerchantUser } from '@/types/merchantUsers';
+import { AdminUser } from '@/types/adminUser';
+import { MerchantUser } from '@/types/merchantUser';
 
 export interface SessionUserProps {
     session: Session;
