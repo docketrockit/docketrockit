@@ -234,7 +234,8 @@ export const getUserFromEmail = async (email: string): Promise<User | null> => {
     if (row.merchantUser) {
         user.merchantUser = {
             jobTitle: row.merchantUser.jobTitle,
-            primaryContact: row.merchantUser.primaryContact,
+            primaryContact:
+                row.merchantUser.merchant.primaryContactId === user.id,
             merchant: row.merchantUser.merchant.name,
             merchantId: row.merchantUser.merchantId,
             brands: row.merchantUser.brands,

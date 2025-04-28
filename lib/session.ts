@@ -88,7 +88,8 @@ export const validateSessionToken = async (
     if (row.user.merchantUser) {
         user.merchantUser = {
             jobTitle: row.user.merchantUser.jobTitle,
-            primaryContact: row.user.merchantUser.primaryContact,
+            primaryContact:
+                row.user.merchantUser.merchant.primaryContactId === user.id,
             merchant: row.user.merchantUser.merchant.name,
             merchantId: row.user.merchantUser.merchantId,
             brands: row.user.merchantUser.brands,

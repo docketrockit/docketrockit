@@ -1,5 +1,5 @@
 import db from './db';
-import { MerchantUser } from '@/types/merchantUsers';
+import { MerchantUser } from '@/types/merchantUser';
 
 export const verifyEmailInput = (email: string): boolean => {
     return /^.+@.+\..+$/.test(email) && email.length < 256;
@@ -22,7 +22,7 @@ export const checkMerchantEmailAvailability = async (
         where: {
             email
         },
-        include: { merchantUser: true }
+        include: { merchantUser: true, primaryContactMerchant: true }
     });
     if (!user) {
         return 'New';
