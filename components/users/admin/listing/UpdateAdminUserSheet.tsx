@@ -32,7 +32,7 @@ import { AdminRoleLabels } from '@/types/user';
 import { updateAdminUser } from '@/actions/admin/adminUsers';
 import { AdminUserSchemaUpdate } from '@/schemas/users';
 import { cn } from '@/lib/utils';
-import { AdminUser } from '@/types/adminUsers';
+import { AdminUser } from '@/types/adminUser';
 import { PhoneInput } from '@/components/ui/phone-input';
 
 interface UpdateTaskSheetProps
