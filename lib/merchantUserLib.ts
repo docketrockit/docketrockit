@@ -1,6 +1,6 @@
 import { Prisma, User, MerchantUser } from '@prisma/client';
 import { filterColumn } from './filterColumn';
-import { MerchantUsersFilterInput } from '@/types/merchantUsers';
+import { MerchantUsersFilterInput } from '@/types/merchantUser';
 
 export const buildMerchantUserWhere = (
     input: MerchantUsersFilterInput

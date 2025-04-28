@@ -1,6 +1,6 @@
 import { Prisma, User, AdminUser } from '@prisma/client';
 import { filterColumn } from './filterColumn';
-import { AdminUsersFilterInput } from '@/types/adminUsers';
+import { AdminUsersFilterInput } from '@/types/adminUser';
 
 export const buildAdminUserWhere = (
     input: AdminUsersFilterInput
