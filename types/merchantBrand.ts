@@ -1,7 +1,7 @@
 import * as z from 'zod';
 
 import { merchantBrandsSearchParamsSchema } from '@/schemas/admin/merchantBrands';
-import { Prisma } from '@prisma/client';
+import { Prisma, Merchant } from '@prisma/client';
 import { type Table } from '@tanstack/react-table';
 
 import { getMerchantBrands } from '@/actions/admin/merchantBrands';
@@ -29,6 +29,7 @@ export type MerchantBrand = Prisma.BrandGetPayload<{
 export interface MerchantBrandsTableProps {
     merchantBrandsPromise: ReturnType<typeof getMerchantBrands>;
     user: User;
+    merchant: Merchant;
 }
 
 export interface MerchantBrandsTableFloatingBarProps {
@@ -38,4 +39,5 @@ export interface MerchantBrandsTableFloatingBarProps {
 export interface MerchantBrandsTableToolbarActionsProps {
     table: Table<MerchantBrand>;
     user: User;
+    slug: string;
 }

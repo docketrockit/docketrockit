@@ -11,14 +11,15 @@ import { MerchantBrandsTableToolbarActionsProps } from '@/types/merchantBrand';
 
 export const MerchantBrandsTableToolbarActions = ({
     table,
-    user
+    user,
+    slug
 }: MerchantBrandsTableToolbarActionsProps) => {
     return (
         <div className="flex items-center gap-2">
             {[AdminRole.ADMIN, AdminRole.SALES].some((role) =>
                 user.adminUser?.adminRole.includes(role)
             ) && (
-                <Link href="/merchant/merchants/add">
+                <Link href={`/admin/brands/add?merchant=${slug}`}>
                     <Button
                         variant="outline"
                         size="sm"

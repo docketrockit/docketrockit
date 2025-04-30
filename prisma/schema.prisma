@@ -202,15 +202,17 @@ model Merchant {
 
 model Brand {
   id               String         @id @default(cuid())
-  status           Status
+  status           Status         @default(PENDING)
   merchant         Merchant       @relation(fields: [merchantId], references: [id], onDelete: Cascade)
   merchantId       String
   name             String
   slug             String         @unique
+  genericEmail     String
+  invoiceEmail     String?
   tradingAsName    String
   logoUrl          String
   address1         String
-  address2         String
+  address2         String?
   suburb           String
   postcode         String
   state            State          @relation(fields: [stateId], references: [id], onDelete: Cascade)

@@ -29,25 +29,27 @@ import {
     PopoverTrigger
 } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
-import { AddMerchantSchema } from '@/schemas/admin/merchants';
+import { AddBrandSchema } from '@/schemas/brands';
 import FormError from '@/components/form/FormError';
 import ComponentCard from '@/components/common/ComponentCard';
 import { cn } from '@/lib/utils';
 import { FormInput } from '@/components/form/FormInputs';
 import { SubmitButton } from '@/components/form/Buttons';
-import { createMerchant } from '@/actions/admin/merchants';
 import { uploadImage } from '@/utils/supabase';
 import { PhoneInput } from '@/components/ui/phone-input';
 import { formatABN, formatACN } from '@/utils/businessNumberValidation';
-import AddMerchantLogoUpload from './AddMerchantLogoUpload';
-import { AddMerchantFormProps } from '@/types/merchant';
+import AddBrandLogoUpload from './AddBrandLogoUpload';
+import { AddBrandFormProps } from '@/types/brand';
 import { getStatesByCountry } from '@/data/location';
+import { createBrand } from '@/actions/brands';
 
-const AddMerchantForm = ({
+const AddBrandForm = ({
     countryProp,
     countries,
-    states
-}: AddMerchantFormProps) => {
+    states,
+    merchantSlug,
+    merchants
+}: AddBrandFormProps) => {
     const [error, setError] = useState<string | undefined>('');
     const [success, setSuccess] = useState<boolean>(false);
     const [isPending, startTransition] = useTransition();
@@ -56,13 +58,16 @@ const AddMerchantForm = ({
     const [statesList, setStatesList] = useState<State[]>(states);
     const [openCountry, setOpenCountry] = useState(false);
     const [openState, setOpenState] = useState(false);
+    const [openMerchant, setOpenMerchant] = useState(false);
 
     const errorClass = 'pl-6';
 
-    const form = useForm<z.infer<typeof AddMerchantSchema>>({
-        resolver: zodResolver(AddMerchantSchema),
+    const form = useForm<z.infer<typeof AddBrandSchema>>({
+        resolver: zodResolver(AddBrandSchema),
         defaultValues: {
+            merchantSlug,
             name: '',
+            tradingAsName: '',
             phoneNumber: '',
             genericEmail: '',
             invoiceEmail: '',
@@ -81,13 +86,13 @@ const AddMerchantForm = ({
     const abn = form.watch('abn');
     const acn = form.watch('acn');
 
-    const onSubmit = (values: z.infer<typeof AddMerchantSchema>) => {
+    const onSubmit = (values: z.infer<typeof AddBrandSchema>) => {
         setError('');
         setSuccess(false);
         startTransition(async () => {
             const logoUrl = await uploadImage(values.logoUrl[0].value, 'logos');
             const formData = { ...values, logoUrl: logoUrl.publicUrl };
-            const data = await createMerchant(formData);
+            const data = await createBrand(formData);
             if (!data.data) {
                 setError(data.error);
             }
@@ -120,6 +125,131 @@ const AddMerchantForm = ({
                                 <div className="flex flex-col space-y-6">
                                     <FormField
                                         control={form.control}
+                                        name="merchantSlug"
+                                        render={({ field }) => (
+                                            <FormItem className={cn('w-full')}>
+                                                <FormLabel required={true}>
+                                                    Merchant
+                                                </FormLabel>
+                                                <Popover
+                                                    open={openMerchant}
+                                                    onOpenChange={
+                                                        setOpenMerchant
+                                                    }
+                                                >
+                                                    <PopoverTrigger
+                                                        asChild
+                                                        className="w-full"
+                                                    >
+                                                        <FormControl>
+                                                            <Button
+                                                                variant="outline"
+                                                                role="combobox"
+                                                                aria-expanded={
+                                                                    openMerchant
+                                                                }
+                                                                className="h-12 w-full justify-between rounded-xl px-6 py-3 text-sm font-normal"
+                                                            >
+                                                                {field.value
+                                                                    ? merchants.find(
+                                                                          (
+                                                                              merchant
+                                                                          ) =>
+                                                                              merchant.slug ===
+                                                                              field.value
+                                                                      )?.name
+                                                                    : 'Select Merchant...'}
+                                                                <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                                            </Button>
+                                                        </FormControl>
+                                                    </PopoverTrigger>
+                                                    <PopoverContent className="w-full p-0">
+                                                        <Command
+                                                            className="w-full"
+                                                            filter={(
+                                                                value,
+                                                                search
+                                                            ) => {
+                                                                const item =
+                                                                    merchants.find(
+                                                                        (
+                                                                            item
+                                                                        ) =>
+                                                                            item.slug.toString() ===
+                                                                            value
+                                                                    );
+                                                                if (!item)
+                                                                    return 0;
+                                                                if (
+                                                                    item.name
+                                                                        .toLowerCase()
+                                                                        .includes(
+                                                                            search.toLowerCase()
+                                                                        )
+                                                                )
+                                                                    return 1;
+
+                                                                return 0;
+                                                            }}
+                                                        >
+                                                            <CommandInput
+                                                                placeholder="Search Merchant..."
+                                                                className="h-9 w-full"
+                                                            />
+                                                            <CommandList className="w-full">
+                                                                <CommandEmpty className="w-full">
+                                                                    No merchant
+                                                                    found.
+                                                                </CommandEmpty>
+                                                                <CommandGroup className="w-full">
+                                                                    {merchants.map(
+                                                                        (
+                                                                            merchant
+                                                                        ) => (
+                                                                            <CommandItem
+                                                                                className="w-full"
+                                                                                key={
+                                                                                    merchant.slug
+                                                                                }
+                                                                                value={merchant.slug.toString()}
+                                                                                onSelect={() => {
+                                                                                    form.setValue(
+                                                                                        'merchantSlug',
+                                                                                        merchant.slug
+                                                                                    );
+                                                                                    setOpenMerchant(
+                                                                                        false
+                                                                                    );
+                                                                                }}
+                                                                            >
+                                                                                {
+                                                                                    merchant.name
+                                                                                }
+                                                                                <CheckIcon
+                                                                                    className={cn(
+                                                                                        'ml-auto h-4 w-4',
+                                                                                        merchant.slug ===
+                                                                                            field.value
+                                                                                            ? 'opacity-100'
+                                                                                            : 'opacity-0'
+                                                                                    )}
+                                                                                />
+                                                                            </CommandItem>
+                                                                        )
+                                                                    )}
+                                                                </CommandGroup>
+                                                            </CommandList>
+                                                        </Command>
+                                                    </PopoverContent>
+                                                </Popover>
+                                                <FormMessage
+                                                    className={errorClass}
+                                                />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
                                         name="name"
                                         render={({ field }) => (
                                             <FormItem
@@ -128,7 +258,7 @@ const AddMerchantForm = ({
                                                 )}
                                             >
                                                 <FormLabel required={true}>
-                                                    Merchant Name
+                                                    Brand Name
                                                 </FormLabel>
                                                 <FormControl>
                                                     <FormInput
@@ -136,6 +266,30 @@ const AddMerchantForm = ({
                                                         name="name"
                                                         type="text"
                                                         label="Name"
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="tradingAsName"
+                                        render={({ field }) => (
+                                            <FormItem
+                                                className={cn(
+                                                    'w-full space-y-2'
+                                                )}
+                                            >
+                                                <FormLabel required={true}>
+                                                    Trading as Name
+                                                </FormLabel>
+                                                <FormControl>
+                                                    <FormInput
+                                                        {...field}
+                                                        name="tradingAsName"
+                                                        type="text"
+                                                        label="Trading as Name"
                                                     />
                                                 </FormControl>
                                                 <FormMessage />
@@ -179,7 +333,7 @@ const AddMerchantForm = ({
                                                 <FormControl>
                                                     <FormInput
                                                         {...field}
-                                                        name="email"
+                                                        name="genericEmail"
                                                         type="email"
                                                         label="Generic Email"
                                                     />
@@ -203,7 +357,7 @@ const AddMerchantForm = ({
                                                 <FormControl>
                                                     <FormInput
                                                         {...field}
-                                                        name="email"
+                                                        name="invoiceEmail"
                                                         type="email"
                                                         label="Invoice Email"
                                                     />
@@ -230,13 +384,13 @@ const AddMerchantForm = ({
                                                         name="abn"
                                                         type="text"
                                                         label="ABN"
-                                                        value={formatABN(abn)}
-                                                        onChange={(e) =>
-                                                            form.setValue(
-                                                                'abn',
-                                                                e.target.value
-                                                            )
-                                                        }
+                                                        // value={formatABN(abn)}
+                                                        // onChange={(e) =>
+                                                        //     form.setValue(
+                                                        //         'abn',
+                                                        //         e.target.value
+                                                        //     )
+                                                        // }
                                                     />
                                                 </FormControl>
                                                 <FormMessage />
@@ -261,13 +415,13 @@ const AddMerchantForm = ({
                                                         name="acn"
                                                         type="text"
                                                         label="ACN"
-                                                        value={formatACN(acn)}
-                                                        onChange={(e) =>
-                                                            form.setValue(
-                                                                'acn',
-                                                                e.target.value
-                                                            )
-                                                        }
+                                                        // value={formatACN(acn)}
+                                                        // onChange={(e) =>
+                                                        //     form.setValue(
+                                                        //         'acn',
+                                                        //         e.target.value
+                                                        //     )
+                                                        // }
                                                     />
                                                 </FormControl>
                                                 <FormMessage />
@@ -635,7 +789,7 @@ const AddMerchantForm = ({
                                     </div>
                                     <div className="flex justify-end">
                                         <SubmitButton
-                                            text="Add Merchant"
+                                            text="Add Brand"
                                             isPending={isPending}
                                         />
                                     </div>
@@ -645,7 +799,7 @@ const AddMerchantForm = ({
                     </div>
                     <div className="space-y-6">
                         <ComponentCard>
-                            <AddMerchantLogoUpload />
+                            <AddBrandLogoUpload />
                         </ComponentCard>
                     </div>
                 </div>
@@ -654,4 +808,4 @@ const AddMerchantForm = ({
     );
 };
 
-export default AddMerchantForm;
+export default AddBrandForm;

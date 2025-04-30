@@ -15,7 +15,9 @@ export const AddMerchantSchema = object({
     name: getStringSchema('Name'),
     phoneNumber: getStringSchema('Phone number'),
     genericEmail: getEmailSchema(),
-    invoiceEmail: optional(getEmailSchema()),
+    invoiceEmail: string()
+        .email({ message: 'Invalid email address' })
+        .optional(),
     address1: getStringSchema('Address line 1'),
     address2: optional(getStringSchema('Address line 2')),
     suburb: getStringSchema('Suburb'),
@@ -41,9 +43,11 @@ export const AddMerchantSchemaCreate = object({
     name: getStringSchema('Name'),
     phoneNumber: getStringSchema('Phone number'),
     genericEmail: getEmailSchema(),
-    invoiceEmail: optional(getEmailSchema()),
+    invoiceEmail: string()
+        .email({ message: 'Invalid email address' })
+        .optional(),
     address1: getStringSchema('Address line 1'),
-    address2: optional(getStringSchema('Address line 2')),
+    address2: optional(string()),
     suburb: getStringSchema('Suburb'),
     postcode: getStringSchema('Postcode'),
     state: getStringSchema('State'),
@@ -78,7 +82,7 @@ export const EditMerchantSchema = object({
     genericEmail: getEmailSchema(),
     invoiceEmail: optional(getEmailSchema()),
     address1: getStringSchema('Address line 1'),
-    address2: optional(getStringSchema('Address line 2')),
+    address2: optional(string()),
     suburb: getStringSchema('Suburb'),
     postcode: getStringSchema('Postcode'),
     state: getStringSchema('State'),

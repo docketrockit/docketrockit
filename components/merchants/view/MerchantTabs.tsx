@@ -84,6 +84,7 @@ const MerchantTabs = ({
                 <MerchantBrandsTable
                     merchantBrandsPromise={merchantBrandsPromise}
                     user={user}
+                    merchant={merchant}
                 />
             </TabsContent>
         </Tabs>

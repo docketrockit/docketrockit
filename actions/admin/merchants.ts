@@ -110,7 +110,7 @@ export const createMerchant = async (
         };
     }
 
-    redirect(`/merchant/merchants/${data.slug}`);
+    redirect(`/admin/merchants/${data.slug}`);
 };
 
 export const updateMerchant = async ({
@@ -224,6 +224,22 @@ export const updateMerchant = async ({
     }
 
     redirect(`/merchant/merchants/${data.slug}`);
+};
+
+export const getAllMerchants = async () => {
+    try {
+        const data = await db.merchant.findMany({
+            where: { status: 'APPROVED' },
+            select: { id: true, name: true, slug: true }
+        });
+
+        return { data, error: null };
+    } catch (err) {
+        return {
+            data: null,
+            error: getErrorMessage(err)
+        };
+    }
 };
 
 export const getMerchants = async (input: GetMerchantsSchema) => {

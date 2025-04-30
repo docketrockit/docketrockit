@@ -11,10 +11,10 @@ import { Upload } from 'lucide-react';
 import { FormControl, FormField, FormItem } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { AddMerchantSchema } from '@/schemas/admin/merchants';
+import { AddBrandSchema } from '@/schemas/brands';
 
-const AddMerchantLogoUpload = () => {
-    const form = useFormContext<z.infer<typeof AddMerchantSchema>>();
+const AddBrandLogoUpload = () => {
+    const form = useFormContext<z.infer<typeof AddBrandSchema>>();
     const maxFiles = 1;
     const {
         fields: imageFields,
@@ -154,7 +154,7 @@ const AddMerchantLogoUpload = () => {
                                                         src={URL.createObjectURL(
                                                             field.value
                                                         )}
-                                                        alt="Merchant Logo"
+                                                        alt="Brand Logo"
                                                         width="0"
                                                         height="0"
                                                         sizes="100vw"
@@ -186,4 +186,4 @@ const AddMerchantLogoUpload = () => {
     );
 };
 
-export default AddMerchantLogoUpload;
+export default AddBrandLogoUpload;

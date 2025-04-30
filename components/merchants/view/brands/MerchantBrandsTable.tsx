@@ -20,7 +20,8 @@ import { MerchantBrandsTableProps, MerchantBrand } from '@/types/merchantBrand';
 
 export const MerchantBrandsTable = ({
     merchantBrandsPromise,
-    user
+    user,
+    merchant
 }: MerchantBrandsTableProps) => {
     // Feature flags for showcasing some additional features. Feel free to remove them.
     const { featureFlags } = useMerchantBrandsTable();
@@ -110,6 +111,7 @@ export const MerchantBrandsTable = ({
                     <MerchantBrandsTableToolbarActions
                         table={table}
                         user={user}
+                        slug={merchant.slug}
                     />
                 </DataTableAdvancedToolbar>
             ) : (
@@ -117,6 +119,7 @@ export const MerchantBrandsTable = ({
                     <MerchantBrandsTableToolbarActions
                         table={table}
                         user={user}
+                        slug={merchant.slug}
                     />
                 </DataTableToolbar>
             )}
