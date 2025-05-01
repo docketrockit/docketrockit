@@ -24,7 +24,7 @@ const AddMerchantPage = async () => {
     await authCheck();
     const countries = await getAllCountries();
     const defaultCountry = await getCountryByName('Australia');
-    if (!defaultCountry) return redirect('/merchant/merchants/');
+    if (!defaultCountry) return redirect('/admin/merchants/');
     const states = await getStatesByCountry(defaultCountry.id);
     const country = await getCountryById(defaultCountry.id);
     return (

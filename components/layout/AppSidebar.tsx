@@ -47,7 +47,7 @@ const navItemsAdmin: NavItem[] = [
         subItems: [
             {
                 name: 'View Admin Users',
-                path: '/merchant/users/admin',
+                path: '/admin/users/admin',
                 rolesAllowed: ['ADMIN']
             },
             {

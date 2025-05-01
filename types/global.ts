@@ -29,3 +29,4 @@ export interface UserResetPasswordDialogProps {
 }
 
 export type ParamsSlug = Promise<{ slug: string }>;
+export type ParamsBrand = Promise<{ slug: string; brandSlug: string }>;

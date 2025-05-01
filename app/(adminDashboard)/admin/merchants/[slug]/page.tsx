@@ -36,7 +36,7 @@ const MerchantDetailsPage = async (props: {
     const { slug } = await props.params;
     const { user } = await authCheckAdmin();
     const { data } = await getMerchant(slug);
-    if (!data) redirect('/merchant/merchants');
+    if (!data) redirect('/admin/merchants');
     let searchUsers = merchantUsersSearchParamsSchema.parse(
         await props.searchParams
     );

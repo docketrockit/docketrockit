@@ -1,8 +1,7 @@
 import { redirect } from 'next/navigation';
 
-import { getMerchant } from '@/actions/admin/merchants';
 import PageBreadcrumb from '@/components/common/PageBreadCrumb';
-import EditMerchantForm from '@/components/merchants/edit/EditMerchantForm';
+import EditBrandForm from '@/components/brands/edit/EditBrandForm';
 import { authCheck } from '@/lib/authCheck';
 import { ParamsSlug } from '@/types/global';
 import {
@@ -12,6 +11,7 @@ import {
     getCountryById,
     getStateById
 } from '@/data/location';
+import { getBrand } from '@/actions/brands';
 
 export async function generateMetadata({
     params
@@ -19,11 +19,11 @@ export async function generateMetadata({
     params: Promise<{ slug: string }>;
 }) {
     const { slug } = await params;
-    const { data: merchant } = await getMerchant(slug);
-    if (!merchant) {
+    const { data: brand } = await getBrand(slug);
+    if (!brand) {
         return;
     }
-    const title = `Edit Merchant | ${merchant.name}`;
+    const title = `Edit Brand | ${brand.name}`;
     const description = 'The DocketRockit Merchant Admin Dashboard';
 
     return {
@@ -32,15 +32,15 @@ export async function generateMetadata({
     };
 }
 
-const EditMerchantPage = async (props: { params: ParamsSlug }) => {
+const EditBrandPage = async (props: { params: ParamsSlug }) => {
     const { slug } = await props.params;
     await authCheck();
-    const { data } = await getMerchant(slug);
+    const { data } = await getBrand(slug);
     if (!data) redirect('/admin/merchants');
 
     const countries = await getAllCountries();
     const defaultCountry = await getCountryByName('Australia');
-    if (!defaultCountry) return redirect('/admin/merchants/');
+    if (!defaultCountry) return redirect('/admin/brands/');
     const states = data.countryId
         ? await getStatesByCountry(data.countryId)
         : await getStatesByCountry(defaultCountry.id);
@@ -53,9 +53,9 @@ const EditMerchantPage = async (props: { params: ParamsSlug }) => {
 
     return (
         <div>
-            <PageBreadcrumb pageTitle="Add Merchant" />
-            <EditMerchantForm
-                merchant={data}
+            <PageBreadcrumb pageTitle="Edit Brand" />
+            <EditBrandForm
+                brand={data}
                 countries={countries!}
                 states={states!}
                 countryProp={country || defaultCountry}
@@ -64,4 +64,4 @@ const EditMerchantPage = async (props: { params: ParamsSlug }) => {
         </div>
     );
 };
-export default EditMerchantPage;
+export default EditBrandPage;

@@ -67,3 +67,30 @@ export const AddBrandSchemaCreate = z.object({
 export const brandFormSchema = z.object({
     merchant: z.string().optional()
 });
+
+export const EditBrandSchema = z.object({
+    name: getStringSchema('Name'),
+    tradingAsName: getStringSchema('Trading as Name'),
+    phoneNumber: getStringSchema('Phone number'),
+    genericEmail: getEmailSchema(),
+    invoiceEmail: z
+        .string()
+        .email({ message: 'Invalid email address' })
+        .optional(),
+    address1: getStringSchema('Address line 1'),
+    address2: z.optional(z.string()),
+    suburb: getStringSchema('Suburb'),
+    postcode: getStringSchema('Postcode'),
+    state: getStringSchema('State'),
+    country: getStringSchema('Country'),
+    abn: getStringSchema('ABN')
+        .length(11, 'ABN must be 11 digits')
+        .refine((abn) => isValidABN(abn), {
+            message: 'Invalid ABN'
+        }),
+    acn: getStringSchema('ACN')
+        .length(9, 'ACN must be 9 digits')
+        .refine((acn) => isValidACN(acn), {
+            message: 'Invalid ACN'
+        })
+});

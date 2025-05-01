@@ -29,66 +29,63 @@ import {
     PopoverTrigger
 } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
-import { AddBrandSchema } from '@/schemas/brands';
+import { EditBrandSchema } from '@/schemas/brands';
 import FormError from '@/components/form/FormError';
 import ComponentCard from '@/components/common/ComponentCard';
 import { cn } from '@/lib/utils';
 import { FormInput } from '@/components/form/FormInputs';
 import { SubmitButton } from '@/components/form/Buttons';
-import { uploadImage } from '@/utils/supabase';
 import { PhoneInput } from '@/components/ui/phone-input';
-import AddBrandLogoUpload from './AddBrandLogoUpload';
-import { AddBrandFormProps } from '@/types/brand';
+import { EditBrandFormProps } from '@/types/brand';
 import { getStatesByCountry } from '@/data/location';
-import { createBrand } from '@/actions/brands';
+import { updateBrand } from '@/actions/brands';
 
-const AddBrandForm = ({
+const EditBrandForm = ({
+    brand,
     countryProp,
     countries,
     states,
-    merchantSlug,
-    merchants
-}: AddBrandFormProps) => {
+    stateProp
+}: EditBrandFormProps) => {
     const [error, setError] = useState<string | undefined>('');
-    const [success, setSuccess] = useState<boolean>(false);
     const [isPending, startTransition] = useTransition();
-    const [country, setCountry] = useState(countryProp);
     const [countriesList, setCountriesList] = useState<Country[]>(countries);
     const [statesList, setStatesList] = useState<State[]>(states);
+    const [country, setCountry] = useState(countryProp);
+    const [state, setState] = useState(stateProp);
     const [openCountry, setOpenCountry] = useState(false);
     const [openState, setOpenState] = useState(false);
     const [openMerchant, setOpenMerchant] = useState(false);
 
     const errorClass = 'pl-6';
 
-    const form = useForm<z.infer<typeof AddBrandSchema>>({
-        resolver: zodResolver(AddBrandSchema),
+    const form = useForm<z.infer<typeof EditBrandSchema>>({
+        resolver: zodResolver(EditBrandSchema),
         defaultValues: {
-            merchantSlug,
-            name: '',
-            tradingAsName: '',
-            phoneNumber: '',
-            genericEmail: '',
-            invoiceEmail: '',
-            address1: '',
-            address2: '',
-            suburb: '',
-            postcode: '',
-            state: '',
+            name: brand.name,
+            tradingAsName: brand.tradingAsName,
+            phoneNumber: brand.phoneNumber,
+            genericEmail: brand.genericEmail,
+            invoiceEmail: brand.invoiceEmail || '',
+            address1: brand.address1,
+            address2: brand.address2 || '',
+            suburb: brand.suburb,
+            postcode: brand.postcode,
+            state: brand.state.id,
             country: country?.id || '',
-            abn: '',
-            acn: '',
-            logoUrl: []
+            abn: brand.abn || '',
+            acn: brand.acn || ''
         }
     });
 
-    const onSubmit = (values: z.infer<typeof AddBrandSchema>) => {
+    const onSubmit = (values: z.infer<typeof EditBrandSchema>) => {
         setError('');
-        setSuccess(false);
         startTransition(async () => {
-            const logoUrl = await uploadImage(values.logoUrl[0].value, 'logos');
-            const formData = { ...values, logoUrl: logoUrl.publicUrl };
-            const data = await createBrand(formData);
+            const data = await updateBrand({
+                id: brand.id,
+                values,
+                merchantSlug: brand.merchant.slug
+            });
             if (!data.data) {
                 setError(data.error);
             }
@@ -101,7 +98,7 @@ const AddBrandForm = ({
                 const result = await getStatesByCountry(
                     form.getValues('country')
                 );
-                form.setValue('state', '');
+                form.setValue('state', state?.id || '');
                 setStatesList(result!);
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -119,131 +116,6 @@ const AddBrandForm = ({
                         <ComponentCard>
                             <div className="space-y-6">
                                 <div className="flex flex-col space-y-6">
-                                    <FormField
-                                        control={form.control}
-                                        name="merchantSlug"
-                                        render={({ field }) => (
-                                            <FormItem className={cn('w-full')}>
-                                                <FormLabel required={true}>
-                                                    Merchant
-                                                </FormLabel>
-                                                <Popover
-                                                    open={openMerchant}
-                                                    onOpenChange={
-                                                        setOpenMerchant
-                                                    }
-                                                >
-                                                    <PopoverTrigger
-                                                        asChild
-                                                        className="w-full"
-                                                    >
-                                                        <FormControl>
-                                                            <Button
-                                                                variant="outline"
-                                                                role="combobox"
-                                                                aria-expanded={
-                                                                    openMerchant
-                                                                }
-                                                                className="h-12 w-full justify-between rounded-xl px-6 py-3 text-sm font-normal"
-                                                            >
-                                                                {field.value
-                                                                    ? merchants.find(
-                                                                          (
-                                                                              merchant
-                                                                          ) =>
-                                                                              merchant.slug ===
-                                                                              field.value
-                                                                      )?.name
-                                                                    : 'Select Merchant...'}
-                                                                <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                                            </Button>
-                                                        </FormControl>
-                                                    </PopoverTrigger>
-                                                    <PopoverContent className="w-full p-0">
-                                                        <Command
-                                                            className="w-full"
-                                                            filter={(
-                                                                value,
-                                                                search
-                                                            ) => {
-                                                                const item =
-                                                                    merchants.find(
-                                                                        (
-                                                                            item
-                                                                        ) =>
-                                                                            item.slug.toString() ===
-                                                                            value
-                                                                    );
-                                                                if (!item)
-                                                                    return 0;
-                                                                if (
-                                                                    item.name
-                                                                        .toLowerCase()
-                                                                        .includes(
-                                                                            search.toLowerCase()
-                                                                        )
-                                                                )
-                                                                    return 1;
-
-                                                                return 0;
-                                                            }}
-                                                        >
-                                                            <CommandInput
-                                                                placeholder="Search Merchant..."
-                                                                className="h-9 w-full"
-                                                            />
-                                                            <CommandList className="w-full">
-                                                                <CommandEmpty className="w-full">
-                                                                    No merchant
-                                                                    found.
-                                                                </CommandEmpty>
-                                                                <CommandGroup className="w-full">
-                                                                    {merchants.map(
-                                                                        (
-                                                                            merchant
-                                                                        ) => (
-                                                                            <CommandItem
-                                                                                className="w-full"
-                                                                                key={
-                                                                                    merchant.slug
-                                                                                }
-                                                                                value={merchant.slug.toString()}
-                                                                                onSelect={() => {
-                                                                                    form.setValue(
-                                                                                        'merchantSlug',
-                                                                                        merchant.slug
-                                                                                    );
-                                                                                    setOpenMerchant(
-                                                                                        false
-                                                                                    );
-                                                                                }}
-                                                                            >
-                                                                                {
-                                                                                    merchant.name
-                                                                                }
-                                                                                <CheckIcon
-                                                                                    className={cn(
-                                                                                        'ml-auto h-4 w-4',
-                                                                                        merchant.slug ===
-                                                                                            field.value
-                                                                                            ? 'opacity-100'
-                                                                                            : 'opacity-0'
-                                                                                    )}
-                                                                                />
-                                                                            </CommandItem>
-                                                                        )
-                                                                    )}
-                                                                </CommandGroup>
-                                                            </CommandList>
-                                                        </Command>
-                                                    </PopoverContent>
-                                                </Popover>
-                                                <FormMessage
-                                                    className={errorClass}
-                                                />
-                                            </FormItem>
-                                        )}
-                                    />
                                     <FormField
                                         control={form.control}
                                         name="name"
@@ -771,17 +643,12 @@ const AddBrandForm = ({
                                     </div>
                                     <div className="flex justify-end">
                                         <SubmitButton
-                                            text="Add Brand"
+                                            text="Update Brand"
                                             isPending={isPending}
                                         />
                                     </div>
                                 </div>
                             </div>
-                        </ComponentCard>
-                    </div>
-                    <div className="space-y-6">
-                        <ComponentCard>
-                            <AddBrandLogoUpload />
                         </ComponentCard>
                     </div>
                 </div>
@@ -790,4 +657,4 @@ const AddBrandForm = ({
     );
 };
 
-export default AddBrandForm;
+export default EditBrandForm;

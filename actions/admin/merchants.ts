@@ -223,7 +223,7 @@ export const updateMerchant = async ({
         };
     }
 
-    redirect(`/merchant/merchants/${data.slug}`);
+    redirect(`/admin/merchants/${data.slug}`);
 };
 
 export const getAllMerchants = async () => {
@@ -351,7 +351,7 @@ export const updateMerchants = async (input: {
             data: { status: input.status }
         });
 
-        revalidatePath('/merchant/merchants');
+        revalidatePath('/admin/merchants');
 
         return {
             data: null,

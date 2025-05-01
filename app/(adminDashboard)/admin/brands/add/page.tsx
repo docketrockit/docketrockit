@@ -34,7 +34,6 @@ const AddBrandPage = async (props: { searchParams: SearchParams }) => {
     const country = await getCountryById(defaultCountry.id);
     const { data } = await getAllMerchants();
 
-    console.log(queryString.merchant);
     return (
         <div>
             <PageBreadcrumb pageTitle="Add Brand" />

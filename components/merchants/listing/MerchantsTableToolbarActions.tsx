@@ -27,7 +27,7 @@ export const MerchantsTableToolbarActions = ({
             {[AdminRole.ADMIN, AdminRole.SALES].some((role) =>
                 user.adminUser?.adminRole.includes(role)
             ) && (
-                <Link href="/merchant/merchants/add">
+                <Link href="/admin/merchants/add">
                     <Button
                         variant="outline"
                         size="sm"
