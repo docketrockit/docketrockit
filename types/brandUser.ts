@@ -25,7 +25,10 @@ export type BrandUsersFilterInput = {
 };
 
 export type BrandUser = Prisma.UserGetPayload<{
-    include: { primaryContactMerchant: true; merchantUser: true };
+    include: {
+        primaryContactBrand: true;
+        merchantUser: { include: { brandUsers: true } };
+    };
 }>;
 
 export interface MerchantUsersTableProps {

@@ -1,6 +1,12 @@
 'use server';
 
-import { Role, Gender, AdminRole, MerchantRole, Brand } from '@prisma/client';
+import {
+    Role,
+    Gender,
+    AdminRole,
+    MerchantRole,
+    BrandRole
+} from '@prisma/client';
 
 import db from './db';
 import { decrypt, encrypt } from './encryption';
@@ -22,6 +28,7 @@ export interface User {
     consumerUser?: ConsumerUser;
     merchantUser?: MerchantUser;
     adminUser?: AdminUser;
+    brandUser?: BrandUser;
 }
 
 export interface ConsumerUser {
@@ -35,13 +42,18 @@ export interface MerchantUser {
     primaryContact: boolean;
     merchant: string;
     merchantId: string;
-    brands: Brand[];
+    brands: BrandUser[];
     merchantRole: MerchantRole[];
 }
 
 export interface AdminUser {
     jobTitle?: string;
     adminRole: AdminRole[];
+}
+
+export interface BrandUser {
+    brandRole: BrandRole[];
+    brandId: string;
 }
 
 interface CreateUserProps {
@@ -205,7 +217,7 @@ export const getUserFromEmail = async (email: string): Promise<User | null> => {
             role: true,
             adminUser: true,
             phoneNumber: true,
-            merchantUser: { include: { merchant: true, brands: true } },
+            merchantUser: { include: { merchant: true, brandUsers: true } },
             consumerUser: true
         }
     });
@@ -232,13 +244,22 @@ export const getUserFromEmail = async (email: string): Promise<User | null> => {
     }
 
     if (row.merchantUser) {
+        const brands: BrandUser[] = [];
+        if (row.merchantUser.brandUsers.length > 0) {
+            row.merchantUser.brandUsers.map((brandUser) => {
+                brands.push({
+                    brandId: brandUser.brandId,
+                    brandRole: brandUser.brandRole
+                });
+            });
+        }
         user.merchantUser = {
             jobTitle: row.merchantUser.jobTitle,
             primaryContact:
                 row.merchantUser.merchant.primaryContactId === user.id,
             merchant: row.merchantUser.merchant.name,
             merchantId: row.merchantUser.merchantId,
-            brands: row.merchantUser.brands,
+            brands,
             merchantRole: row.merchantUser.merchantRole
         };
     }

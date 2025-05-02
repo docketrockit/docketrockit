@@ -4,7 +4,7 @@ import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTransition, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { MerchantRole, Status } from '@prisma/client';
+import { BrandRole, Status } from '@prisma/client';
 import { UserRound, Mail, Briefcase } from 'lucide-react';
 import { ReloadIcon } from '@radix-ui/react-icons';
 import { toast } from 'sonner';
@@ -38,43 +38,51 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { FormInputIcon } from '@/components/form/FormInputs';
 import { MultiSelect } from '@/components/ui/multi-select';
-import { MerchantRoleLabels } from '@/types/user';
-import { MerchantUserSchemaUpdate } from '@/schemas/users';
+import { BrandRoleLabels } from '@/types/user';
+import { BrandUserSchemaUpdate } from '@/schemas/users';
 import { cn } from '@/lib/utils';
-import { MerchantUser } from '@/types/merchantUser';
-import { updateMerchantUser } from '@/actions/admin/merchantUsers';
+import { BrandUser } from '@/types/brandUser';
+import { updateBrandUser } from '@/actions/admin/brandUsers';
 import { PhoneInput } from '@/components/ui/phone-input';
 
 interface UpdateBrandUserSheetProps
     extends React.ComponentPropsWithRef<typeof Sheet> {
-    user: MerchantUser;
+    user: BrandUser;
     brandId: string;
     brandSlug: string;
+    merchantId: string;
+    merchantSlug: string;
 }
 
 export const UpdateBrandUserSheet = ({
     user,
     brandId,
     brandSlug,
+    merchantId,
+    merchantSlug,
     ...props
 }: UpdateBrandUserSheetProps) => {
     const [isUpdatePending, startUpdateTransition] = useTransition();
     const statusValues = Object.values(Status);
 
-    const merchantRoleOptions = Object.values(MerchantRole).map((value) => ({
+    const brandRoleOptions = Object.values(BrandRole).map((value) => ({
         value,
-        label: MerchantRoleLabels[value]
+        label: BrandRoleLabels[value]
     }));
 
-    const form = useForm<z.infer<typeof MerchantUserSchemaUpdate>>({
-        resolver: zodResolver(MerchantUserSchemaUpdate),
+    const brandUser = user.merchantUser?.brandUsers.find(
+        (brand) => brand.brandId === brandId
+    );
+
+    const form = useForm<z.infer<typeof BrandUserSchemaUpdate>>({
+        resolver: zodResolver(BrandUserSchemaUpdate),
         defaultValues: {
             firstName: user.firstName,
             lastName: user.lastName,
             email: user.email,
             jobTitle: user.merchantUser?.jobTitle,
-            merchantRole: user.merchantUser?.merchantRole,
-            primaryContact: user.primaryContactMerchant !== null,
+            brandRole: brandUser?.brandRole || [],
+            primaryContact: user.primaryContactBrand !== null,
             phoneNumber: user.phoneNumber || '',
             status: user.status
         }
@@ -86,28 +94,33 @@ export const UpdateBrandUserSheet = ({
             lastName: user.lastName,
             email: user.email,
             jobTitle: user.merchantUser?.jobTitle,
-            merchantRole: user.merchantUser?.merchantRole,
-            primaryContact: user.primaryContactMerchant !== null,
+            brandRole: brandUser?.brandRole || [],
+            primaryContact: user.primaryContactBrand !== null,
             phoneNumber: user.phoneNumber || '',
             status: user.status
         });
     }, [user, form]);
 
-    function onSubmit(input: z.infer<typeof MerchantUserSchemaUpdate>) {
+    function onSubmit(input: z.infer<typeof BrandUserSchemaUpdate>) {
         startUpdateTransition(async () => {
-            const { error } = await updateMerchantUser(
-                input,
-                user.id,
-                merchantId,
-                merchantSlug
-            );
-            if (error) {
-                toast.error(error);
-                return;
+            if (brandUser) {
+                const { error } = await updateBrandUser(
+                    input,
+                    user.id,
+                    merchantId,
+                    merchantSlug,
+                    brandUser.id,
+                    brandId,
+                    brandSlug
+                );
+                if (error) {
+                    toast.error(error);
+                    return;
+                }
+                form.reset();
+                props.onOpenChange?.(false);
+                toast.success('User updated');
             }
-            form.reset();
-            props.onOpenChange?.(false);
-            toast.success('User updated');
         });
     }
 
@@ -238,20 +251,20 @@ export const UpdateBrandUserSheet = ({
                         />
                         <FormField
                             control={form.control}
-                            name="merchantRole"
+                            name="brandRole"
                             render={({ field }) => (
                                 <FormItem className={cn('w-full')}>
                                     <FormControl>
                                         <MultiSelect
                                             {...field}
                                             name="access"
-                                            options={merchantRoleOptions}
+                                            options={brandRoleOptions}
                                             onValueChange={(selectedValues) => {
                                                 form.setValue(
-                                                    'merchantRole',
+                                                    'brandRole',
                                                     selectedValues.map(
                                                         (key) =>
-                                                            key as MerchantRole
+                                                            key as BrandRole
                                                     )
                                                 );
                                             }}

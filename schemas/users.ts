@@ -1,10 +1,11 @@
 import { object, array, nativeEnum, boolean } from 'zod';
 
 import { getStringSchema, getEmailSchema, getPasswordSchema } from './schemas';
-import { AdminRole, MerchantRole, Status } from '@prisma/client';
+import { AdminRole, MerchantRole, BrandRole, Status } from '@prisma/client';
 
 const adminRoleSchema = nativeEnum(AdminRole);
 const merchantRoleSchema = nativeEnum(MerchantRole);
+const brandRoleSchema = nativeEnum(BrandRole);
 const statusSchema = nativeEnum(Status);
 
 export const AdminUserSchema = object({
@@ -44,6 +45,28 @@ export const MerchantUserSchemaUpdate = object({
     jobTitle: getStringSchema('Job title'),
     phoneNumber: getStringSchema('Phone number'),
     merchantRole: array(merchantRoleSchema),
+    primaryContact: boolean(),
+    status: statusSchema
+});
+
+export const BrandUserSchema = object({
+    firstName: getStringSchema('First name'),
+    lastName: getStringSchema('Last name'),
+    email: getEmailSchema(),
+    password: getPasswordSchema('Password'),
+    phoneNumber: getStringSchema('Phone number'),
+    jobTitle: getStringSchema('Job title'),
+    brandRole: array(brandRoleSchema),
+    primaryContact: boolean()
+});
+
+export const BrandUserSchemaUpdate = object({
+    firstName: getStringSchema('First name'),
+    lastName: getStringSchema('Last name'),
+    email: getEmailSchema(),
+    jobTitle: getStringSchema('Job title'),
+    phoneNumber: getStringSchema('Phone number'),
+    brandRole: array(brandRoleSchema),
     primaryContact: boolean(),
     status: statusSchema
 });

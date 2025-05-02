@@ -30,23 +30,27 @@ import {
     DrawerTrigger
 } from '@/components/ui/drawer';
 
-import { createMerchantUser } from '@/actions/admin/merchantUsers';
-import { MerchantUserSchema } from '@/schemas/users';
-import { CreateMerchantUserForm } from './CreateMerchantUserForm';
+import { createBrandUser } from '@/actions/admin/brandUsers';
+import { BrandUserSchema } from '@/schemas/users';
+import { CreateBrandUserForm } from './CreateBrandUserForm';
 
 export const CreateMerchantUserDialog = ({
     merchantId,
-    merchantSlug
+    merchantSlug,
+    brandId,
+    brandSlug
 }: {
     merchantId: string;
     merchantSlug: string;
+    brandId: string;
+    brandSlug: string;
 }) => {
     const [open, setOpen] = useState(false);
     const [isCreatePending, startCreateTransition] = useTransition();
     const isDesktop = useMediaQuery('(min-width: 640px)');
 
-    const form = useForm<z.infer<typeof MerchantUserSchema>>({
-        resolver: zodResolver(MerchantUserSchema),
+    const form = useForm<z.infer<typeof BrandUserSchema>>({
+        resolver: zodResolver(BrandUserSchema),
         defaultValues: {
             firstName: '',
             lastName: '',
@@ -54,18 +58,20 @@ export const CreateMerchantUserDialog = ({
             password: '',
             jobTitle: '',
             phoneNumber: '',
-            merchantRole: [],
+            brandRole: [],
             primaryContact: false
         }
     });
 
-    function onSubmit(input: z.infer<typeof MerchantUserSchema>) {
+    function onSubmit(input: z.infer<typeof BrandUserSchema>) {
         startCreateTransition(async () => {
-            const { error } = await createMerchantUser(
+            const { error } = await createBrandUser(
                 input,
-                'merchant',
+                'brand',
                 merchantId,
-                merchantSlug
+                merchantSlug,
+                brandId,
+                brandSlug
             );
 
             if (error) {
@@ -95,7 +101,7 @@ export const CreateMerchantUserDialog = ({
                             Fill in the form below to create a new admin user.
                         </DialogDescription>
                     </DialogHeader>
-                    <CreateMerchantUserForm form={form} onSubmit={onSubmit}>
+                    <CreateBrandUserForm form={form} onSubmit={onSubmit}>
                         <DialogFooter className="gap-2 pt-2 sm:space-x-0">
                             <Button
                                 type="button"
@@ -117,7 +123,7 @@ export const CreateMerchantUserDialog = ({
                                 Create
                             </Button>
                         </DialogFooter>
-                    </CreateMerchantUserForm>
+                    </CreateBrandUserForm>
                 </DialogContent>
             </Dialog>
         );

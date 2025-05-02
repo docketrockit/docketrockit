@@ -43,6 +43,12 @@ enum MerchantRole {
   ACCOUNTS
 }
 
+enum BrandRole {
+  ADMIN
+  TECHNICAL
+  ACCOUNTS
+}
+
 model User {
   id                       String                     @id @default(cuid())
   firstName                String
@@ -129,7 +135,7 @@ model MerchantUser {
   merchant     Merchant       @relation(fields: [merchantId], references: [id], onDelete: Cascade)
   merchantId   String
   merchantRole MerchantRole[]
-  brands       Brand[]
+  brandUsers   BrandUser[]
   user         User           @relation(fields: [userId], references: [id])
   userId       String         @unique
   createdAt    DateTime       @default(now())
@@ -144,6 +150,17 @@ model AdminUser {
   userId    String      @unique
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
+}
+
+model BrandUser {
+  id             String        @id @default(cuid())
+  brand          Brand         @relation(fields: [brandId], references: [id])
+  brandId        String        @unique
+  MerchantUser   MerchantUser? @relation(fields: [merchantUserId], references: [id])
+  merchantUserId String?
+  brandRole      BrandRole[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 }
 
 model Country {
@@ -201,12 +218,12 @@ model Merchant {
 }
 
 model Brand {
-  id               String         @id @default(cuid())
-  status           Status         @default(PENDING)
-  merchant         Merchant       @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  id               String     @id @default(cuid())
+  status           Status     @default(PENDING)
+  merchant         Merchant   @relation(fields: [merchantId], references: [id], onDelete: Cascade)
   merchantId       String
   name             String
-  slug             String         @unique
+  slug             String     @unique
   genericEmail     String
   invoiceEmail     String?
   tradingAsName    String
@@ -215,19 +232,19 @@ model Brand {
   address2         String?
   suburb           String
   postcode         String
-  state            State          @relation(fields: [stateId], references: [id], onDelete: Cascade)
+  state            State      @relation(fields: [stateId], references: [id], onDelete: Cascade)
   stateId          String
-  country          Country        @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  country          Country    @relation(fields: [countryId], references: [id], onDelete: Cascade)
   countryId        String
   abn              String?
   acn              String?
   phoneNumber      String
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
-  primaryContact   User?          @relation(fields: [primaryContactId], references: [id]) // references `id` of `Profile`
-  primaryContactId String?        @unique
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  primaryContact   User?      @relation(fields: [primaryContactId], references: [id]) // references `id` of `Profile`
+  primaryContactId String?    @unique
   stores           Store[]
-  merchantUsers    MerchantUser[]
+  BrandUser        BrandUser?
 }
 
 model Store {

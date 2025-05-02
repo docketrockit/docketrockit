@@ -7,7 +7,7 @@ import { cookies } from 'next/headers';
 import { cache } from 'react';
 
 import db from './db';
-import type { User } from './user';
+import type { User, BrandUser } from './user';
 
 export interface SessionFlags {
     twoFactorVerified: boolean;
@@ -48,7 +48,9 @@ export const validateSessionToken = async (
                     role: true,
                     adminUser: true,
                     phoneNumber: true,
-                    merchantUser: { include: { merchant: true, brands: true } },
+                    merchantUser: {
+                        include: { merchant: true, brandUsers: true }
+                    },
                     consumerUser: true
                 }
             }
@@ -86,13 +88,22 @@ export const validateSessionToken = async (
     }
 
     if (row.user.merchantUser) {
+        const brands: BrandUser[] = [];
+        if (row.user.merchantUser.brandUsers.length > 0) {
+            row.user.merchantUser.brandUsers.map((brandUser) => {
+                brands.push({
+                    brandId: brandUser.brandId,
+                    brandRole: brandUser.brandRole
+                });
+            });
+        }
         user.merchantUser = {
             jobTitle: row.user.merchantUser.jobTitle,
             primaryContact:
                 row.user.merchantUser.merchant.primaryContactId === user.id,
             merchant: row.user.merchantUser.merchant.name,
             merchantId: row.user.merchantUser.merchantId,
-            brands: row.user.merchantUser.brands,
+            brands,
             merchantRole: row.user.merchantUser.merchantRole
         };
     }

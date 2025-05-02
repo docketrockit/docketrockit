@@ -1,4 +1,4 @@
-import { AdminRole, MerchantRole } from '@prisma/client';
+import { AdminRole, MerchantRole, BrandRole } from '@prisma/client';
 
 export enum UserRole {
     BUSINESSADMIN = 'Business Admin',
@@ -15,6 +15,12 @@ export const AdminRoleLabels: Record<AdminRole, string> = {
 };
 
 export const MerchantRoleLabels: Record<MerchantRole, string> = {
+    [MerchantRole.ADMIN]: 'Admin',
+    [MerchantRole.TECHNICAL]: 'Technical',
+    [MerchantRole.ACCOUNTS]: 'Accounts'
+};
+
+export const BrandRoleLabels: Record<BrandRole, string> = {
     [MerchantRole.ADMIN]: 'Admin',
     [MerchantRole.TECHNICAL]: 'Technical',
     [MerchantRole.ACCOUNTS]: 'Accounts'

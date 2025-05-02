@@ -10,7 +10,7 @@ import { authCheckAdmin } from '@/lib/authCheck';
 import { GetBrandUsersSchema } from '@/types/brandUser';
 import { getErrorMessage } from '@/lib/handleError';
 import {
-    checkMerchantEmailAvailability,
+    checkBrandEmailAvailability,
     checkEmailAvailability
 } from '@/lib/email';
 import { globalPOSTRateLimit } from '@/lib/request';
@@ -21,7 +21,7 @@ import {
     sendUpdatedUserToAdminEmail
 } from '@/lib/mail';
 import { createUser, createUserFromUser, User } from '@/lib/user';
-import { MerchantUserSchema, MerchantUserSchemaUpdate } from '@/schemas/users';
+import { BrandUserSchema, BrandUserSchemaUpdate } from '@/schemas/users';
 import { buildBrandUserWhere, buildOrderBy } from '@/lib/brandUserLib';
 
 export const getBrandUsers = async (input: GetBrandUsersSchema) => {
@@ -69,7 +69,10 @@ export const getBrandUsers = async (input: GetBrandUsersSchema) => {
 
         const data = await db.user.findMany({
             where,
-            include: { primaryContactMerchant: true, merchantUser: true },
+            include: {
+                primaryContactBrand: true,
+                merchantUser: { include: { brandUsers: true } }
+            },
             skip: offset,
             take: per_page,
             orderBy
@@ -115,8 +118,8 @@ export const updateBrandUsers = async (input: {
 };
 
 export const createBrandUser = async (
-    values: z.infer<typeof MerchantUserSchema>,
-    page: string,
+    values: z.infer<typeof BrandUserSchema>,
+    page: 'admin' | 'brand',
     merchantId: string,
     merchantSlug: string,
     brandId: string,
@@ -137,7 +140,7 @@ export const createBrandUser = async (
                 error: getErrorMessage('Too many requests')
             };
         }
-        const validatedFields = MerchantUserSchema.safeParse(values);
+        const validatedFields = BrandUserSchema.safeParse(values);
 
         if (!validatedFields.success) {
             return { data: null, error: getErrorMessage('Invalid fields') };
@@ -149,12 +152,15 @@ export const createBrandUser = async (
             email,
             password,
             jobTitle,
-            merchantRole,
+            brandRole,
             primaryContact,
             phoneNumber
         } = validatedFields.data;
 
-        const emailAvailable = await checkMerchantEmailAvailability(email);
+        const emailAvailable = await checkBrandEmailAvailability(
+            email,
+            merchantId
+        );
 
         if (emailAvailable === 'No') {
             return {
@@ -187,18 +193,70 @@ export const createBrandUser = async (
                 password,
                 code: emailVerificationRequest.code
             });
-        } else {
-            userId = emailAvailable.id;
             await db.user.update({
                 where: { id: userId },
+                data: { phoneNumber }
+            });
+
+            await db.merchantUser.create({
                 data: {
-                    role: { push: 'MERCHANT' }
+                    jobTitle,
+                    userId,
+                    merchantId,
+                    brandUsers: {
+                        create: [{ brandId, brandRole }]
+                    }
                 }
             });
+        } else {
+            if (
+                emailAvailable.merchantUser?.brandUsers.some(
+                    (brand) => brand.id === brandId
+                )
+            ) {
+                return {
+                    data: null,
+                    error: getErrorMessage('User already on brand')
+                };
+            }
+            userId = emailAvailable.id;
             user = await createUserFromUser({ user: emailAvailable });
+
+            if (!emailAvailable.role.includes('MERCHANT')) {
+                await db.user.update({
+                    where: { id: userId },
+                    data: {
+                        role: { push: 'MERCHANT' }
+                    }
+                });
+            }
+            if (!emailAvailable.merchantUser) {
+                await db.merchantUser.create({
+                    data: {
+                        jobTitle,
+                        userId,
+                        merchantId,
+                        brandUsers: {
+                            create: [{ brandId, brandRole }]
+                        }
+                    }
+                });
+            } else {
+                const brandUser = await db.brandUser.create({
+                    data: {
+                        brandId,
+                        merchantUserId: emailAvailable.merchantUser?.id,
+                        brandRole
+                    }
+                });
+                await db.merchantUser.update({
+                    where: { id: emailAvailable.merchantUser.id },
+                    data: { brandUsers: { connect: { id: brandUser.id } } }
+                });
+            }
             await sendUpdatedUserToAdminEmail({
                 email,
-                firstName: user.firstName
+                firstName
             });
         }
         if (primaryContact) {
@@ -208,24 +266,14 @@ export const createBrandUser = async (
             });
         }
 
-        await db.user.update({ where: { id: userId }, data: { phoneNumber } });
-
-        await db.merchantUser.create({
-            data: {
-                jobTitle,
-                merchantRole,
-                userId,
-                merchantId,
-                brands: { push: brandId }
-            }
-        });
-
         switch (page) {
             case 'admin':
                 revalidatePath('/admin/users/merchant');
                 break;
-            case 'merchant':
-                revalidatePath(`/admin/merchants/${merchantSlug}`);
+            case 'brand':
+                revalidatePath(
+                    `/admin/merchants/${merchantSlug}/brands/${brandSlug}`
+                );
                 break;
             default:
                 revalidatePath('/admin/users/merchant');
@@ -244,11 +292,14 @@ export const createBrandUser = async (
     }
 };
 
-export const updateMerchantUser = async (
-    values: z.infer<typeof MerchantUserSchemaUpdate>,
+export const updateBrandUser = async (
+    values: z.infer<typeof BrandUserSchemaUpdate>,
     id: string,
     merchantId: string,
-    merchantSlug: string
+    merchantSlug: string,
+    brandUserId: string,
+    brandId: string,
+    brandSlug: string
 ) => {
     const { user: adminUser } = await authCheckAdmin(['ADMIN']);
 
@@ -271,7 +322,13 @@ export const updateMerchantUser = async (
         if (!merchant) {
             return { data: null, error: getErrorMessage('Invalid fields') };
         }
-        const validatedFields = MerchantUserSchemaUpdate.safeParse(values);
+        const brand = await db.brand.findUnique({
+            where: { id: brandId }
+        });
+        if (!brand) {
+            return { data: null, error: getErrorMessage('Invalid fields') };
+        }
+        const validatedFields = BrandUserSchemaUpdate.safeParse(values);
 
         if (!validatedFields.success) {
             return { data: null, error: getErrorMessage('Invalid fields') };
@@ -282,7 +339,7 @@ export const updateMerchantUser = async (
             lastName,
             email,
             jobTitle,
-            merchantRole,
+            brandRole,
             status,
             primaryContact,
             phoneNumber
@@ -296,12 +353,12 @@ export const updateMerchantUser = async (
             };
         }
         if (primaryContact) {
-            await db.merchant.updateMany({
-                where: { id: merchantId },
+            await db.brand.updateMany({
+                where: { id: brandId },
                 data: { primaryContactId: id }
             });
         } else {
-            if (id === merchant.primaryContactId) {
+            if (id === brand.primaryContactId) {
                 await db.merchant.updateMany({
                     where: { id: merchantId },
                     data: { primaryContactId: null }
@@ -315,17 +372,16 @@ export const updateMerchantUser = async (
                 lastName,
                 email,
                 status,
-                phoneNumber,
-                merchantUser: {
-                    update: {
-                        jobTitle,
-                        merchantRole
-                    }
-                }
+                phoneNumber
             }
         });
 
-        revalidatePath(`/admin/merchants/${merchantSlug}`);
+        await db.brandUser.update({
+            where: { id: brandUserId },
+            data: { brandRole }
+        });
+
+        revalidatePath(`/admin/merchants/${merchantSlug}/brands/${brandSlug}`);
 
         return {
             data: null,

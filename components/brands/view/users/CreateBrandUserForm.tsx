@@ -2,7 +2,7 @@
 
 import * as z from 'zod';
 import { type UseFormReturn } from 'react-hook-form';
-import { MerchantRole } from '@prisma/client';
+import { BrandRole } from '@prisma/client';
 import {
     UserRound,
     Mail,
@@ -26,8 +26,8 @@ import {
 } from '@/components/form/FormInputs';
 import { Switch } from '@/components/ui/switch';
 import { MultiSelect } from '@/components/ui/multi-select';
-import { MerchantRoleLabels } from '@/types/user';
-import { MerchantUserSchema } from '@/schemas/users';
+import { BrandRoleLabels } from '@/types/user';
+import { BrandUserSchema } from '@/schemas/users';
 import { Button } from '@/components/ui/button';
 import generatePassword from '@/utils/generatePassword';
 import { cn } from '@/lib/utils';
@@ -36,18 +36,18 @@ import { PhoneInput } from '@/components/ui/phone-input';
 interface CreateTypeFormProps
     extends Omit<React.ComponentPropsWithRef<'form'>, 'onSubmit'> {
     children: React.ReactNode;
-    form: UseFormReturn<z.infer<typeof MerchantUserSchema>>;
-    onSubmit: (data: z.infer<typeof MerchantUserSchema>) => void;
+    form: UseFormReturn<z.infer<typeof BrandUserSchema>>;
+    onSubmit: (data: z.infer<typeof BrandUserSchema>) => void;
 }
 
-export const CreateMerchantUserForm = ({
+export const CreateBrandUserForm = ({
     form,
     onSubmit,
     children
 }: CreateTypeFormProps) => {
-    const merchantRoleOptions = Object.values(MerchantRole).map((value) => ({
+    const brandRoleOptions = Object.values(BrandRole).map((value) => ({
         value,
-        label: MerchantRoleLabels[value]
+        label: BrandRoleLabels[value]
     }));
     const onGenerate = () => {
         const password = generatePassword(12);
@@ -193,19 +193,19 @@ export const CreateMerchantUserForm = ({
                 />
                 <FormField
                     control={form.control}
-                    name="merchantRole"
+                    name="brandRole"
                     render={({ field }) => (
                         <FormItem className={cn('w-full')}>
                             <FormControl>
                                 <MultiSelect
                                     {...field}
                                     name="merchantRole"
-                                    options={merchantRoleOptions}
+                                    options={brandRoleOptions}
                                     onValueChange={(selectedValues) => {
                                         form.setValue(
-                                            'merchantRole',
+                                            'brandRole',
                                             selectedValues.map(
-                                                (key) => key as MerchantRole
+                                                (key) => key as BrandRole
                                             )
                                         );
                                     }}

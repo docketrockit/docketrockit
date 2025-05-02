@@ -1,5 +1,6 @@
 import db from './db';
 import { MerchantUser } from '@/types/merchantUser';
+import { BrandUser } from '@/types/brandUser';
 
 export const verifyEmailInput = (email: string): boolean => {
     return /^.+@.+\..+$/.test(email) && email.length < 256;
@@ -28,6 +29,32 @@ export const checkMerchantEmailAvailability = async (
         return 'New';
     }
     if (user.role.includes('ADMIN') || user.role.includes('MERCHANT')) {
+        return 'No';
+    }
+    return user;
+};
+
+export const checkBrandEmailAvailability = async (
+    email: string,
+    merchantId: string
+): Promise<'No' | 'New' | BrandUser> => {
+    const user = await db.user.findUnique({
+        where: {
+            email
+        },
+        include: {
+            merchantUser: { include: { brandUsers: true } },
+            primaryContactBrand: true
+        }
+    });
+    if (!user) {
+        return 'New';
+    }
+    if (
+        user.role.includes('ADMIN') ||
+        (user.role.includes('MERCHANT') && !user.merchantUser) ||
+        (user.role.includes('MERCHANT') && user.merchantUser?.id !== merchantId)
+    ) {
         return 'No';
     }
     return user;
