@@ -4,6 +4,7 @@ import { Session } from '@/lib/session';
 import { User } from '@/lib/user';
 import { AdminUser } from '@/types/adminUser';
 import { MerchantUser } from '@/types/merchantUser';
+import { BrandUser } from '@/types/brandUser';
 
 export interface SessionUserProps {
     session: Session;
@@ -23,7 +24,7 @@ export const statusLabels: { value: Status; label: string }[] = [
 ];
 
 export interface UserResetPasswordDialogProps {
-    user: AdminUser | MerchantUser;
+    user: AdminUser | MerchantUser | BrandUser;
     isOpen: boolean;
     onOpenChange: (open: boolean) => void;
 }

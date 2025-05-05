@@ -9,7 +9,12 @@ import { BrandMainProps } from '@/types/brand';
 import BrandTabs from './BrandTabs';
 import Link from 'next/link';
 
-const BrandMain = ({ brand, user, brandUsersPromise }: BrandMainProps) => {
+const BrandMain = ({
+    brand,
+    user,
+    brandUsersPromise,
+    brandStoresPromise
+}: BrandMainProps) => {
     if (!brand) return 'No brand found';
 
     const primaryContact = brand.primaryContact;
@@ -79,7 +84,7 @@ const BrandMain = ({ brand, user, brandUsersPromise }: BrandMainProps) => {
                     <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
                         <div>
                             <h4 className="text-lg font-semibold text-gray-800 lg:mb-6 dark:text-white/90">
-                                Merchant Information
+                                Brand Information
                             </h4>
 
                             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
@@ -241,6 +246,7 @@ const BrandMain = ({ brand, user, brandUsersPromise }: BrandMainProps) => {
             <div className="rounded-2xl border border-gray-200 p-5 lg:p-6 dark:border-gray-800 w-full">
                 <BrandTabs
                     brandUsersPromise={brandUsersPromise}
+                    brandStoresPromise={brandStoresPromise}
                     brand={brand}
                     user={user}
                 />

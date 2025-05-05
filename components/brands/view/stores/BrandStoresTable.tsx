@@ -2,7 +2,6 @@
 'use memo';
 
 import { use, useMemo } from 'react';
-import { BrandRole } from '@prisma/client';
 
 import { type DataTableFilterField } from '@/types/data-table';
 import { statusLabels } from '@/types/global';
@@ -13,27 +12,26 @@ import { DataTable } from '@/components/datatable/DataTable';
 import { DataTableToolbar } from '@/components/datatable/DataTableToolbar';
 
 import { getStatusIcon } from '@/lib/utils';
-import { getColumns } from './BrandUsersTableColumns';
-import { BrandUsersTableFloatingBar } from './BrandUsersTableFloatingBar';
-import { useBrandUsersTable } from './BrandUsersTableProviders';
-import { BrandUsersTableToolbarActions } from './BrandUsersTableToolbarActions';
-import { BrandUsersTableProps, BrandUser } from '@/types/brandUser';
+import { getColumns } from './BrandStoresTableColumns';
+import { BrandStoresTableFloatingBar } from './BrandStoresTableFloatingBar';
+import { useBrandStoresTable } from './BrandStoresTableProviders';
+import { BrandStoresTableToolbarActions } from './BrandStoresTableToolbarActions';
+import { BrandStoresTableProps, BrandStore } from '@/types/brandStore';
 
-export const BrandUsersTable = ({
-    brandUsersPromise,
-    brand,
-    user
-}: BrandUsersTableProps) => {
+export const BrandStoresTable = ({
+    brandStoresPromise,
+    user,
+    brand
+}: BrandStoresTableProps) => {
     // Feature flags for showcasing some additional features. Feel free to remove them.
-    const { featureFlags } = useBrandUsersTable();
+    const { featureFlags } = useBrandStoresTable();
 
-    const { data, pageCount } = use(brandUsersPromise);
+    const { data, pageCount } = use(brandStoresPromise);
 
     // Memoize the columns so they don't re-render on every render
     const columns = useMemo(
         () =>
             getColumns({
-                brand,
                 user
             }),
         []
@@ -56,16 +54,10 @@ export const BrandUsersTable = ({
             .replace(/_/g, ' ')
             .replace(/\b\w/g, (c) => c.toUpperCase());
 
-    const brandRoleOptions = Object.values(BrandRole).map((role) => ({
-        label: formatRoleLabel(role),
-        value: role,
-        withCount: true
-    }));
-
-    const filterFields: DataTableFilterField<BrandUser>[] = [
+    const filterFields: DataTableFilterField<BrandStore>[] = [
         {
             label: 'Search Names...',
-            value: 'firstName',
+            value: 'name',
             placeholder: 'Search names...'
         },
         {
@@ -88,7 +80,7 @@ export const BrandUsersTable = ({
         filterFields,
         enableAdvancedFilter: featureFlags.includes('advancedFilter'),
         initialState: {
-            sorting: [{ id: 'firstName', desc: false }],
+            sorting: [{ id: 'name', desc: false }],
             columnPinning: { right: ['actions'] }
         },
         // For remembering the previous row selection on page change
@@ -102,7 +94,7 @@ export const BrandUsersTable = ({
             table={table}
             floatingBar={
                 featureFlags.includes('floatingBar') ? (
-                    <BrandUsersTableFloatingBar table={table} />
+                    <BrandStoresTableFloatingBar table={table} />
                 ) : null
             }
         >
@@ -111,16 +103,18 @@ export const BrandUsersTable = ({
                     table={table}
                     filterFields={filterFields}
                 >
-                    <BrandUsersTableToolbarActions
+                    <BrandStoresTableToolbarActions
                         table={table}
-                        brand={brand}
+                        user={user}
+                        slug={brand.slug}
                     />
                 </DataTableAdvancedToolbar>
             ) : (
                 <DataTableToolbar table={table} filterFields={filterFields}>
-                    <BrandUsersTableToolbarActions
+                    <BrandStoresTableToolbarActions
                         table={table}
-                        brand={brand}
+                        user={user}
+                        slug={brand.slug}
                     />
                 </DataTableToolbar>
             )}

@@ -24,12 +24,15 @@ import {
 } from '@/components/ui/tooltip';
 import { Kbd } from '@/components/common/kbd';
 import { statusLabels } from '@/types/global';
-import { updateBrandUsers } from '@/actions/admin/brandUsers';
-import { BrandUsersTableFloatingBarProps, BrandUser } from '@/types/brandUser';
+import { updateBrandStores } from '@/actions/admin/brandStores';
+import {
+    BrandStoresTableFloatingBarProps,
+    BrandStore
+} from '@/types/brandStore';
 
-export const BrandUsersTableFloatingBar = ({
+export const BrandStoresTableFloatingBar = ({
     table
-}: BrandUsersTableFloatingBarProps) => {
+}: BrandStoresTableFloatingBarProps) => {
     const rows = table.getFilteredSelectedRowModel().rows;
 
     const [isPending, startTransition] = useTransition();
@@ -89,11 +92,11 @@ export const BrandUsersTableFloatingBar = ({
                     />
                     <div className="flex items-center gap-1.5">
                         <Select
-                            onValueChange={(value: BrandUser['status']) => {
+                            onValueChange={(value: BrandStore['status']) => {
                                 setMethod('update-status');
 
                                 startTransition(async () => {
-                                    const { error } = await updateBrandUsers({
+                                    const { error } = await updateBrandStores({
                                         ids: rows.map((row) => row.original.id),
                                         status: value
                                     });
@@ -103,7 +106,7 @@ export const BrandUsersTableFloatingBar = ({
                                         return;
                                     }
 
-                                    toast.success('Users updated');
+                                    toast.success('Brands updated');
                                 });
                             }}
                         >
@@ -184,7 +187,7 @@ export const BrandUsersTableFloatingBar = ({
                                 </Button>
                             </TooltipTrigger>
                             <TooltipContent className="border bg-accent font-semibold text-foreground dark:bg-zinc-900">
-                                <p>Export users</p>
+                                <p>Export Stores</p>
                             </TooltipContent>
                         </Tooltip>
                     </div>

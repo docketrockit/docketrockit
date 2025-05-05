@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { DotsHorizontalIcon, CheckCircledIcon } from '@radix-ui/react-icons';
 import { type ColumnDef, type Row } from '@tanstack/react-table';
-import { MerchantRole } from '@prisma/client';
+import { BrandRole } from '@prisma/client';
 import parsePhoneNumber from 'libphonenumber-js';
 
 import { formatDate } from '@/lib/utils';
@@ -23,18 +23,16 @@ import { UpdateBrandUserSheet } from './UpdateBrandUserSheet';
 import UserResetPasswordDialog from './UserResetPasswordDialog';
 import UserResetTwoFactorDialog from './UserResetTwoFactorDialog';
 import { useAlertDialog } from '@/hooks/useAlertDialog';
-import { MerchantUser } from '@/types/merchantUser';
+import { BrandUser, Brand } from '@/types/brandUser';
 import { User } from '@/lib/user';
 
 export const getColumns = ({
-    merchantId,
-    merchantSlug,
+    brand,
     user
 }: {
-    merchantId: string;
-    merchantSlug: string;
+    brand: Brand;
     user: User;
-}): ColumnDef<MerchantUser>[] => {
+}): ColumnDef<BrandUser>[] => {
     const hasAccessToActions =
         user.adminUser?.adminRole.includes('ADMIN') ||
         user.adminUser?.adminRole.includes('ACCOUNTS');
@@ -125,7 +123,7 @@ export const getColumns = ({
                 />
             ),
             cell: ({ row }) => {
-                if (row.original.primaryContactMerchant) {
+                if (row.original.primaryContactBrand) {
                     return (
                         <div className="flex w-[6.25rem] items-center">
                             <CheckCircledIcon
@@ -153,21 +151,22 @@ export const getColumns = ({
             }
         },
         {
-            id: 'merchantRole',
-            accessorFn: (row) => row.merchantUser?.merchantRole ?? [],
+            id: 'brandRole',
+            accessorFn: (row) => row.merchantUser?.brandUsers ?? [],
             header: ({ column }) => (
                 <DataTableColumnHeader column={column} title="Access" />
             ),
             cell: ({ row }) => {
-                const merchantRoles = row.original.merchantUser
-                    ?.merchantRole as MerchantRole[];
+                const brandUser = row.original.merchantUser?.brandUsers.find(
+                    (brandUserFind) => brandUserFind.brandId === brand.id
+                );
+                const brandRoles = brandUser?.brandRole as BrandRole[];
 
-                if (!merchantRoles || !Array.isArray(merchantRoles))
-                    return null;
+                if (!brandRoles || !Array.isArray(brandRoles)) return null;
 
                 return (
                     <>
-                        {merchantRoles.map((role) => (
+                        {brandRoles.map((role) => (
                             <div
                                 key={role}
                                 className="flex w-[6.25rem] items-center"
@@ -182,12 +181,16 @@ export const getColumns = ({
             //     return Array.isArray(value) && value.includes(row.getValue(id));
             // }
             filterFn: (row, columnId, filterValue: string[]) => {
-                const userRoles = row.original.merchantUser?.merchantRole ?? [];
+                const brandUser = row.original.merchantUser?.brandUsers.find(
+                    (brandUserFind) => brandUserFind.brandId === brand.id
+                );
+                const userRoles = brandUser?.brandRole ?? [];
+
                 const rolesToFilter = Array.isArray(filterValue)
                     ? filterValue
                     : [filterValue];
                 return rolesToFilter.some((role) =>
-                    userRoles.includes(role as MerchantRole)
+                    userRoles.includes(role as BrandRole)
                 );
                 // return filterValue.some((role) =>
                 //     userRoles.includes(role as AdminRole)
@@ -232,7 +235,7 @@ export const getColumns = ({
             ? [
                   {
                       id: 'actions',
-                      cell: function Cell({ row }: { row: Row<MerchantUser> }) {
+                      cell: function Cell({ row }: { row: Row<BrandUser> }) {
                           const [
                               showUpdateAdminUserSheet,
                               setShowUpdateAdminUserSheet
@@ -250,12 +253,14 @@ export const getColumns = ({
                           } = useAlertDialog();
                           return (
                               <>
-                                  <UpdateMerchantUserSheet
+                                  <UpdateBrandUserSheet
                                       open={showUpdateAdminUserSheet}
                                       onOpenChange={setShowUpdateAdminUserSheet}
                                       user={row.original}
-                                      merchantId={merchantId}
-                                      merchantSlug={merchantSlug}
+                                      merchantId={brand.merchantId}
+                                      merchantSlug={brand.merchant.slug}
+                                      brandId={brand.id}
+                                      brandSlug={brand.slug}
                                   />
                                   <UserResetPasswordDialog
                                       isOpen={isResetPasswordDialogOpen}

@@ -14,7 +14,12 @@ export const BrandUsersTableToolbarActions = ({
 }: BrandUsersTableToolbarActionsProps) => {
     return (
         <div className="flex items-center gap-2">
-            <CreateBrandUserDialog brandId={brand.id} brandSlug={brand.slug} />
+            <CreateBrandUserDialog
+                brandId={brand.id}
+                brandSlug={brand.slug}
+                merchantId={brand.merchant.id}
+                merchantSlug={brand.merchant.slug}
+            />
             <Button
                 variant="outline"
                 size="sm"

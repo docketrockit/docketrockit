@@ -10,8 +10,14 @@ import {
 import { motion } from 'framer-motion';
 import { BrandTabsProps } from '@/types/brand';
 import { BrandUsersTable } from './users/BrandUsersTable';
+import { BrandStoresTable } from './stores/BrandStoresTable';
 
-const BrandTabs = ({ brandUsersPromise, brand, user }: BrandTabsProps) => {
+const BrandTabs = ({
+    brandUsersPromise,
+    brandStoresPromise,
+    brand,
+    user
+}: BrandTabsProps) => {
     const [activeTab, setActiveTab] = useState('users');
     const [underlineWidth, setUnderlineWidth] = useState(0);
     const [underlineLeft, setUnderlineLeft] = useState(0);
@@ -51,7 +57,7 @@ const BrandTabs = ({ brandUsersPromise, brand, user }: BrandTabsProps) => {
                     }}
                     className="w-full"
                 >
-                    Brands
+                    Stores
                 </TabsTrigger>
                 <motion.div
                     className="absolute bottom-0 h-0.5 bg-primary"
@@ -68,18 +74,18 @@ const BrandTabs = ({ brandUsersPromise, brand, user }: BrandTabsProps) => {
                 />
             </TabsList>
             <TabsContent value="users" className="mt-4">
-                <MerchantUsersTable
-                    merchantUsersPromise={merchantUsersPromise}
-                    merchant={merchant}
+                <BrandUsersTable
+                    brandUsersPromise={brandUsersPromise}
+                    brand={brand}
                     user={user}
                 />
             </TabsContent>
             <TabsContent value="brands" className="mt-4">
-                {/* <MerchantBrandsTable
-                    merchantBrandsPromise={merchantBrandsPromise}
+                <BrandStoresTable
+                    brandStoresPromise={brandStoresPromise}
                     user={user}
-                    merchant={merchant}
-                /> */}
+                    brand={brand}
+                />
                 Stores coming soon
             </TabsContent>
         </Tabs>

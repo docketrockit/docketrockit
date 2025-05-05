@@ -77,7 +77,7 @@ export const buildBrandUserWhere = (
     }
 
     if (brandId) {
-        merchantWhereFilter.push({ brands: { some: { id: brandId } } });
+        merchantWhereFilter.push({ brandUsers: { some: { brandId } } });
     }
 
     const userFilter =

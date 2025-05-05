@@ -185,7 +185,6 @@ model State {
   merchants Merchant[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
-  stores    Store[]
   brands    Brand[]
   users     User[]
 }
@@ -249,15 +248,16 @@ model Brand {
 
 model Store {
   id               String    @id @default(cuid())
-  status           Status
+  name             String
+  slug             String    @unique
+  status           Status    @default(PENDING)
   brand            Brand     @relation(fields: [brandId], references: [id], onDelete: Cascade)
   brandId          String
   address1         String
-  address2         String
-  suburb           String
-  postcode         String
-  state            State     @relation(fields: [stateId], references: [id], onDelete: Cascade)
-  stateId          String
+  address2         String?
+  city             String
+  region           String
+  postalCode       String
   country          Country   @relation(fields: [countryId], references: [id], onDelete: Cascade)
   countryId        String
   formattedAddress String

@@ -1,16 +1,14 @@
 import { redirect } from 'next/navigation';
 
-import { getMerchant } from '@/actions/admin/merchants';
 import { authCheckAdmin } from '@/lib/authCheck';
 import { ParamsBrand } from '@/types/global';
 import BrandMain from '@/components/brands/view/BrandMain';
 import { brandUsersSearchParamsSchema } from '@/schemas/admin/brandUsers';
-import { merchantBrandsSearchParamsSchema } from '@/schemas/admin/merchantBrands';
-import { getMerchantUsers } from '@/actions/admin/merchantUsers';
+import { brandStoresSearchParamsSchema } from '@/schemas/admin/brandStores';
 import { SearchParams } from '@/types/global';
-import { getMerchantBrands } from '@/actions/admin/merchantBrands';
 import { getBrand } from '@/actions/brands';
 import { getBrandUsers } from '@/actions/admin/brandUsers';
+import { getBrandStores } from '@/actions/admin/brandStores';
 
 export async function generateMetadata({
     params
@@ -42,15 +40,15 @@ const BrandDetailsPage = async (props: {
     let searchUsers = brandUsersSearchParamsSchema.parse(
         await props.searchParams
     );
-    // let searchBrands = merchantBrandsSearchParamsSchema.parse(
-    //     await props.searchParams
-    // );
+    let searchBrands = brandStoresSearchParamsSchema.parse(
+        await props.searchParams
+    );
 
     searchUsers = { ...searchUsers, brandId: brand.id };
-    // searchBrands = { ...searchBrands, merchantId: data.id };
+    searchBrands = { ...searchBrands, brandId: brand.id };
 
     const brandUsersPromise = getBrandUsers(searchUsers);
-    // const merchantBrandsPromise = getMerchantBrands(searchBrands);
+    const brandStoresPromise = getBrandStores(searchBrands);
 
     return (
         <div>
@@ -63,6 +61,7 @@ const BrandDetailsPage = async (props: {
                         brand={brand}
                         user={user}
                         brandUsersPromise={brandUsersPromise}
+                        brandStoresPromise={brandStoresPromise}
                     />
                 </div>
             </div>

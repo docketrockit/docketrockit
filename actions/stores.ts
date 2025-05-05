@@ -2,20 +2,19 @@
 
 import * as z from 'zod';
 import { redirect } from 'next/navigation';
-import { Brand, Merchant } from '@prisma/client';
+import { Brand } from '@prisma/client';
 import GithubSlugger from 'github-slugger';
 
 import db from '@/lib/db';
+import { Store } from '@/types/store';
 import { authCheckAdmin } from '@/lib/authCheck';
 import { globalPOSTRateLimit } from '@/lib/request';
 import { getErrorMessage } from '@/lib/handleError';
-import { AddBrandSchemaCreate, EditBrandSchema } from '@/schemas/brands';
+import { AddStoreSchema, EditStoreSchema } from '@/schemas/stores';
 
 const slugger = new GithubSlugger();
 
-export const createBrand = async (
-    values: z.infer<typeof AddBrandSchemaCreate>
-) => {
+export const createStore = async (values: z.infer<typeof AddStoreSchema>) => {
     const { user: adminUser } = await authCheckAdmin(['ADMIN']);
 
     if (!adminUser)
@@ -24,8 +23,8 @@ export const createBrand = async (
             error: getErrorMessage('Unauthorized')
         };
 
-    let data: Brand;
-    let merchant: Merchant | null;
+    let data: Store;
+    let brand: Brand | null;
 
     try {
         if (!(await globalPOSTRateLimit())) {
@@ -34,7 +33,7 @@ export const createBrand = async (
                 error: getErrorMessage('Too many requests')
             };
         }
-        const validatedFields = AddBrandSchemaCreate.safeParse(values);
+        const validatedFields = AddStoreSchema.safeParse(values);
 
         if (!validatedFields.success) {
             return {
@@ -44,31 +43,42 @@ export const createBrand = async (
         }
 
         const {
-            merchantSlug,
+            brandSlug,
             name,
-            tradingAsName,
             phoneNumber,
-            genericEmail,
-            invoiceEmail,
             address1,
             address2,
-            suburb,
-            state,
-            postcode,
-            country,
+            formattedAddress,
+            city,
+            region,
+            postalCode,
+            countryCode,
+            latitude,
+            longitude,
+            currency,
             abn,
-            acn,
-            logoUrl
+            acn
         } = validatedFields.data;
 
-        merchant = await db.merchant.findUnique({
-            where: { slug: merchantSlug }
+        brand = await db.brand.findUnique({
+            where: { slug: brandSlug }
         });
 
-        if (!merchant) {
+        if (!brand) {
             return {
                 data: null,
                 error: getErrorMessage('Invalid fields')
+            };
+        }
+
+        const countryId = await db.country.findFirst({
+            where: { isoCode: countryCode }
+        });
+
+        if (!countryId) {
+            return {
+                data: null,
+                error: getErrorMessage('Error with fields')
             };
         }
 
@@ -85,25 +95,26 @@ export const createBrand = async (
             }
         }
 
-        data = await db.brand.create({
+        data = await db.store.create({
             data: {
                 name,
-                tradingAsName,
                 slug,
                 phoneNumber,
-                genericEmail,
-                invoiceEmail,
                 address1,
                 address2,
-                suburb,
-                postcode,
-                stateId: state,
-                countryId: country,
+                formattedAddress,
+                latitude,
+                longitude,
+                city,
+                region,
+                postalCode,
+                currency,
+                countryId: countryId.id,
                 abn,
                 acn,
-                logoUrl,
-                merchantId: merchant.id
-            }
+                brandId: brand.id
+            },
+            include: { country: true, brand: { include: { merchant: true } } }
         });
 
         if (!data) {
@@ -119,39 +130,37 @@ export const createBrand = async (
         };
     }
 
-    redirect(`/admin/merchants/${merchant.slug}/brands/${data.slug}`);
+    redirect(
+        `/admin/merchants/${data.brand.merchant.slug}/brands/${data.brand.slug}/stores/${data.slug}`
+    );
 };
 
-export const getBrand = async (slug: string) => {
+export const getStore = async (slug: string) => {
     const { user } = await authCheckAdmin();
 
     if (!user)
         return {
             data: null
         };
-    const data = await db.brand.findUnique({
+    const data = await db.store.findUnique({
         where: {
             slug
         },
         include: {
-            state: true,
             country: true,
-            primaryContact: true,
-            merchant: true
+            brand: { include: { merchant: true } }
         }
     });
 
     return { data };
 };
 
-export const updateBrand = async ({
+export const updateStore = async ({
     id,
-    values,
-    merchantSlug
+    values
 }: {
     id: string;
-    values: z.infer<typeof EditBrandSchema>;
-    merchantSlug: string;
+    values: z.infer<typeof EditStoreSchema>;
 }) => {
     const { user: adminUser } = await authCheckAdmin(['ADMIN']);
 
@@ -161,8 +170,7 @@ export const updateBrand = async ({
             error: getErrorMessage('Unauthorized')
         };
 
-    let data: Brand;
-    let merchant: Merchant | null;
+    let data: Store;
 
     try {
         if (!(await globalPOSTRateLimit())) {
@@ -171,7 +179,7 @@ export const updateBrand = async ({
                 error: getErrorMessage('Too many requests')
             };
         }
-        const validatedFields = EditBrandSchema.safeParse(values);
+        const validatedFields = EditStoreSchema.safeParse(values);
 
         if (!validatedFields.success) {
             return {
@@ -180,41 +188,42 @@ export const updateBrand = async ({
             };
         }
 
-        const existingBrand = await db.brand.findUnique({
+        const existingStore = await db.store.findUnique({
             where: { id }
         });
 
-        if (!existingBrand) {
+        if (!existingStore) {
             return {
                 data: null,
-                error: getErrorMessage('Invalid brand id')
+                error: getErrorMessage('Invalid store id')
             };
         }
 
         const {
             name,
-            tradingAsName,
             phoneNumber,
-            genericEmail,
-            invoiceEmail,
             address1,
             address2,
-            suburb,
-            state,
-            postcode,
-            country,
+            formattedAddress,
+            city,
+            region,
+            postalCode,
+            countryCode,
+            latitude,
+            longitude,
+            currency,
             abn,
             acn
         } = validatedFields.data;
 
-        let slug = existingBrand.slug;
+        let slug = existingStore.slug;
 
-        if (name !== existingBrand.name) {
+        if (name !== existingStore.name) {
             slug = slugger.slug(name);
             let slugExists = true;
 
             while (slugExists) {
-                const checkSlug = await db.brand.findUnique({
+                const checkSlug = await db.store.findUnique({
                     where: { slug }
                 });
                 if (!checkSlug) {
@@ -226,23 +235,39 @@ export const updateBrand = async ({
             }
         }
 
-        data = await db.brand.update({
+        const countryId = await db.country.findFirst({
+            where: { isoCode: countryCode }
+        });
+
+        if (!countryId) {
+            return {
+                data: null,
+                error: getErrorMessage('Error with fields')
+            };
+        }
+
+        data = await db.store.update({
             where: { id },
             data: {
                 name,
-                tradingAsName,
                 slug,
                 phoneNumber,
-                genericEmail,
-                invoiceEmail,
                 address1,
                 address2,
-                suburb,
-                postcode,
-                stateId: state,
-                countryId: country,
+                formattedAddress,
+                latitude,
+                longitude,
+                city,
+                region,
+                postalCode,
+                currency,
+                countryId: countryId.id,
                 abn,
                 acn
+            },
+            include: {
+                country: true,
+                brand: { include: { merchant: true } }
             }
         });
 
@@ -259,5 +284,7 @@ export const updateBrand = async ({
         };
     }
 
-    redirect(`/admin/merchants/${merchantSlug}/brands/${data.slug}`);
+    redirect(
+        `/admin/merchants/${data.brand.merchant.slug}/brands/${data.brand.slug}/stores/${data.slug}`
+    );
 };

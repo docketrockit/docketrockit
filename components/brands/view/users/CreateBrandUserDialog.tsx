@@ -34,7 +34,7 @@ import { createBrandUser } from '@/actions/admin/brandUsers';
 import { BrandUserSchema } from '@/schemas/users';
 import { CreateBrandUserForm } from './CreateBrandUserForm';
 
-export const CreateMerchantUserDialog = ({
+export const CreateBrandUserDialog = ({
     merchantId,
     merchantSlug,
     brandId,

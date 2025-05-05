@@ -1,6 +1,6 @@
 import * as z from 'zod';
 
-import { Prisma, Brand } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { type Table } from '@tanstack/react-table';
 
 import { getBrandUsers } from '@/actions/admin/brandUsers';
@@ -31,7 +31,16 @@ export type BrandUser = Prisma.UserGetPayload<{
     };
 }>;
 
-export interface MerchantUsersTableProps {
+export type Brand = Prisma.BrandGetPayload<{
+    include: {
+        state: true;
+        country: true;
+        primaryContact: true;
+        merchant: true;
+    };
+}>;
+
+export interface BrandUsersTableProps {
     brandUsersPromise: ReturnType<typeof getBrandUsers>;
     brand: Brand;
     user: User;
