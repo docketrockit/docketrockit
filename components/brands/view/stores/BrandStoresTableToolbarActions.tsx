@@ -26,7 +26,7 @@ export const BrandStoresTableToolbarActions = ({
                         className="cursor-pointer"
                     >
                         <PlusIcon className="mr-2 size-4" aria-hidden="true" />
-                        New brand
+                        New store
                     </Button>
                 </Link>
             )}
