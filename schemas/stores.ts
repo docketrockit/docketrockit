@@ -67,3 +67,7 @@ export const EditStoreSchema = z.object({
             message: 'Invalid ACN'
         })
 });
+
+export const storeFormSchema = z.object({
+    brand: z.string().optional()
+});

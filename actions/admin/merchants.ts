@@ -229,7 +229,6 @@ export const updateMerchant = async ({
 export const getAllMerchants = async () => {
     try {
         const data = await db.merchant.findMany({
-            where: { status: 'APPROVED' },
             select: { id: true, name: true, slug: true }
         });
 

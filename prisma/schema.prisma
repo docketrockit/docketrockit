@@ -163,6 +163,23 @@ model BrandUser {
   updatedAt      DateTime      @updatedAt
 }
 
+model Currency {
+  id           String @id @default(cuid())
+  name         String
+  code         String
+  demonym      String
+  majorSingle  String
+  majorPlural  String
+  ISOnum       Int
+  symbol       String
+  symbolNative String
+  minorSingle  String
+  minorPlural  String
+  ISOdigits    Int
+  decimals     Int
+  numToBasic   Int
+}
+
 model Country {
   id        String     @id @default(cuid())
   isoCode   String

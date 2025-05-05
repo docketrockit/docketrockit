@@ -261,3 +261,18 @@ export const updateBrand = async ({
 
     redirect(`/admin/merchants/${merchantSlug}/brands/${data.slug}`);
 };
+
+export const getAllBrands = async () => {
+    try {
+        const data = await db.brand.findMany({
+            select: { id: true, name: true, slug: true }
+        });
+
+        return { data, error: null };
+    } catch (err) {
+        return {
+            data: null,
+            error: getErrorMessage(err)
+        };
+    }
+};
