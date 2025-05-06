@@ -36,8 +36,15 @@ import { FormInput } from '@/components/form/FormInputs';
 import { SubmitButton } from '@/components/form/Buttons';
 import { PhoneInput } from '@/components/ui/phone-input';
 import { AddStoreFormProps } from '@/types/store';
+import { createStore } from '@/actions/stores';
+import Autocomplete from '@/components/autocomplete/Autocomplete';
 
-const AddStoreForm = ({ brandSlug, brands, currencies }: AddStoreFormProps) => {
+const AddStoreForm = ({
+    brandSlug,
+    brands,
+    currencies,
+    defaultCurrency
+}: AddStoreFormProps) => {
     const [error, setError] = useState<string | undefined>('');
     const [isPending, startTransition] = useTransition();
     const [openBrand, setOpenBrand] = useState(false);
@@ -63,20 +70,29 @@ const AddStoreForm = ({ brandSlug, brands, currencies }: AddStoreFormProps) => {
             longitude: 0,
             abn: '',
             acn: '',
-            currency: ''
+            currency: defaultCurrency?.id || ''
         }
     });
 
     const onSubmit = (values: z.infer<typeof AddStoreSchema>) => {
         setError('');
         startTransition(async () => {
-            // const logoUrl = await uploadImage(values.logoUrl[0].value, 'logos');
-            // const formData = { ...values, logoUrl: logoUrl.publicUrl };
-            // const data = await createBrand(formData);
-            // if (!data.data) {
-            //     setError(data.error);
-            // }
+            const data = await createStore(values);
+            if (!data.data) {
+                setError(data.error);
+            }
         });
+    };
+
+    const currencyDisplayName = (id: string) => {
+        {
+            const currency = currencies.find((currency) => currency.id === id);
+            if (currency) {
+                return `${currency.code} - ${currency.name} (${currency.symbolNative})`;
+            } else {
+                return 'No currency found';
+            }
+        }
     };
 
     return (
@@ -333,13 +349,16 @@ const AddStoreForm = ({ brandSlug, brands, currencies }: AddStoreFormProps) => {
                                                                 className="h-12 w-full justify-between rounded-xl px-6 py-3 text-sm font-normal"
                                                             >
                                                                 {field.value
-                                                                    ? currencies.find(
-                                                                          (
-                                                                              currency
-                                                                          ) =>
-                                                                              currency.id ===
-                                                                              field.value
-                                                                      )?.name
+                                                                    ? // ? currencies.find(
+                                                                      //       (
+                                                                      //           currency
+                                                                      //       ) =>
+                                                                      //           currency.id ===
+                                                                      //           field.value
+                                                                      //   )?.name
+                                                                      currencyDisplayName(
+                                                                          field.value
+                                                                      )
                                                                     : 'Select Currency...'}
                                                                 <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                                             </Button>
@@ -368,7 +387,7 @@ const AddStoreForm = ({ brandSlug, brands, currencies }: AddStoreFormProps) => {
                                                                         .includes(
                                                                             search.toLowerCase()
                                                                         ) ||
-                                                                    item.currency
+                                                                    item.code
                                                                         .toLowerCase()
                                                                         .includes(
                                                                             search.toLowerCase()
@@ -401,7 +420,7 @@ const AddStoreForm = ({ brandSlug, brands, currencies }: AddStoreFormProps) => {
                                                                                 value={currency.id.toString()}
                                                                                 onSelect={() => {
                                                                                     form.setValue(
-                                                                                        'brandSlug',
+                                                                                        'currency',
                                                                                         currency.id
                                                                                     );
                                                                                     setOpenCurrency(
@@ -409,7 +428,7 @@ const AddStoreForm = ({ brandSlug, brands, currencies }: AddStoreFormProps) => {
                                                                                     );
                                                                                 }}
                                                                             >
-                                                                                {`${currency.currency} (${currency.name})`}
+                                                                                {`${currency.code} - ${currency.name} (${currency.symbolNative})`}
                                                                                 <CheckIcon
                                                                                     className={cn(
                                                                                         'ml-auto h-4 w-4',
@@ -439,9 +458,10 @@ const AddStoreForm = ({ brandSlug, brands, currencies }: AddStoreFormProps) => {
                         <ComponentCard>
                             <div className="space-y-6">
                                 <div className="flex flex-col space-y-6">
+                                    <Autocomplete />
                                     <div className="flex justify-end">
                                         <SubmitButton
-                                            text="Add Brand"
+                                            text="Add Store"
                                             isPending={isPending}
                                         />
                                     </div>

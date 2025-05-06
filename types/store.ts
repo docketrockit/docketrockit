@@ -22,6 +22,7 @@ export interface AddStoreFormProps {
     brandSlug?: string;
     brands: Brand[];
     currencies: Currency[];
+    defaultCurrency: Currency | null;
 }
 
 export interface EditStoreFormProps {

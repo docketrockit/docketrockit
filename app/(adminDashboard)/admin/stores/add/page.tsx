@@ -4,7 +4,7 @@ import AddStoreForm from '@/components/stores/add/AddStoreForm';
 import { storeFormSchema } from '@/schemas/stores';
 import { authCheck } from '@/lib/authCheck';
 import { getAllBrands } from '@/actions/brands';
-import { getAllCurrencies } from '@/actions/currencies';
+import { getAllCurrencies, getCurrencyByCode } from '@/actions/currencies';
 
 export async function generateMetadata() {
     const title = 'Add Store';
@@ -22,6 +22,7 @@ const AddStorePage = async (props: { searchParams: SearchParams }) => {
     const queryString = storeFormSchema.parse(searchParams);
     const { data: brands } = await getAllBrands();
     const { data: currencies } = await getAllCurrencies();
+    const { data: currency } = await getCurrencyByCode('AUD');
 
     return (
         <div>
@@ -30,6 +31,7 @@ const AddStorePage = async (props: { searchParams: SearchParams }) => {
                 brandSlug={queryString.brand}
                 brands={brands || []}
                 currencies={currencies || []}
+                defaultCurrency={currency}
             />
         </div>
     );

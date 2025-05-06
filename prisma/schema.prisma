@@ -164,20 +164,20 @@ model BrandUser {
 }
 
 model Currency {
-  id           String @id @default(cuid())
-  name         String
-  code         String
-  demonym      String
-  majorSingle  String
-  majorPlural  String
-  ISOnum       Int
-  symbol       String
+  id           String  @id @default(cuid())
+  name         String  @unique
+  code         String  @unique
+  demonym      String?
+  majorSingle  String?
+  majorPlural  String?
+  ISOnum       Int?
+  symbol       String?
   symbolNative String
-  minorSingle  String
-  minorPlural  String
-  ISOdigits    Int
-  decimals     Int
-  numToBasic   Int
+  minorSingle  String?
+  minorPlural  String?
+  ISOdigits    Int?
+  decimals     Int?
+  numToBasic   Int?
 }
 
 model Country {

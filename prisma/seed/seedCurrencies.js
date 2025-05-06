@@ -1,6 +1,91 @@
-export const currencies = [
-    {
-        code: 'AED',
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.currencies = void 0;
+var client_1 = require("@prisma/client");
+// import { currencies } from './currencies.ts';
+var prisma = new client_1.PrismaClient();
+function main() {
+    return __awaiter(this, void 0, void 0, function () {
+        var currencyEntries;
+        return __generator(this, function (_a) {
+            currencyEntries = Object.entries(exports.currencies);
+            // for (const [code, data] of currencyEntries) {
+            //     await prisma.currency.create({
+            //         data: {
+            //             code,
+            //             name: data.name,
+            //             demonym: data.demonym,
+            //             majorSingle: data.majorSingle,
+            //             majorPlural: data.majorPlural,
+            //             ISOnum: data.ISOnum || 0,
+            //             symbol: data.symbol,
+            //             symbolNative: data.symbolNative,
+            //             minorSingle: data.minorSingle,
+            //             minorPlural: data.minorPlural,
+            //             ISOdigits: data.ISOdigits,
+            //             decimals: data.decimals,
+            //             numToBasic: data.numToBasic || 0
+            //         }
+            //     });
+            // }
+            console.log("Seeded ".concat(currencyEntries.length, " currencies."));
+            return [2 /*return*/];
+        });
+    });
+}
+main()
+    .catch(function (e) {
+    console.error(e);
+    process.exit(1);
+})
+    .finally(function () { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, prisma.$disconnect()];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+exports.currencies = {
+    AED: {
         name: 'United Arab Emirates Dirham',
         demonym: 'UAE',
         majorSingle: 'Dirham',
@@ -14,8 +99,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'AFN',
+    AFN: {
         name: 'Afghan Afghani',
         demonym: 'Afghan',
         majorSingle: 'Afghani',
@@ -29,8 +113,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'ALL',
+    ALL: {
         name: 'Albanian Lek',
         demonym: 'Albanian',
         majorSingle: 'Lek',
@@ -44,8 +127,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'AMD',
+    AMD: {
         name: 'Armenian Dram',
         demonym: 'Armenian',
         majorSingle: 'Dram',
@@ -59,8 +141,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'ANG',
+    ANG: {
         name: 'Netherlands Antillean Guilder',
         demonym: 'Netherlands Antillean',
         majorSingle: 'Guilder',
@@ -74,8 +155,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'AOA',
+    AOA: {
         name: 'Angolan Kwanza',
         demonym: 'Angolan',
         majorSingle: 'Kwanza',
@@ -89,8 +169,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'ARS',
+    ARS: {
         name: 'Argentine Peso',
         demonym: 'Argentine',
         majorSingle: 'Peso',
@@ -104,8 +183,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'AUD',
+    AUD: {
         name: 'Australian Dollar',
         demonym: 'Australian',
         majorSingle: 'Dollar',
@@ -119,8 +197,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'AWG',
+    AWG: {
         name: 'Aruban Florin',
         demonym: 'Aruban',
         majorSingle: 'Florin',
@@ -134,8 +211,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'AZN',
+    AZN: {
         name: 'Azerbaijani Manat',
         demonym: 'Azerbaijani',
         majorSingle: 'Manat',
@@ -149,8 +225,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'BAM',
+    BAM: {
         name: 'Bosnia and Herzegovina Convertible Mark',
         demonym: 'Bosnia-Herzegovina',
         majorSingle: 'Convertible Mark',
@@ -164,8 +239,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'BBD',
+    BBD: {
         name: 'Barbadian Dollar',
         demonym: 'Barbadian',
         majorSingle: 'Dollar',
@@ -179,8 +253,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'BDT',
+    BDT: {
         name: 'Bangladeshi Taka',
         demonym: 'Bangladeshi',
         majorSingle: 'Taka',
@@ -194,8 +267,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'BGN',
+    BGN: {
         name: 'Bulgarian Lev',
         demonym: 'Bulgarian',
         majorSingle: 'Lev',
@@ -209,8 +281,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'BHD',
+    BHD: {
         name: 'Bahraini Dinar',
         demonym: 'Bahraini',
         majorSingle: 'Dinar',
@@ -224,8 +295,7 @@ export const currencies = [
         decimals: 3,
         numToBasic: 1000
     },
-    {
-        code: 'BIF',
+    BIF: {
         name: 'Burundian Franc',
         demonym: 'Burundian',
         majorSingle: 'Franc',
@@ -239,8 +309,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'BMD',
+    BMD: {
         name: 'Bermudian Dollar',
         demonym: 'Bermudian',
         majorSingle: 'Dollar',
@@ -254,8 +323,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'BND',
+    BND: {
         name: 'Brunei Dollar',
         demonym: 'Brunei',
         majorSingle: 'Dollar',
@@ -269,8 +337,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'BOB',
+    BOB: {
         name: 'Bolivian Boliviano',
         demonym: 'Bolivian',
         majorSingle: 'Boliviano',
@@ -284,8 +351,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'BRL',
+    BRL: {
         name: 'Brazilian Real',
         demonym: 'Brazilian',
         majorSingle: 'Real',
@@ -299,8 +365,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'BSD',
+    BSD: {
         name: 'Bahamian Dollar',
         demonym: 'Bahamian',
         majorSingle: 'Dollar',
@@ -314,8 +379,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'BTN',
+    BTN: {
         name: 'Bhutanese Ngultrum',
         demonym: 'Bhutanese',
         majorSingle: 'Ngultrum',
@@ -329,8 +393,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'BWP',
+    BWP: {
         name: 'Botswana Pula',
         demonym: 'Botswana',
         majorSingle: 'Pula',
@@ -344,8 +407,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'BYN',
+    BYN: {
         name: 'Belarusian Ruble',
         demonym: 'Belarusian',
         majorSingle: 'Ruble',
@@ -359,8 +421,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'BZD',
+    BZD: {
         name: 'Belize Dollar',
         demonym: 'Belize',
         majorSingle: 'Dollar',
@@ -374,8 +435,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'CAD',
+    CAD: {
         name: 'Canadian Dollar',
         demonym: 'Canadian',
         majorSingle: 'Dollar',
@@ -389,8 +449,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'CDF',
+    CDF: {
         name: 'Congolese Franc',
         demonym: 'Congolese',
         majorSingle: 'Franc',
@@ -404,8 +463,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'CHF',
+    CHF: {
         name: 'Swiss Franc',
         demonym: 'Swiss',
         majorSingle: 'Franc',
@@ -419,13 +477,12 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'CKD',
+    CKD: {
         name: 'Cook Islands Dollar',
         demonym: 'Cook Islands',
         majorSingle: 'Dollar',
         majorPlural: 'Dollars',
-        ISOnum: '',
+        ISOnum: null,
         symbol: '$',
         symbolNative: '$',
         minorSingle: 'Cent',
@@ -434,8 +491,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'CLP',
+    CLP: {
         name: 'Chilean Peso',
         demonym: 'Chilean',
         majorSingle: 'Peso',
@@ -449,8 +505,7 @@ export const currencies = [
         decimals: 0,
         numToBasic: 100
     },
-    {
-        code: 'CNY',
+    CNY: {
         name: 'Chinese Yuan',
         demonym: 'Chinese',
         majorSingle: 'Yuan',
@@ -464,8 +519,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'COP',
+    COP: {
         name: 'Colombian Peso',
         demonym: 'Colombian',
         majorSingle: 'Peso',
@@ -479,8 +533,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'CRC',
+    CRC: {
         name: 'Costa Rican Colon',
         demonym: 'Costa Rican',
         majorSingle: 'Colón',
@@ -494,8 +547,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'CUC',
+    CUC: {
         name: 'Cuban convertible Peso',
         demonym: 'Cuban Convertible',
         majorSingle: 'Peso',
@@ -509,8 +561,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'CUP',
+    CUP: {
         name: 'Cuban Peso',
         demonym: 'Cuban',
         majorSingle: 'Peso',
@@ -524,8 +575,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'CVE',
+    CVE: {
         name: 'Cabo Verdean Escudo',
         demonym: 'Cabo Verdean',
         majorSingle: 'Escudo',
@@ -539,8 +589,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'CZK',
+    CZK: {
         name: 'Czech Koruna',
         demonym: 'Czech',
         majorSingle: 'Koruna',
@@ -554,8 +603,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'DJF',
+    DJF: {
         name: 'Djiboutian Franc',
         demonym: 'Djiboutian',
         majorSingle: 'Franc',
@@ -569,8 +617,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'DKK',
+    DKK: {
         name: 'Danish Krone',
         demonym: 'Danish',
         majorSingle: 'Krone',
@@ -584,8 +631,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'DOP',
+    DOP: {
         name: 'Dominican Peso',
         demonym: 'Dominican',
         majorSingle: 'Peso',
@@ -599,8 +645,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'DZD',
+    DZD: {
         name: 'Algerian Dinar',
         demonym: 'Algerian',
         majorSingle: 'Dinar',
@@ -614,8 +659,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'EGP',
+    EGP: {
         name: 'Egyptian Pound',
         demonym: 'Egyptian',
         majorSingle: 'Pound',
@@ -629,13 +673,12 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'EHP',
+    EHP: {
         name: 'Sahrawi Peseta',
         demonym: 'Sahrawi',
         majorSingle: 'Peseta',
         majorPlural: 'Pesetas',
-        ISOnum: '',
+        ISOnum: null,
         symbol: 'Ptas.',
         symbolNative: 'Ptas.',
         minorSingle: 'Céntimo',
@@ -644,8 +687,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'ERN',
+    ERN: {
         name: 'Eritrean Nakfa',
         demonym: 'Eritrean',
         majorSingle: 'Nakfa',
@@ -659,8 +701,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'ETB',
+    ETB: {
         name: 'Ethiopian Birr',
         demonym: 'Ethiopian',
         majorSingle: 'Birr',
@@ -674,8 +715,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'EUR',
+    EUR: {
         name: 'Euro',
         demonym: '',
         majorSingle: 'Euro',
@@ -689,8 +729,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'FJD',
+    FJD: {
         name: 'Fijian Dollar',
         demonym: 'Fijian',
         majorSingle: 'Dollar',
@@ -704,8 +743,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'FKP',
+    FKP: {
         name: 'Falkland Islands Pound',
         demonym: 'Falkland Islands',
         majorSingle: 'Pound',
@@ -719,13 +757,12 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'FOK',
+    FOK: {
         name: 'Faroese Króna',
         demonym: 'Faroese',
         majorSingle: 'Króna',
         majorPlural: 'Krónas',
-        ISOnum: '',
+        ISOnum: null,
         symbol: 'kr',
         symbolNative: 'kr',
         minorSingle: 'Oyra',
@@ -734,8 +771,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'GBP',
+    GBP: {
         name: 'Pound Sterling',
         demonym: 'Pound Sterling',
         majorSingle: 'Pound',
@@ -749,8 +785,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'GEL',
+    GEL: {
         name: 'Georgian Lari',
         demonym: 'Georgian',
         majorSingle: 'Lari',
@@ -764,13 +799,12 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'GGP',
+    GGP: {
         name: 'Guernsey Pound',
         demonym: 'Guernsey',
         majorSingle: 'Pound',
         majorPlural: 'Pounds',
-        ISOnum: '',
+        ISOnum: null,
         symbol: '£',
         symbolNative: '£',
         minorSingle: 'Penny',
@@ -779,8 +813,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'GHS',
+    GHS: {
         name: 'Ghanaian Cedi',
         demonym: 'Ghanaian',
         majorSingle: 'Cedi',
@@ -794,8 +827,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'GIP',
+    GIP: {
         name: 'Gibraltar Pound',
         demonym: 'Gibraltar',
         majorSingle: 'Pound',
@@ -809,8 +841,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'GMD',
+    GMD: {
         name: 'Gambian Dalasi',
         demonym: 'Gambian',
         majorSingle: 'Dalasi',
@@ -824,8 +855,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'GNF',
+    GNF: {
         name: 'Guinean Franc',
         demonym: 'Guinean',
         majorSingle: 'Franc',
@@ -839,8 +869,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'GTQ',
+    GTQ: {
         name: 'Guatemalan Quetzal',
         demonym: 'Guatemalan',
         majorSingle: 'Quetzal',
@@ -854,8 +883,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'GYD',
+    GYD: {
         name: 'Guyanese Dollar',
         demonym: 'Guyanese',
         majorSingle: 'Dollar',
@@ -869,8 +897,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'HKD',
+    HKD: {
         name: 'Hong Kong Dollar',
         demonym: 'Hong Kong',
         majorSingle: 'Dollar',
@@ -884,8 +911,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'HNL',
+    HNL: {
         name: 'Honduran Lempira',
         demonym: 'Honduran',
         majorSingle: 'Lempira',
@@ -899,8 +925,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'HRK',
+    HRK: {
         name: 'Croatian Kuna',
         demonym: 'Croatian',
         majorSingle: 'Kuna',
@@ -914,8 +939,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'HTG',
+    HTG: {
         name: 'Haitian Gourde',
         demonym: 'Haitian',
         majorSingle: 'Gourde',
@@ -929,8 +953,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'HUF',
+    HUF: {
         name: 'Hungarian Forint',
         demonym: 'Hungarian',
         majorSingle: 'Forint',
@@ -944,8 +967,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'IDR',
+    IDR: {
         name: 'Indonesian Rupiah',
         demonym: 'Indonesian',
         majorSingle: 'Rupiah',
@@ -959,8 +981,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'ILS',
+    ILS: {
         name: 'Israeli new Shekel',
         demonym: 'Israeli',
         majorSingle: 'Shekel',
@@ -974,13 +995,12 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'IMP',
+    IMP: {
         name: 'Manx Pound',
         demonym: 'Manx',
         majorSingle: 'Pound',
         majorPlural: 'Pounds',
-        ISOnum: '',
+        ISOnum: null,
         symbol: '£',
         symbolNative: '£',
         minorSingle: 'Penny',
@@ -989,8 +1009,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'INR',
+    INR: {
         name: 'Indian Rupee',
         demonym: 'Indian',
         majorSingle: 'Rupee',
@@ -1004,8 +1023,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'IQD',
+    IQD: {
         name: 'Iraqi Dinar',
         demonym: 'Iraqi',
         majorSingle: 'Dinar',
@@ -1019,8 +1037,7 @@ export const currencies = [
         decimals: 3,
         numToBasic: 1000
     },
-    {
-        code: 'IRR',
+    IRR: {
         name: 'Iranian Rial',
         demonym: 'Iranian',
         majorSingle: 'Rial',
@@ -1034,8 +1051,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'ISK',
+    ISK: {
         name: 'Icelandic Krona',
         demonym: 'Icelandic',
         majorSingle: 'Krona',
@@ -1049,13 +1065,12 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'JEP',
+    JEP: {
         name: 'Jersey Pound',
         demonym: 'Jersey',
         majorSingle: 'Pound',
         majorPlural: 'Pounds',
-        ISOnum: '',
+        ISOnum: null,
         symbol: '£',
         symbolNative: '£',
         minorSingle: 'Penny',
@@ -1064,8 +1079,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'JMD',
+    JMD: {
         name: 'Jamaican Dollar',
         demonym: 'Jamaican',
         majorSingle: 'Dollar',
@@ -1079,8 +1093,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'JOD',
+    JOD: {
         name: 'Jordanian Dinar',
         demonym: 'Jordanian',
         majorSingle: 'Dinar',
@@ -1094,8 +1107,7 @@ export const currencies = [
         decimals: 3,
         numToBasic: 1000
     },
-    {
-        code: 'JPY',
+    JPY: {
         name: 'Japanese Yen',
         demonym: 'Japanese',
         majorSingle: 'Yen',
@@ -1109,8 +1121,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'KES',
+    KES: {
         name: 'Kenyan Shilling',
         demonym: 'Kenyan',
         majorSingle: 'Shilling',
@@ -1124,8 +1135,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'KGS',
+    KGS: {
         name: 'Kyrgyzstani Som',
         demonym: 'Kyrgyzstani',
         majorSingle: 'Som',
@@ -1139,8 +1149,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'KHR',
+    KHR: {
         name: 'Cambodian Riel',
         demonym: 'Cambodian',
         majorSingle: 'Riel',
@@ -1154,13 +1163,12 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'KID',
+    KID: {
         name: 'Kiribati Dollar',
         demonym: 'Kiribati',
         majorSingle: 'Dollar',
         majorPlural: 'Dollars',
-        ISOnum: '',
+        ISOnum: null,
         symbol: '$',
         symbolNative: '$',
         minorSingle: 'Cent',
@@ -1169,8 +1177,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'KMF',
+    KMF: {
         name: 'Comorian Franc',
         demonym: 'Comorian',
         majorSingle: 'Franc',
@@ -1184,8 +1191,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'KPW',
+    KPW: {
         name: 'North Korean Won',
         demonym: 'North Korean',
         majorSingle: 'Won',
@@ -1199,8 +1205,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'KRW',
+    KRW: {
         name: 'South Korean Won',
         demonym: 'South Korean',
         majorSingle: 'Won',
@@ -1214,8 +1219,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'KWD',
+    KWD: {
         name: 'Kuwaiti Dinar',
         demonym: 'Kuwaiti',
         majorSingle: 'Dinar',
@@ -1229,8 +1233,7 @@ export const currencies = [
         decimals: 3,
         numToBasic: 1000
     },
-    {
-        code: 'KYD',
+    KYD: {
         name: 'Cayman Islands Dollar',
         demonym: 'Cayman Islands',
         majorSingle: 'Dollar',
@@ -1244,8 +1247,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'KZT',
+    KZT: {
         name: 'Kazakhstani Tenge',
         demonym: 'Kazakhstani',
         majorSingle: 'Tenge',
@@ -1259,8 +1261,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'LAK',
+    LAK: {
         name: 'Lao Kip',
         demonym: 'Lao',
         majorSingle: 'Kip',
@@ -1274,8 +1275,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'LBP',
+    LBP: {
         name: 'Lebanese Pound',
         demonym: 'Lebanese',
         majorSingle: 'Pound',
@@ -1289,8 +1289,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'LKR',
+    LKR: {
         name: 'Sri Lankan Rupee',
         demonym: 'Sri Lankan',
         majorSingle: 'Rupee',
@@ -1304,8 +1303,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'LRD',
+    LRD: {
         name: 'Liberian Dollar',
         demonym: 'Liberian',
         majorSingle: 'Dollar',
@@ -1319,8 +1317,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'LSL',
+    LSL: {
         name: 'Lesotho Loti',
         demonym: 'Lesotho',
         majorSingle: 'Loti',
@@ -1334,8 +1331,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'LYD',
+    LYD: {
         name: 'Libyan Dinar',
         demonym: 'Libyan',
         majorSingle: 'Dinar',
@@ -1349,8 +1345,7 @@ export const currencies = [
         decimals: 3,
         numToBasic: 1000
     },
-    {
-        code: 'MAD',
+    MAD: {
         name: 'Moroccan Dirham',
         demonym: 'Moroccan',
         majorSingle: 'Dirham',
@@ -1364,8 +1359,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'MDL',
+    MDL: {
         name: 'Moldovan Leu',
         demonym: 'Moldovan',
         majorSingle: 'Leu',
@@ -1379,8 +1373,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'MGA',
+    MGA: {
         name: 'Malagasy Ariary',
         demonym: 'Malagasy',
         majorSingle: 'Ariary',
@@ -1394,8 +1387,7 @@ export const currencies = [
         decimals: 0,
         numToBasic: 5
     },
-    {
-        code: 'MKD',
+    MKD: {
         name: 'Macedonian Denar',
         demonym: 'Macedonian',
         majorSingle: 'Denar',
@@ -1409,8 +1401,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'MMK',
+    MMK: {
         name: 'Myanmar Kyat',
         demonym: 'Myanmar',
         majorSingle: 'Kyat',
@@ -1424,8 +1415,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'MNT',
+    MNT: {
         name: 'Mongolian Tögrög',
         demonym: 'Mongolian',
         majorSingle: 'Tögrög',
@@ -1439,8 +1429,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'MOP',
+    MOP: {
         name: 'Macanese Pataca',
         demonym: 'Macanese',
         majorSingle: 'Pataca',
@@ -1454,8 +1443,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'MRU',
+    MRU: {
         name: 'Mauritanian Ouguiya',
         demonym: 'Mauritanian',
         majorSingle: 'Ouguiya',
@@ -1469,23 +1457,21 @@ export const currencies = [
         decimals: 0,
         numToBasic: 5
     },
-    {
-        code: 'MUR',
+    MUR: {
         name: 'Mauritian Rupee',
         demonym: 'Mauritian',
         majorSingle: 'Rupee',
         majorPlural: 'Rupees',
         ISOnum: 480,
         symbol: 'Rs.',
-        symbolNative: 'रु',
+        symbolNative: 'रु ',
         minorSingle: 'Cent',
         minorPlural: 'Cents',
         ISOdigits: 2,
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'MVR',
+    MVR: {
         name: 'Maldivian Rufiyaa',
         demonym: 'Maldivian',
         majorSingle: 'Rufiyaa',
@@ -1499,8 +1485,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'MWK',
+    MWK: {
         name: 'Malawian Kwacha',
         demonym: 'Malawian',
         majorSingle: 'Kwacha',
@@ -1514,8 +1499,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'MXN',
+    MXN: {
         name: 'Mexican Peso',
         demonym: 'Mexican',
         majorSingle: 'Peso',
@@ -1529,8 +1513,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'MYR',
+    MYR: {
         name: 'Malaysian Ringgit',
         demonym: 'Malaysian',
         majorSingle: 'Ringgit',
@@ -1544,8 +1527,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'MZN',
+    MZN: {
         name: 'Mozambican Metical',
         demonym: 'Mozambican',
         majorSingle: 'Metical',
@@ -1559,8 +1541,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'NAD',
+    NAD: {
         name: 'Namibian Dollar',
         demonym: 'Namibian',
         majorSingle: 'Dollar',
@@ -1574,8 +1555,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'NGN',
+    NGN: {
         name: 'Nigerian Naira',
         demonym: 'Nigerian',
         majorSingle: 'Naira',
@@ -1589,8 +1569,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'NIO',
+    NIO: {
         name: 'Nicaraguan Córdoba',
         demonym: 'Nicaraguan',
         majorSingle: 'Córdoba Oro',
@@ -1604,8 +1583,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'NOK',
+    NOK: {
         name: 'Norwegian Krone',
         demonym: 'Norwegian',
         majorSingle: 'Krone',
@@ -1619,8 +1597,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'NPR',
+    NPR: {
         name: 'Nepalese Rupee',
         demonym: 'Nepalese',
         majorSingle: 'Rupee',
@@ -1634,8 +1611,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'NZD',
+    NZD: {
         name: 'New Zealand Dollar',
         demonym: 'New Zealand',
         majorSingle: 'Dollar',
@@ -1649,8 +1625,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'OMR',
+    OMR: {
         name: 'Omani Rial',
         demonym: 'Omani',
         majorSingle: 'Rial',
@@ -1664,8 +1639,7 @@ export const currencies = [
         decimals: 3,
         numToBasic: 1000
     },
-    {
-        code: 'PAB',
+    PAB: {
         name: 'Panamanian Balboa',
         demonym: 'Panamanian',
         majorSingle: 'Balboa',
@@ -1679,8 +1653,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'PEN',
+    PEN: {
         name: 'Peruvian Sol',
         demonym: 'Peruvian',
         majorSingle: 'Sol',
@@ -1694,8 +1667,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'PGK',
+    PGK: {
         name: 'Papua New Guinean Kina',
         demonym: 'Papua New Guinean',
         majorSingle: 'Kina',
@@ -1709,8 +1681,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'PHP',
+    PHP: {
         name: 'Philippine Peso',
         demonym: 'Philippine',
         majorSingle: 'Peso',
@@ -1724,8 +1695,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'PKR',
+    PKR: {
         name: 'Pakistani Rupee',
         demonym: 'Pakistani',
         majorSingle: 'Rupee',
@@ -1739,8 +1709,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'PLN',
+    PLN: {
         name: 'Polish Zloty',
         demonym: 'Polish',
         majorSingle: 'Zloty',
@@ -1754,13 +1723,12 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'PND',
+    PND: {
         name: 'Pitcairn Islands Dollar',
         demonym: 'Pitcairn Islands',
         majorSingle: 'Dollar',
         majorPlural: 'Dollars',
-        ISOnum: '',
+        ISOnum: null,
         symbol: '$',
         symbolNative: '$',
         minorSingle: 'Cent',
@@ -1769,13 +1737,12 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'PRB',
+    PRB: {
         name: 'Transnistrian Ruble',
         demonym: 'Transnistrian',
         majorSingle: 'Ruble',
         majorPlural: 'Rubles',
-        ISOnum: '',
+        ISOnum: null,
         symbol: 'р.',
         symbolNative: 'р.',
         minorSingle: 'Kopek',
@@ -1784,8 +1751,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'PYG',
+    PYG: {
         name: 'Paraguayan Guaraní',
         demonym: 'Paraguayan',
         majorSingle: 'Guaraní',
@@ -1799,8 +1765,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'QAR',
+    QAR: {
         name: 'Qatari Riyal',
         demonym: 'Qatari',
         majorSingle: 'Riyal',
@@ -1814,8 +1779,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'RON',
+    RON: {
         name: 'Romanian Leu',
         demonym: 'Romanian',
         majorSingle: 'Leu',
@@ -1829,8 +1793,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'RSD',
+    RSD: {
         name: 'Serbian Dinar',
         demonym: 'Serbian',
         majorSingle: 'Dinar',
@@ -1844,8 +1807,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'RUB',
+    RUB: {
         name: 'Russian Ruble',
         demonym: 'Russian',
         majorSingle: 'Ruble',
@@ -1859,8 +1821,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'RWF',
+    RWF: {
         name: 'Rwandan Franc',
         demonym: 'Rwandan',
         majorSingle: 'Franc',
@@ -1874,8 +1835,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'SAR',
+    SAR: {
         name: 'Saudi Riyal',
         demonym: 'Saudi',
         majorSingle: 'Riyal',
@@ -1889,8 +1849,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'SBD',
+    SBD: {
         name: 'Solomon Islands Dollar',
         demonym: 'Solomon Islands',
         majorSingle: 'Dollar',
@@ -1904,8 +1863,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'SCR',
+    SCR: {
         name: 'Seychellois Rupee',
         demonym: 'Seychellois',
         majorSingle: 'Rupee',
@@ -1919,8 +1877,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'SDG',
+    SDG: {
         name: 'Sudanese Pound',
         demonym: 'Sudanese',
         majorSingle: 'Pound',
@@ -1934,8 +1891,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'SEK',
+    SEK: {
         name: 'Swedish Krona',
         demonym: 'Swedish',
         majorSingle: 'Krona',
@@ -1949,8 +1905,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'SGD',
+    SGD: {
         name: 'Singapore Dollar',
         demonym: 'Singapore',
         majorSingle: 'Dollar',
@@ -1964,8 +1919,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'SHP',
+    SHP: {
         name: 'Saint Helena Pound',
         demonym: 'Saint Helena',
         majorSingle: 'Pound',
@@ -1979,8 +1933,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'SLL',
+    SLL: {
         name: 'Sierra Leonean Leone',
         demonym: 'Sierra Leonean',
         majorSingle: 'Leone',
@@ -1994,13 +1947,12 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'SLS',
+    SLS: {
         name: 'Somaliland Shilling',
         demonym: 'Somaliland',
         majorSingle: 'Shilling',
         majorPlural: 'Shillings',
-        ISOnum: '',
+        ISOnum: null,
         symbol: 'Sl',
         symbolNative: 'Sl',
         minorSingle: 'Cent',
@@ -2009,8 +1961,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'SOS',
+    SOS: {
         name: 'Somali Shilling',
         demonym: 'Somali',
         majorSingle: 'Shilling',
@@ -2024,8 +1975,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'SRD',
+    SRD: {
         name: 'Surinamese Dollar',
         demonym: 'Surinamese',
         majorSingle: 'Dollar',
@@ -2039,8 +1989,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'SSP',
+    SSP: {
         name: 'South Sudanese Pound',
         demonym: 'South Sudanese',
         majorSingle: 'Pound',
@@ -2054,8 +2003,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'STN',
+    STN: {
         name: 'Sao Tome and Príncipe Dobra',
         demonym: 'Sao Tome',
         majorSingle: 'Dobra',
@@ -2069,8 +2017,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'SVC',
+    SVC: {
         name: 'Salvadoran Colón',
         demonym: 'Salvadoran',
         majorSingle: 'Colón',
@@ -2084,8 +2031,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'SYP',
+    SYP: {
         name: 'Syrian Pound',
         demonym: 'Syrian',
         majorSingle: 'Pound',
@@ -2099,8 +2045,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'SZL',
+    SZL: {
         name: 'Swazi Lilangeni',
         demonym: 'Swazi',
         majorSingle: 'Lilangeni',
@@ -2114,8 +2059,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'THB',
+    THB: {
         name: 'Thai Baht',
         demonym: 'Thai',
         majorSingle: 'Baht',
@@ -2129,8 +2073,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'TJS',
+    TJS: {
         name: 'Tajikistani Somoni',
         demonym: 'Tajikistani',
         majorSingle: 'Somoni',
@@ -2144,8 +2087,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'TMT',
+    TMT: {
         name: 'Turkmenistan Manat',
         demonym: 'Turkmenistan',
         majorSingle: 'Manat',
@@ -2159,8 +2101,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'TND',
+    TND: {
         name: 'Tunisian Dinar',
         demonym: 'Tunisian',
         majorSingle: 'Dinar',
@@ -2174,8 +2115,7 @@ export const currencies = [
         decimals: 3,
         numToBasic: 1000
     },
-    {
-        code: 'TOP',
+    TOP: {
         name: 'Tongan Paʻanga',
         demonym: 'Tongan',
         majorSingle: "Pa'anga",
@@ -2189,8 +2129,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'TRY',
+    TRY: {
         name: 'Turkish Lira',
         demonym: 'Turkish',
         majorSingle: 'Lira',
@@ -2204,8 +2143,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'TTD',
+    TTD: {
         name: 'Trinidad and Tobago Dollar',
         demonym: 'Trinidad and Tobago',
         majorSingle: 'Dollar',
@@ -2219,13 +2157,12 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'TVD',
+    TVD: {
         name: 'Tuvaluan Dollar',
         demonym: 'Tuvaluan',
         majorSingle: 'Dollar',
         majorPlural: 'Dollars',
-        ISOnum: '',
+        ISOnum: null,
         symbol: '$',
         symbolNative: '$',
         minorSingle: 'Cent',
@@ -2234,8 +2171,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'TWD',
+    TWD: {
         name: 'New Taiwan Dollar',
         demonym: 'New Taiwan',
         majorSingle: 'Dollar',
@@ -2249,8 +2185,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'TZS',
+    TZS: {
         name: 'Tanzanian Shilling',
         demonym: 'Tanzanian',
         majorSingle: 'Shilling',
@@ -2264,8 +2199,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'UAH',
+    UAH: {
         name: 'Ukrainian Hryvnia',
         demonym: 'Ukrainian',
         majorSingle: 'Hryvnia',
@@ -2279,8 +2213,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'UGX',
+    UGX: {
         name: 'Ugandan Shilling',
         demonym: 'Ugandan',
         majorSingle: 'Shilling',
@@ -2294,8 +2227,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'USD',
+    USD: {
         name: 'United States Dollar',
         demonym: 'US',
         majorSingle: 'Dollar',
@@ -2309,8 +2241,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'UYU',
+    UYU: {
         name: 'Uruguayan Peso',
         demonym: 'Uruguayan',
         majorSingle: 'Peso',
@@ -2324,8 +2255,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'UZS',
+    UZS: {
         name: 'Uzbekistani Som',
         demonym: 'Uzbekistani',
         majorSingle: 'Som',
@@ -2339,13 +2269,12 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'VED',
+    VED: {
         name: 'Venezuelan bolívar digital',
         demonym: 'Venezuelan',
         majorSingle: 'Bolívar Digital',
         majorPlural: 'Bolívars Digital',
-        ISOnum: '',
+        ISOnum: null,
         symbol: 'Bs.',
         symbolNative: 'Bs.',
         minorSingle: 'Céntimo',
@@ -2354,8 +2283,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'VES',
+    VES: {
         name: 'Venezuelan Bolívar Soberano',
         demonym: 'Venezuelan',
         majorSingle: 'Bolívar',
@@ -2369,8 +2297,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'VND',
+    VND: {
         name: 'Vietnamese Dong',
         demonym: 'Vietnamese',
         majorSingle: 'Dong',
@@ -2384,8 +2311,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 10
     },
-    {
-        code: 'VUV',
+    VUV: {
         name: 'Vanuatu Vatu',
         demonym: 'Vanuatu',
         majorSingle: 'Vatu',
@@ -2397,10 +2323,9 @@ export const currencies = [
         minorPlural: '',
         ISOdigits: 0,
         decimals: 0,
-        numToBasic: ''
+        numToBasic: null
     },
-    {
-        code: 'WST',
+    WST: {
         name: 'Samoan Tala',
         demonym: 'Samoan',
         majorSingle: 'Tala',
@@ -2414,8 +2339,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'XAF',
+    XAF: {
         name: 'Central African CFA Franc BEAC',
         demonym: 'Central African CFA',
         majorSingle: 'Franc',
@@ -2429,8 +2353,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'XCD',
+    XCD: {
         name: 'East Caribbean Dollar',
         demonym: 'East Caribbean',
         majorSingle: 'Dollar',
@@ -2444,8 +2367,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'XOF',
+    XOF: {
         name: 'West African CFA Franc BCEAO',
         demonym: 'West African CFA',
         majorSingle: 'Franc',
@@ -2459,8 +2381,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'XPF',
+    XPF: {
         name: 'CFP Franc (Franc Pacifique)',
         demonym: 'CFP',
         majorSingle: 'Franc',
@@ -2474,8 +2395,7 @@ export const currencies = [
         decimals: 0,
         numToBasic: 100
     },
-    {
-        code: 'YER',
+    YER: {
         name: 'Yemeni Rial',
         demonym: 'Yemeni',
         majorSingle: 'Rial',
@@ -2489,8 +2409,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'ZAR',
+    ZAR: {
         name: 'South African Rand',
         demonym: 'South African',
         majorSingle: 'Rand',
@@ -2504,8 +2423,7 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'ZMW',
+    ZMW: {
         name: 'Zambian Kwacha',
         demonym: 'Zambian',
         majorSingle: 'Kwacha',
@@ -2519,23 +2437,21 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'ZWB',
+    ZWB: {
         name: 'RTGS Dollar',
         demonym: 'RTGS',
         majorSingle: 'Dollar',
         majorPlural: 'Dollars',
-        ISOnum: '',
+        ISOnum: null,
         symbol: '',
         symbolNative: '',
         minorSingle: '',
         minorPlural: '',
         ISOdigits: 0,
         decimals: 0,
-        numToBasic: ''
+        numToBasic: null
     },
-    {
-        code: 'ZWL',
+    ZWL: {
         name: 'Zimbabwean Dollar',
         demonym: 'Zimbabwean',
         majorSingle: 'Dollar',
@@ -2549,28 +2465,26 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     },
-    {
-        code: 'Abkhazia',
+    Abkhazia: {
         name: 'Abkhazian Apsar',
         demonym: 'Abkhazian',
         majorSingle: 'Apsar',
         majorPlural: 'Apsark',
-        ISOnum: '',
+        ISOnum: null,
         symbol: '',
         symbolNative: '',
         minorSingle: '',
         minorPlural: '',
         ISOdigits: 0,
         decimals: 0,
-        numToBasic: ''
+        numToBasic: null
     },
-    {
-        code: 'Artsakh',
+    Artsakh: {
         name: 'Artsakh Dram',
         demonym: 'Artsakh',
         majorSingle: 'Dram',
         majorPlural: 'Dram',
-        ISOnum: '',
+        ISOnum: null,
         symbol: 'դր.',
         symbolNative: 'դր.',
         minorSingle: 'Luma',
@@ -2579,4 +2493,4 @@ export const currencies = [
         decimals: 2,
         numToBasic: 100
     }
-];
+};
