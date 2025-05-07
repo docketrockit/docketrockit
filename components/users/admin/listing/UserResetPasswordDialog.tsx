@@ -53,7 +53,7 @@ const UserResetPasswordDialog = ({
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction asChild>
+                    <AlertDialogAction>
                         <Button
                             type="button"
                             disabled={isPending}
