@@ -48,7 +48,11 @@ export const getBrandStores = async (input: GetBrandStoresSchema) => {
 
         const data = await db.store.findMany({
             where,
-            include: { country: true, brand: { include: { merchant: true } } },
+            include: {
+                currency: true,
+                country: true,
+                brand: { include: { merchant: true } }
+            },
             skip: offset,
             take: per_page,
             orderBy
