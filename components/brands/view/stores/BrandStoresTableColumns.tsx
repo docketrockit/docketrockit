@@ -125,7 +125,7 @@ export const getColumns = ({
                 return (
                     <div className="flex space-x-2">
                         <span className="max-w-[31.25rem] truncate font-medium">
-                            {row.original.currency}
+                            {`${row.original.currency.code} - ${row.original.currency.name}`}
                         </span>
                     </div>
                 );
