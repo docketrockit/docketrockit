@@ -230,13 +230,13 @@ const AddMerchantForm = ({
                                                         name="abn"
                                                         type="text"
                                                         label="ABN"
-                                                        value={formatABN(abn)}
-                                                        onChange={(e) =>
-                                                            form.setValue(
-                                                                'abn',
-                                                                e.target.value
-                                                            )
-                                                        }
+                                                        // value={formatABN(abn)}
+                                                        // onChange={(e) =>
+                                                        //     form.setValue(
+                                                        //         'abn',
+                                                        //         e.target.value
+                                                        //     )
+                                                        // }
                                                     />
                                                 </FormControl>
                                                 <FormMessage />
@@ -261,13 +261,13 @@ const AddMerchantForm = ({
                                                         name="acn"
                                                         type="text"
                                                         label="ACN"
-                                                        value={formatACN(acn)}
-                                                        onChange={(e) =>
-                                                            form.setValue(
-                                                                'acn',
-                                                                e.target.value
-                                                            )
-                                                        }
+                                                        // value={formatACN(acn)}
+                                                        // onChange={(e) =>
+                                                        //     form.setValue(
+                                                        //         'acn',
+                                                        //         e.target.value
+                                                        //     )
+                                                        // }
                                                     />
                                                 </FormControl>
                                                 <FormMessage />

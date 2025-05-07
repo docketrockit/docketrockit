@@ -4,10 +4,10 @@ import Image from 'next/image';
 import { Pencil } from 'lucide-react';
 import { AdminRole } from '@prisma/client';
 import parsePhoneNumber, { PhoneNumber } from 'libphonenumber-js';
+import Link from 'next/link';
 
 import { BrandMainProps } from '@/types/brand';
 import BrandTabs from './BrandTabs';
-import Link from 'next/link';
 
 const BrandMain = ({
     brand,

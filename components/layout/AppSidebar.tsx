@@ -102,6 +102,12 @@ const navItemsMerchant: NavItem[] = [
         name: 'Dashboard',
         path: '/merchant',
         rolesAllowed: []
+    },
+    {
+        icon: <UsersRound />,
+        name: 'Users',
+        path: '/merchant/users',
+        rolesAllowed: []
     }
 ];
 

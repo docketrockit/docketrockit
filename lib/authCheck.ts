@@ -72,3 +72,25 @@ export const authCheckAdmin = async (
 
     return { session, user };
 };
+
+export const authCheckMerchant = async (
+    access: string[] = []
+): Promise<AuthCheckReturn> => {
+    const { session, user } = await getCurrentSession();
+
+    if (!session || !user) redirect('/auth/login');
+
+    if (!user.role.includes('MERCHANT')) redirect('/auth/login');
+
+    if (!user.merchantUser) redirect('/auth/login');
+
+    if (access.length !== 0) {
+        const hasAccess = user.merchantUser.merchantRole.some((role) =>
+            access.includes(role)
+        );
+
+        if (!hasAccess) redirect('/merchant');
+    }
+
+    return { session, user };
+};

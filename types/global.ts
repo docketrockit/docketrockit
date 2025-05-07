@@ -5,6 +5,7 @@ import { User } from '@/lib/user';
 import { AdminUser } from '@/types/adminUser';
 import { MerchantUser } from '@/types/merchantUser';
 import { BrandUser } from '@/types/brandUser';
+import { MerchantUser as MerchantMerchantUser } from '@/types/merchant/user';
 
 export interface SessionUserProps {
     session: Session;
@@ -24,10 +25,15 @@ export const statusLabels: { value: Status; label: string }[] = [
 ];
 
 export interface UserResetPasswordDialogProps {
-    user: AdminUser | MerchantUser | BrandUser;
+    user: AdminUser | MerchantUser | BrandUser | MerchantMerchantUser;
     isOpen: boolean;
     onOpenChange: (open: boolean) => void;
 }
 
 export type ParamsSlug = Promise<{ slug: string }>;
 export type ParamsBrand = Promise<{ slug: string; brandSlug: string }>;
+export type ParamsStore = Promise<{
+    slug: string;
+    brandSlug: string;
+    storeSlug: string;
+}>;

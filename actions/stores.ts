@@ -55,7 +55,7 @@ export const createStore = async (values: z.infer<typeof AddStoreSchema>) => {
             countryCode,
             latitude,
             longitude,
-            currency,
+            currencyId,
             abn,
             acn
         } = validatedFields.data;
@@ -82,7 +82,7 @@ export const createStore = async (values: z.infer<typeof AddStoreSchema>) => {
             };
         }
 
-        let slug = slugger.slug(name);
+        let slug = slugger.slug(`${brand.name} ${name}`);
         let slugExists = true;
 
         while (slugExists) {
@@ -91,7 +91,7 @@ export const createStore = async (values: z.infer<typeof AddStoreSchema>) => {
                 slugExists = false;
                 break;
             } else {
-                slug = slugger.slug(name);
+                slug = slugger.slug(`${brand.name} ${name}`);
             }
         }
 
@@ -108,13 +108,17 @@ export const createStore = async (values: z.infer<typeof AddStoreSchema>) => {
                 city,
                 region,
                 postalCode,
-                currency,
+                currencyId,
                 countryId: countryId.id,
                 abn,
                 acn,
                 brandId: brand.id
             },
-            include: { country: true, brand: { include: { merchant: true } } }
+            include: {
+                currency: true,
+                country: true,
+                brand: { include: { merchant: true } }
+            }
         });
 
         if (!data) {
@@ -147,6 +151,7 @@ export const getStore = async (slug: string) => {
             slug
         },
         include: {
+            currency: true,
             country: true,
             brand: { include: { merchant: true } }
         }
@@ -189,7 +194,8 @@ export const updateStore = async ({
         }
 
         const existingStore = await db.store.findUnique({
-            where: { id }
+            where: { id },
+            include: { brand: true }
         });
 
         if (!existingStore) {
@@ -211,7 +217,7 @@ export const updateStore = async ({
             countryCode,
             latitude,
             longitude,
-            currency,
+            currencyId,
             abn,
             acn
         } = validatedFields.data;
@@ -219,7 +225,6 @@ export const updateStore = async ({
         let slug = existingStore.slug;
 
         if (name !== existingStore.name) {
-            slug = slugger.slug(name);
             let slugExists = true;
 
             while (slugExists) {
@@ -230,7 +235,7 @@ export const updateStore = async ({
                     slugExists = false;
                     break;
                 } else {
-                    slug = slugger.slug(name);
+                    slug = slugger.slug(`${existingStore.brand.name} ${name}`);
                 }
             }
         }
@@ -260,12 +265,13 @@ export const updateStore = async ({
                 city,
                 region,
                 postalCode,
-                currency,
+                currencyId,
                 countryId: countryId.id,
                 abn,
                 acn
             },
             include: {
+                currency: true,
                 country: true,
                 brand: { include: { merchant: true } }
             }

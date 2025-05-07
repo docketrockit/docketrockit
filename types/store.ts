@@ -1,14 +1,9 @@
 import { Prisma } from '@prisma/client';
 
 import { BrandStore } from './brandStore';
+import { User } from '@/lib/user';
 
 export type Store = BrandStore;
-
-type StoreData = Prisma.StoreGetPayload<{
-    include: {
-        brand: true;
-    };
-}>;
 
 type Brand = Prisma.BrandGetPayload<{
     select: { id: true; name: true; slug: true };
@@ -26,5 +21,11 @@ export interface AddStoreFormProps {
 }
 
 export interface EditStoreFormProps {
-    brand: StoreData;
+    store: Store;
+    currencies: Currency[];
+}
+
+export interface StoreMainProps {
+    store: Store;
+    user: User;
 }

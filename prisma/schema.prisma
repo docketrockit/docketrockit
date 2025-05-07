@@ -178,6 +178,7 @@ model Currency {
   ISOdigits    Int?
   decimals     Int?
   numToBasic   Int?
+  Store        Store[]
 }
 
 model Country {
@@ -283,7 +284,8 @@ model Store {
   abn              String?
   acn              String?
   phoneNumber      String
-  currency         String
+  currency         Currency  @relation(fields: [currencyId], references: [id], onDelete: Cascade)
+  currencyId       String
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
   receipts         Receipt[]

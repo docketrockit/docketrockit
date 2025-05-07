@@ -23,7 +23,11 @@ export type BrandStoresFilterInput = {
 };
 
 export type BrandStore = Prisma.StoreGetPayload<{
-    include: { country: true; brand: { include: { merchant: true } } };
+    include: {
+        currency: true;
+        country: true;
+        brand: { include: { merchant: true } };
+    };
 }>;
 
 export interface BrandStoresTableProps {

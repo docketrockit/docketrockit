@@ -23,7 +23,7 @@ export const AddStoreSchema = z.object({
     postalCode: getStringSchema('Postal code'),
     country: getStringSchema('Country'),
     countryCode: z.optional(z.string()),
-    currency: getStringSchema('currency'),
+    currencyId: getStringSchema('currency'),
     abn: getStringSchema('ABN')
         .length(11, 'ABN must be 11 digits')
         .refine((abn) => isValidABN(abn), {
@@ -55,7 +55,7 @@ export const EditStoreSchema = z.object({
     postalCode: getStringSchema('Postal code'),
     country: getStringSchema('Country'),
     countryCode: z.optional(z.string()),
-    currency: getStringSchema('currency'),
+    currencyId: getStringSchema('currency'),
     abn: getStringSchema('ABN')
         .length(11, 'ABN must be 11 digits')
         .refine((abn) => isValidABN(abn), {

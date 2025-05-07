@@ -19,7 +19,7 @@ export const AddMerchantSchema = object({
         .email({ message: 'Invalid email address' })
         .optional(),
     address1: getStringSchema('Address line 1'),
-    address2: optional(getStringSchema('Address line 2')),
+    address2: optional(string()),
     suburb: getStringSchema('Suburb'),
     postcode: getStringSchema('Postcode'),
     state: getStringSchema('State'),

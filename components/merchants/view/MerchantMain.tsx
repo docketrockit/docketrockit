@@ -39,6 +39,7 @@ const MerchantMain = ({
                                     '/images/logo/blanklogo.jpg'
                                 }
                                 alt={merchant.name}
+                                className="items-center"
                             />
                         </div>
                         <div className="order-3 xl:order-2">
