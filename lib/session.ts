@@ -103,6 +103,7 @@ export const validateSessionToken = async (
                 row.user.merchantUser.merchant.primaryContactId === user.id,
             merchant: row.user.merchantUser.merchant.name,
             merchantId: row.user.merchantUser.merchantId,
+            merchantSlug: row.user.merchantUser.merchant.slug,
             brands,
             merchantRole: row.user.merchantUser.merchantRole
         };

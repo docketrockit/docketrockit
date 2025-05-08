@@ -29,61 +29,64 @@ import {
     PopoverTrigger
 } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
-import { EditMerchantSchema } from '@/schemas/admin/merchants';
+import { AddBrandSchema } from '@/schemas/brands';
 import FormError from '@/components/form/FormError';
 import ComponentCard from '@/components/common/ComponentCard';
 import { cn } from '@/lib/utils';
 import { FormInput } from '@/components/form/FormInputs';
 import { SubmitButton } from '@/components/form/Buttons';
-import { updateMerchant } from '@/actions/admin/merchants';
+import { uploadImage } from '@/utils/supabase';
 import { PhoneInput } from '@/components/ui/phone-input';
-import { formatABN, formatACN } from '@/utils/businessNumberValidation';
-import { EditMerchantFormProps } from '@/types/merchant';
+import AddBrandLogoUpload from './AddBrandLogoUpload';
+import { AddBrandFormProps } from '@/types/merchant/brands';
 import { getStatesByCountry } from '@/data/location';
+import { createBrand } from '@/actions/brands';
 
-const EditMerchantForm = ({
-    merchant,
+const AddBrandForm = ({
+    countryProp,
     countries,
     states,
-    stateProp,
-    countryProp
-}: EditMerchantFormProps) => {
+    merchantSlug
+}: AddBrandFormProps) => {
     const [error, setError] = useState<string | undefined>('');
+    const [success, setSuccess] = useState<boolean>(false);
     const [isPending, startTransition] = useTransition();
+    const [country, setCountry] = useState(countryProp);
     const [countriesList, setCountriesList] = useState<Country[]>(countries);
     const [statesList, setStatesList] = useState<State[]>(states);
-    const [country, setCountry] = useState(countryProp);
-    const [state, setState] = useState(stateProp);
     const [openCountry, setOpenCountry] = useState(false);
     const [openState, setOpenState] = useState(false);
 
     const errorClass = 'pl-6';
 
-    const form = useForm<z.infer<typeof EditMerchantSchema>>({
-        resolver: zodResolver(EditMerchantSchema),
+    const form = useForm<z.infer<typeof AddBrandSchema>>({
+        resolver: zodResolver(AddBrandSchema),
         defaultValues: {
-            name: merchant.name,
-            phoneNumber: merchant.phoneNumber,
-            genericEmail: merchant.genericEmail,
-            invoiceEmail: merchant.invoiceEmail || '',
-            address1: merchant.address1,
-            address2: merchant.address2 || '',
-            suburb: merchant.suburb,
-            postcode: merchant.suburb,
-            state: state?.id,
-            country: country?.id,
-            abn: merchant.abn,
-            acn: merchant.acn
+            merchantSlug,
+            name: '',
+            tradingAsName: '',
+            phoneNumber: '',
+            genericEmail: '',
+            invoiceEmail: '',
+            address1: '',
+            address2: '',
+            suburb: '',
+            postcode: '',
+            state: '',
+            country: country?.id || '',
+            abn: '',
+            acn: '',
+            logoUrl: []
         }
     });
 
-    const abn = form.watch('abn');
-    const acn = form.watch('acn');
-
-    const onSubmit = (values: z.infer<typeof EditMerchantSchema>) => {
+    const onSubmit = (values: z.infer<typeof AddBrandSchema>) => {
         setError('');
+        setSuccess(false);
         startTransition(async () => {
-            const data = await updateMerchant({ id: merchant.id, values });
+            const logoUrl = await uploadImage(values.logoUrl[0].value, 'logos');
+            const formData = { ...values, logoUrl: logoUrl.publicUrl };
+            const data = await createBrand(formData);
             if (!data.data) {
                 setError(data.error);
             }
@@ -96,7 +99,7 @@ const EditMerchantForm = ({
                 const result = await getStatesByCountry(
                     form.getValues('country')
                 );
-                form.setValue('state', state?.id || '');
+                form.setValue('state', '');
                 setStatesList(result!);
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -124,7 +127,7 @@ const EditMerchantForm = ({
                                                 )}
                                             >
                                                 <FormLabel required={true}>
-                                                    Merchant Name
+                                                    Brand Name
                                                 </FormLabel>
                                                 <FormControl>
                                                     <FormInput
@@ -132,6 +135,30 @@ const EditMerchantForm = ({
                                                         name="name"
                                                         type="text"
                                                         label="Name"
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="tradingAsName"
+                                        render={({ field }) => (
+                                            <FormItem
+                                                className={cn(
+                                                    'w-full space-y-2'
+                                                )}
+                                            >
+                                                <FormLabel required={true}>
+                                                    Trading as Name
+                                                </FormLabel>
+                                                <FormControl>
+                                                    <FormInput
+                                                        {...field}
+                                                        name="tradingAsName"
+                                                        type="text"
+                                                        label="Trading as Name"
                                                     />
                                                 </FormControl>
                                                 <FormMessage />
@@ -175,7 +202,7 @@ const EditMerchantForm = ({
                                                 <FormControl>
                                                     <FormInput
                                                         {...field}
-                                                        name="email"
+                                                        name="genericEmail"
                                                         type="email"
                                                         label="Generic Email"
                                                     />
@@ -199,7 +226,7 @@ const EditMerchantForm = ({
                                                 <FormControl>
                                                     <FormInput
                                                         {...field}
-                                                        name="email"
+                                                        name="invoiceEmail"
                                                         type="email"
                                                         label="Invoice Email"
                                                     />
@@ -226,13 +253,6 @@ const EditMerchantForm = ({
                                                         name="abn"
                                                         type="text"
                                                         label="ABN"
-                                                        value={formatABN(abn)}
-                                                        onChange={(e) =>
-                                                            form.setValue(
-                                                                'abn',
-                                                                e.target.value
-                                                            )
-                                                        }
                                                     />
                                                 </FormControl>
                                                 <FormMessage />
@@ -257,13 +277,6 @@ const EditMerchantForm = ({
                                                         name="acn"
                                                         type="text"
                                                         label="ACN"
-                                                        value={formatACN(acn)}
-                                                        onChange={(e) =>
-                                                            form.setValue(
-                                                                'acn',
-                                                                e.target.value
-                                                            )
-                                                        }
                                                     />
                                                 </FormControl>
                                                 <FormMessage />
@@ -273,8 +286,6 @@ const EditMerchantForm = ({
                                 </div>
                             </div>
                         </ComponentCard>
-                    </div>
-                    <div className="space-y-6">
                         <ComponentCard>
                             <div className="space-y-6">
                                 <div className="flex flex-col space-y-6">
@@ -382,6 +393,9 @@ const EditMerchantForm = ({
                                                 <FormItem
                                                     className={cn('w-full')}
                                                 >
+                                                    <FormLabel required={true}>
+                                                        Country
+                                                    </FormLabel>
                                                     <Popover
                                                         open={openCountry}
                                                         onOpenChange={
@@ -508,6 +522,9 @@ const EditMerchantForm = ({
                                                 <FormItem
                                                     className={cn('w-full')}
                                                 >
+                                                    <FormLabel required={true}>
+                                                        State
+                                                    </FormLabel>
                                                     <Popover
                                                         open={openState}
                                                         onOpenChange={
@@ -627,12 +644,17 @@ const EditMerchantForm = ({
                                     </div>
                                     <div className="flex justify-end">
                                         <SubmitButton
-                                            text="Update Merchant"
+                                            text="Add Brand"
                                             isPending={isPending}
                                         />
                                     </div>
                                 </div>
                             </div>
+                        </ComponentCard>
+                    </div>
+                    <div className="space-y-6">
+                        <ComponentCard>
+                            <AddBrandLogoUpload />
                         </ComponentCard>
                     </div>
                 </div>
@@ -641,4 +663,4 @@ const EditMerchantForm = ({
     );
 };
 
-export default EditMerchantForm;
+export default AddBrandForm;

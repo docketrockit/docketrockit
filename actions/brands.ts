@@ -6,7 +6,7 @@ import { Brand, Merchant } from '@prisma/client';
 import GithubSlugger from 'github-slugger';
 
 import db from '@/lib/db';
-import { authCheckAdmin } from '@/lib/authCheck';
+import { authCheckAdmin, authCheckBoth } from '@/lib/authCheck';
 import { globalPOSTRateLimit } from '@/lib/request';
 import { getErrorMessage } from '@/lib/handleError';
 import { AddBrandSchemaCreate, EditBrandSchema } from '@/schemas/brands';
@@ -16,7 +16,7 @@ const slugger = new GithubSlugger();
 export const createBrand = async (
     values: z.infer<typeof AddBrandSchemaCreate>
 ) => {
-    const { user: adminUser } = await authCheckAdmin(['ADMIN']);
+    const { user: adminUser } = await authCheckBoth(['ADMIN']);
 
     if (!adminUser)
         return {
@@ -118,12 +118,15 @@ export const createBrand = async (
             error: getErrorMessage(error)
         };
     }
+    if (adminUser.adminUser) {
+        redirect(`/admin/merchants/${merchant.slug}/brands/${data.slug}`);
+    }
 
-    redirect(`/admin/merchants/${merchant.slug}/brands/${data.slug}`);
+    redirect('/merchant/brands');
 };
 
 export const getBrand = async (slug: string) => {
-    const { user } = await authCheckAdmin();
+    const { user } = await authCheckBoth();
 
     if (!user)
         return {
@@ -153,7 +156,7 @@ export const updateBrand = async ({
     values: z.infer<typeof EditBrandSchema>;
     merchantSlug: string;
 }) => {
-    const { user: adminUser } = await authCheckAdmin(['ADMIN']);
+    const { user: adminUser } = await authCheckBoth(['ADMIN']);
 
     if (!adminUser)
         return {
@@ -162,7 +165,6 @@ export const updateBrand = async ({
         };
 
     let data: Brand;
-    let merchant: Merchant | null;
 
     try {
         if (!(await globalPOSTRateLimit())) {
@@ -259,7 +261,11 @@ export const updateBrand = async ({
         };
     }
 
-    redirect(`/admin/merchants/${merchantSlug}/brands/${data.slug}`);
+    if (adminUser.adminUser) {
+        redirect(`/admin/merchants/${merchantSlug}/brands/${data.slug}`);
+    }
+
+    redirect('/merchant/brands');
 };
 
 export const getAllBrands = async () => {

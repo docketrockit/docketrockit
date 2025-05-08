@@ -24,7 +24,7 @@ import {
 } from '@/components/form/FormInputs';
 import { MultiSelect } from '@/components/ui/multi-select';
 import { MerchantRoleLabels } from '@/types/user';
-import { MerchantUserSchema } from '@/schemas/users';
+import { MerchantUserSchema } from '@/schemas/merchant/users';
 import { Button } from '@/components/ui/button';
 import generatePassword from '@/utils/generatePassword';
 import { cn } from '@/lib/utils';

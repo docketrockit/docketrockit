@@ -6,7 +6,7 @@ import { revalidatePath } from 'next/cache';
 import { type User as UserType } from '@prisma/client';
 
 import db from '@/lib/db';
-import { authCheckAdmin } from '@/lib/authCheck';
+import { authCheckAdmin, authCheckBoth } from '@/lib/authCheck';
 import { GetBrandUsersSchema } from '@/types/brandUser';
 import { getErrorMessage } from '@/lib/handleError';
 import {
@@ -25,7 +25,7 @@ import { BrandUserSchema, BrandUserSchemaUpdate } from '@/schemas/users';
 import { buildBrandUserWhere, buildOrderBy } from '@/lib/brandUserLib';
 
 export const getBrandUsers = async (input: GetBrandUsersSchema) => {
-    const { user } = await authCheckAdmin();
+    const { user } = await authCheckBoth();
 
     if (!user) return { data: [], pageCount: 0 };
 

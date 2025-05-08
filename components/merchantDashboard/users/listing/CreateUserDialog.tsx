@@ -31,7 +31,7 @@ import {
 } from '@/components/ui/drawer';
 
 import { createMerchantUser } from '@/actions/merchant/users';
-import { MerchantUserSchema } from '@/schemas/users';
+import { MerchantUserSchema } from '@/schemas/merchant/users';
 import { CreateUserForm } from './CreateUserForm';
 
 export const CreateUserDialog = () => {

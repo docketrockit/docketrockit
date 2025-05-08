@@ -8,6 +8,7 @@ import Link from 'next/link';
 
 import { BrandMainProps } from '@/types/brand';
 import BrandTabs from './BrandTabs';
+import { formatACN, formatABN } from '@/utils/businessNumberValidation';
 
 const BrandMain = ({
     brand,
@@ -24,6 +25,8 @@ const BrandMain = ({
     if (primaryContact && primaryContact.phoneNumber) {
         phoneNumber = parsePhoneNumber(primaryContact.phoneNumber);
     }
+
+    const brandPhoneNumber = parsePhoneNumber(brand.phoneNumber);
 
     return (
         <>
@@ -93,7 +96,8 @@ const BrandMain = ({
                                         Phone Number
                                     </p>
                                     <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                                        {brand.phoneNumber}
+                                        {brandPhoneNumber?.formatNational() ||
+                                            brand.phoneNumber}
                                     </p>
                                 </div>
 
@@ -137,7 +141,7 @@ const BrandMain = ({
                                         ABN
                                     </p>
                                     <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                                        {brand.abn}
+                                        {brand.abn ? formatABN(brand.abn) : ''}
                                     </p>
                                 </div>
 
@@ -146,7 +150,7 @@ const BrandMain = ({
                                         ACN
                                     </p>
                                     <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                                        {brand.acn}
+                                        {brand.acn ? formatACN(brand.acn) : ''}
                                     </p>
                                 </div>
                                 {primaryContact && (

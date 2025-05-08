@@ -94,3 +94,34 @@ export const authCheckMerchant = async (
 
     return { session, user };
 };
+
+export const authCheckBoth = async (access: string[] = []) => {
+    const { session, user } = await getCurrentSession();
+
+    if (!session || !user) redirect('/auth/login');
+
+    if (!user.role.includes('MERCHANT') && !user.role.includes('MERCHANT'))
+        redirect('/auth/login');
+
+    if (!user.merchantUser && !user.adminUser) redirect('/auth/login');
+
+    let hasAccess = false;
+
+    if (access.length !== 0) {
+        if (user.merchantUser) {
+            hasAccess = user.merchantUser.merchantRole.some((role) =>
+                access.includes(role)
+            );
+        }
+
+        if (user.adminUser) {
+            hasAccess = user.adminUser.adminRole.some((role) =>
+                access.includes(role)
+            );
+        }
+
+        if (!hasAccess) redirect('/merchant');
+    }
+
+    return { session, user };
+};

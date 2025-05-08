@@ -42,6 +42,7 @@ export interface MerchantUser {
     primaryContact: boolean;
     merchant: string;
     merchantId: string;
+    merchantSlug: string;
     brands: BrandUser[];
     merchantRole: MerchantRole[];
 }
@@ -259,6 +260,7 @@ export const getUserFromEmail = async (email: string): Promise<User | null> => {
                 row.merchantUser.merchant.primaryContactId === user.id,
             merchant: row.merchantUser.merchant.name,
             merchantId: row.merchantUser.merchantId,
+            merchantSlug: row.merchantUser.merchant.slug,
             brands,
             merchantRole: row.merchantUser.merchantRole
         };

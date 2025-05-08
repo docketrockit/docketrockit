@@ -1,7 +1,12 @@
 import * as z from 'zod';
+import { MerchantRole, BrandRole } from '@prisma/client';
 
 import { getMerchantUsers } from '@/actions/merchant/users';
+import { getStringSchema, getEmailSchema, getPasswordSchema } from '../schemas';
 import { User } from '@/lib/user';
+
+const merchantRoleSchema = z.nativeEnum(MerchantRole);
+const brandRoleSchema = z.nativeEnum(BrandRole);
 
 export const merchantUsersSearchParamsSchema = z.object({
     page: z.coerce.number().default(1),
@@ -25,3 +30,14 @@ export interface UsersTableProps {
     merchantUsersPromise: ReturnType<typeof getMerchantUsers>;
     user: User;
 }
+
+export const MerchantUserSchema = z.object({
+    firstName: getStringSchema('First name'),
+    lastName: getStringSchema('Last name'),
+    email: getEmailSchema(),
+    password: getPasswordSchema('Password'),
+    phoneNumber: getStringSchema('Phone number'),
+    jobTitle: getStringSchema('Job title'),
+    merchantRole: z.array(merchantRoleSchema || ''),
+    primaryContact: z.boolean()
+});

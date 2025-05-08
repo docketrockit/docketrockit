@@ -1,16 +1,19 @@
 'use server';
 
+import * as z from 'zod';
 import { format } from 'date-fns';
+import { revalidatePath } from 'next/cache';
 import { type Brand as UserType } from '@prisma/client';
 
 import db from '@/lib/db';
-import { GetBrandStoresSchema } from '@/types/brandStore';
-import { authCheckBoth } from '@/lib/authCheck';
+import { GetBrandsSchema } from '@/types/merchant/brands';
+import { authCheckMerchant } from '@/lib/authCheck';
 import { getErrorMessage } from '@/lib/handleError';
-import { buildBrandStoreWhere, buildOrderBy } from '@/lib/brandStoreLib';
+import { globalPOSTRateLimit } from '@/lib/request';
+import { buildMerchantBrandWhere, buildOrderBy } from '@/lib/brandLib';
 
-export const getBrandStores = async (input: GetBrandStoresSchema) => {
-    const { user } = await authCheckBoth();
+export const getBrands = async (input: GetBrandsSchema) => {
+    const { user } = await authCheckMerchant();
 
     if (!user) return { data: [], pageCount: 0 };
 
@@ -19,13 +22,13 @@ export const getBrandStores = async (input: GetBrandStoresSchema) => {
         per_page,
         sort,
         name,
-        country,
-        state,
+        tradingAsName,
+        primaryContact,
         status,
         operator,
         from,
         to,
-        brandId
+        merchantId
     } = input;
 
     try {
@@ -35,30 +38,31 @@ export const getBrandStores = async (input: GetBrandStoresSchema) => {
         const fromDay = from ? format(new Date(from), 'yyyy-MM-dd') : undefined;
         const toDay = to ? format(new Date(to), 'yyyy-MM-dd') : undefined;
 
-        const where = buildBrandStoreWhere({
+        const where = buildMerchantBrandWhere({
             operator,
             name,
-            country,
-            state,
+            tradingAsName,
+            primaryContact,
             status,
             from: fromDay,
             to: toDay,
-            brandId
+            merchantId
         });
 
-        const data = await db.store.findMany({
+        const data = await db.brand.findMany({
             where,
             include: {
-                currency: true,
+                state: true,
                 country: true,
-                brand: { include: { merchant: true } }
+                primaryContact: true,
+                merchant: true
             },
             skip: offset,
             take: per_page,
             orderBy
         });
 
-        const total = await db.store.count({ where });
+        const total = await db.brand.count({ where });
 
         const pageCount = Math.ceil(total / per_page);
         return { data, pageCount };
@@ -67,11 +71,11 @@ export const getBrandStores = async (input: GetBrandStoresSchema) => {
     }
 };
 
-export const updateBrandStores = async (input: {
+export const updateBrands = async (input: {
     ids: string[];
     status?: UserType['status'];
 }) => {
-    const { user } = await authCheckBoth(['ADMIN']);
+    const { user } = await authCheckMerchant(['ADMIN']);
 
     if (!user)
         return {
@@ -80,7 +84,7 @@ export const updateBrandStores = async (input: {
         };
 
     try {
-        const data = await db.store.updateMany({
+        const data = await db.brand.updateMany({
             where: { id: { in: input.ids } },
             data: { status: input.status }
         });

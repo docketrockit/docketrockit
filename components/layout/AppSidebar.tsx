@@ -15,7 +15,8 @@ import {
     Ellipsis,
     FileText,
     Building2,
-    UsersRound
+    UsersRound,
+    Component
 } from 'lucide-react';
 import { SessionUserProps } from '@/types/global';
 import { User } from '@/lib/user';
@@ -108,6 +109,23 @@ const navItemsMerchant: NavItem[] = [
         name: 'Users',
         path: '/merchant/users',
         rolesAllowed: []
+    },
+    {
+        icon: <Component />,
+        name: 'Brands',
+        rolesAllowed: [],
+        subItems: [
+            {
+                name: 'Add Brand',
+                path: '/merchant/brands/add',
+                rolesAllowed: ['ADMIN']
+            },
+            {
+                name: 'View Brands',
+                path: '/merchant/brands',
+                rolesAllowed: []
+            }
+        ]
     }
 ];
 
