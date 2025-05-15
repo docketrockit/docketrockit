@@ -268,9 +268,14 @@ export const updateBrand = async ({
     redirect('/merchant/brands');
 };
 
-export const getAllBrands = async () => {
+export const getAllBrands = async (merchantId?: string) => {
     try {
+        let where = {};
+        if (merchantId) {
+            where = { merchantId };
+        }
         const data = await db.brand.findMany({
+            where,
             select: { id: true, name: true, slug: true }
         });
 

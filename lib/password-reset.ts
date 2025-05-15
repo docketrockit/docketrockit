@@ -169,8 +169,6 @@ export const checkPasswordUpdate = async (userId: string): Promise<boolean> => {
         select: { passwordVerified: true }
     });
 
-    console.log(user);
-
     if (!user) return true;
 
     return user.passwordVerified;

@@ -65,7 +65,12 @@ export const getColumns = ({
                 return (
                     <div className="flex space-x-2">
                         <span className="max-w-[31.25rem] truncate font-medium">
-                            {row.original.name}
+                            <Link
+                                className="hover:underline"
+                                href={`/admin/merchants/${row.original.merchant.slug}/brands/${row.original.slug}`}
+                            >
+                                {row.original.name}
+                            </Link>
                         </span>
                     </div>
                 );

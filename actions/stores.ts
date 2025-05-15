@@ -7,7 +7,7 @@ import GithubSlugger from 'github-slugger';
 
 import db from '@/lib/db';
 import { Store } from '@/types/store';
-import { authCheckAdmin } from '@/lib/authCheck';
+import { authCheckAdmin, authCheckBoth } from '@/lib/authCheck';
 import { globalPOSTRateLimit } from '@/lib/request';
 import { getErrorMessage } from '@/lib/handleError';
 import { AddStoreSchema, EditStoreSchema } from '@/schemas/stores';
@@ -15,7 +15,7 @@ import { AddStoreSchema, EditStoreSchema } from '@/schemas/stores';
 const slugger = new GithubSlugger();
 
 export const createStore = async (values: z.infer<typeof AddStoreSchema>) => {
-    const { user: adminUser } = await authCheckAdmin(['ADMIN']);
+    const { user: adminUser } = await authCheckBoth(['ADMIN']);
 
     if (!adminUser)
         return {
@@ -134,9 +134,13 @@ export const createStore = async (values: z.infer<typeof AddStoreSchema>) => {
         };
     }
 
-    redirect(
-        `/admin/merchants/${data.brand.merchant.slug}/brands/${data.brand.slug}/stores/${data.slug}`
-    );
+    if (adminUser.adminUser) {
+        redirect(
+            `/admin/merchants/${data.brand.merchant.slug}/brands/${data.brand.slug}/stores/${data.slug}`
+        );
+    }
+
+    redirect(`/merchant/brands/${data.brand.slug}/stores/${data.slug}`);
 };
 
 export const getStore = async (slug: string) => {

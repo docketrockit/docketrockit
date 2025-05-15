@@ -36,6 +36,7 @@ const BrandDetailsPage = async (props: {
     const { slug, brandSlug } = await props.params;
     const { user } = await authCheckAdmin();
     const { data: brand } = await getBrand(brandSlug);
+
     if (!brand) redirect(`/admin/merchants/${slug}`);
     let searchUsers = brandUsersSearchParamsSchema.parse(
         await props.searchParams

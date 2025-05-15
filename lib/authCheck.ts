@@ -57,11 +57,8 @@ export const authCheckAdmin = async (
     const { session, user } = await getCurrentSession();
 
     if (!session || !user) redirect('/auth/login');
-
     if (!user.role.includes('ADMIN')) redirect('/auth/login');
-
     if (!user.adminUser) redirect('/auth/login');
-
     if (access.length !== 0) {
         const hasAccess = user.adminUser.adminRole.some((role) =>
             access.includes(role)
@@ -99,12 +96,9 @@ export const authCheckBoth = async (access: string[] = []) => {
     const { session, user } = await getCurrentSession();
 
     if (!session || !user) redirect('/auth/login');
-
-    if (!user.role.includes('MERCHANT') && !user.role.includes('MERCHANT'))
+    if (!user.role.includes('ADMIN') && !user.role.includes('MERCHANT'))
         redirect('/auth/login');
-
     if (!user.merchantUser && !user.adminUser) redirect('/auth/login');
-
     let hasAccess = false;
 
     if (access.length !== 0) {
