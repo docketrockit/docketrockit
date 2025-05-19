@@ -30,7 +30,6 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
     useEffect(() => {
         if (isInitialized) {
             localStorage.setItem('theme', theme);
-            console.log('Before:', document.documentElement.classList.value);
             if (theme === 'dark') {
                 document.documentElement.classList.add('dark');
             } else {

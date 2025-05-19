@@ -1,8 +1,8 @@
 'use client';
 
 import { toast } from 'sonner';
+import { useState, useTransition } from 'react';
 
-import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -24,7 +24,7 @@ import {
     SelectTrigger,
     SelectValue
 } from '@/components/ui/select';
-import { AlertCircle, CheckCircle2, FileUp, Plus, Trash2 } from 'lucide-react';
+import { AlertCircle, CheckCircle2, FileUp, LoaderCircle } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
     Table,
@@ -34,6 +34,9 @@ import {
     TableHeader,
     TableRow
 } from '@/components/ui/table';
+import { checkDuplicateNames } from '@/utils/storeValidations';
+import { validateRow } from '@/actions/stores';
+import { RowErrors } from '@/types/store';
 
 // Define field type
 type Field = {
@@ -50,9 +53,16 @@ type Mapping = {
     headerIndex: number | null;
 };
 
-export function StoresCsvImporter({ importFields }: { importFields: Field[] }) {
+export function StoresCsvImporter({
+    importFields,
+    brand
+}: {
+    importFields: Field[];
+    brand: string;
+}) {
     // State for fields
     const [fields, setFields] = useState<Field[]>(importFields);
+    const [isPending, startTransition] = useTransition();
 
     // State for CSV data
     const [file, setFile] = useState<File | null>(null);
@@ -68,6 +78,12 @@ export function StoresCsvImporter({ importFields }: { importFields: Field[] }) {
     const [validationDataError, setValidationDataError] = useState<
         string | null
     >(null);
+    const [duplicateNamesError, setDuplicationNamesError] = useState<
+        ReturnType<typeof checkDuplicateNames>
+    >([]);
+    const [validationRowErrors, setValidationRowErrors] = useState<RowErrors[]>(
+        []
+    );
 
     const [importSuccess, setImportSuccess] = useState(false);
 
@@ -111,12 +127,12 @@ export function StoresCsvImporter({ importFields }: { importFields: Field[] }) {
                 headerIndex:
                     csvHeaders.findIndex(
                         (header) =>
-                            header.toLowerCase() === field.name.toLowerCase()
+                            header.toLowerCase() === field.value.toLowerCase()
                     ) !== -1
                         ? csvHeaders.findIndex(
                               (header) =>
                                   header.toLowerCase() ===
-                                  field.name.toLowerCase()
+                                  field.value.toLowerCase()
                           )
                         : null
             }))
@@ -163,20 +179,43 @@ export function StoresCsvImporter({ importFields }: { importFields: Field[] }) {
 
     const validateData = () => {
         setValidationDataError(null);
+        setDuplicationNamesError([]);
 
-        const merged = rows.map((row) => {
-            const obj: Record<string, string> = {};
+        startTransition(async () => {
+            const merged = rows.map((row) => {
+                const obj: Record<string, string> = {};
 
-            for (const mapping of mappings) {
-                if (mapping.headerIndex)
-                    obj[mapping.value] = row[mapping.headerIndex];
+                for (const mapping of mappings) {
+                    if (mapping.headerIndex || mapping.headerIndex === 0)
+                        obj[mapping.value] = row[mapping.headerIndex];
+                }
+
+                return obj;
+            });
+
+            const duplicateNames = checkDuplicateNames({ data: merged });
+            if (duplicateNames.length > 0) {
+                setValidationDataError('duplicate');
+                setDuplicationNamesError(duplicateNames);
+            } else {
+                const rowErrors: RowErrors[] = [];
+                let i = 2;
+
+                for (const row of merged) {
+                    const validatedRow = await validateRow({
+                        data: row,
+                        brand
+                    });
+                    if (validatedRow.length > 0)
+                        rowErrors.push({ row: i, errors: validatedRow });
+                    i++;
+                }
+                if (rowErrors.length > 0) {
+                    setValidationDataError('validation');
+                    setValidationRowErrors(rowErrors);
+                }
             }
-
-            return obj;
         });
-        console.log(merged);
-
-        return true;
     };
 
     // Process import
@@ -521,6 +560,192 @@ export function StoresCsvImporter({ importFields }: { importFields: Field[] }) {
                             )}
                         </div>
                     </TabsContent>
+                    <TabsContent value="import">
+                        <div className="space-y-4">
+                            <div>
+                                <h3 className="text-lg font-medium mb-2">
+                                    Data Validation
+                                </h3>
+                                {isPending ? (
+                                    <Alert>
+                                        <AlertDescription>
+                                            <LoaderCircle className="animate-spin" />
+                                        </AlertDescription>
+                                    </Alert>
+                                ) : validationDataError ? (
+                                    <Alert variant="destructive">
+                                        <AlertCircle className="h-4 w-4" />
+                                        <AlertDescription>
+                                            {validationDataError === 'duplicate'
+                                                ? 'There were duplicate names, please see the rows below and re-import'
+                                                : 'There were errors in your data import, please see below and re-import'}
+                                        </AlertDescription>
+                                    </Alert>
+                                ) : (
+                                    <Alert>
+                                        <CheckCircle2 className="h-4 w-4" />
+                                        <AlertDescription>
+                                            All required fields are ready for
+                                            import
+                                        </AlertDescription>
+                                    </Alert>
+                                )}
+                            </div>
+
+                            {validationDataError && (
+                                <div>
+                                    <h3 className="text-lg font-medium mb-2">
+                                        Data Validation Summary
+                                    </h3>
+                                    {isPending ? (
+                                        <LoaderCircle className="animate-spin" />
+                                    ) : (
+                                        <div className="border rounded-md p-4 space-y-2">
+                                            <p>
+                                                <strong>File:</strong>{' '}
+                                                {file?.name}
+                                            </p>
+                                            {validationDataError ===
+                                            'duplicate' ? (
+                                                <>
+                                                    <p>
+                                                        <strong>
+                                                            Duplicate names:
+                                                        </strong>{' '}
+                                                        {
+                                                            duplicateNamesError.length
+                                                        }
+                                                    </p>
+                                                    <Table>
+                                                        <TableHeader>
+                                                            <TableRow>
+                                                                <TableHead className="w-[100px]">
+                                                                    Name
+                                                                </TableHead>
+                                                                <TableHead>
+                                                                    Rows
+                                                                    Affected
+                                                                </TableHead>
+                                                            </TableRow>
+                                                        </TableHeader>
+                                                        <TableBody>
+                                                            {duplicateNamesError.map(
+                                                                (
+                                                                    duplicate,
+                                                                    index
+                                                                ) => (
+                                                                    <TableRow
+                                                                        key={
+                                                                            index
+                                                                        }
+                                                                    >
+                                                                        <TableCell className="font-medium align-text-top">
+                                                                            {
+                                                                                duplicate.name
+                                                                            }
+                                                                        </TableCell>
+                                                                        <TableCell className="align-text-top">
+                                                                            <div className="flex flex-col">
+                                                                                {duplicate.rows.map(
+                                                                                    (
+                                                                                        row
+                                                                                    ) => (
+                                                                                        <div
+                                                                                            key={
+                                                                                                row
+                                                                                            }
+                                                                                        >
+                                                                                            {
+                                                                                                row
+                                                                                            }
+                                                                                        </div>
+                                                                                    )
+                                                                                )}
+                                                                            </div>
+                                                                        </TableCell>
+                                                                    </TableRow>
+                                                                )
+                                                            )}
+                                                        </TableBody>
+                                                    </Table>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <p>
+                                                        <strong>
+                                                            Row Error Totals:
+                                                        </strong>{' '}
+                                                        {
+                                                            validationRowErrors.length
+                                                        }
+                                                    </p>
+                                                    <Table>
+                                                        <TableHeader>
+                                                            <TableRow>
+                                                                <TableHead className="w-[100px]">
+                                                                    Row Number
+                                                                </TableHead>
+                                                                <TableHead>
+                                                                    Fields
+                                                                </TableHead>
+                                                            </TableRow>
+                                                        </TableHeader>
+                                                        <TableBody>
+                                                            {validationRowErrors.map(
+                                                                (
+                                                                    error,
+                                                                    index
+                                                                ) => (
+                                                                    <TableRow
+                                                                        key={
+                                                                            index
+                                                                        }
+                                                                    >
+                                                                        <TableCell className="font-medium align-text-top">
+                                                                            {
+                                                                                error.row
+                                                                            }
+                                                                        </TableCell>
+                                                                        <TableCell className="align-text-top">
+                                                                            <div className="flex flex-col">
+                                                                                {error.errors.map(
+                                                                                    (
+                                                                                        issue,
+                                                                                        index
+                                                                                    ) => (
+                                                                                        <div
+                                                                                            key={
+                                                                                                index
+                                                                                            }
+                                                                                        >
+                                                                                            {`${issue.field} - ${issue.error}`}
+                                                                                        </div>
+                                                                                    )
+                                                                                )}
+                                                                            </div>
+                                                                        </TableCell>
+                                                                    </TableRow>
+                                                                )
+                                                            )}
+                                                        </TableBody>
+                                                    </Table>
+                                                </>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {importSuccess && (
+                                <Alert className="bg-green-50 border-green-200">
+                                    <CheckCircle2 className="h-4 w-4 text-green-500" />
+                                    <AlertDescription className="text-green-700">
+                                        CSV data imported successfully!
+                                    </AlertDescription>
+                                </Alert>
+                            )}
+                        </div>
+                    </TabsContent>
                 </Tabs>
             </CardContent>
             <CardFooter className="flex justify-between">
@@ -546,7 +771,10 @@ export function StoresCsvImporter({ importFields }: { importFields: Field[] }) {
                         } else if (activeTab === 'import') processImport();
                     }}
                     disabled={
-                        (activeTab === 'define' && !file) || importSuccess
+                        (activeTab === 'define' && !file) ||
+                        (activeTab === 'import' &&
+                            validationDataError !== null) ||
+                        importSuccess
                     }
                 >
                     {activeTab === 'import' ? 'Process Import' : 'Next'}

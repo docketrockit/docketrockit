@@ -6,11 +6,14 @@ import { Brand } from '@prisma/client';
 import GithubSlugger from 'github-slugger';
 
 import db from '@/lib/db';
-import { Store } from '@/types/store';
+import { Store, RowError } from '@/types/store';
 import { authCheckAdmin, authCheckBoth } from '@/lib/authCheck';
 import { globalPOSTRateLimit } from '@/lib/request';
 import { getErrorMessage } from '@/lib/handleError';
 import { AddStoreSchema, EditStoreSchema } from '@/schemas/stores';
+import { geocodeAddress } from '@/lib/geocode';
+import { validateAddress } from '@/lib/validateAddress';
+import { isValidABN, isValidACN } from '@/utils/businessNumberValidation';
 
 const slugger = new GithubSlugger();
 
@@ -297,4 +300,130 @@ export const updateStore = async ({
     redirect(
         `/admin/merchants/${data.brand.merchant.slug}/brands/${data.brand.slug}/stores/${data.slug}`
     );
+};
+
+export const validateRow = async ({
+    data,
+    brand
+}: {
+    data: Record<string, string>;
+    brand: string;
+}) => {
+    const errors: RowError[] = [];
+
+    if (data.name) {
+        const nameExists = await db.store.findFirst({
+            where: { brand: { slug: brand } }
+        });
+
+        if (nameExists)
+            errors.push({
+                field: 'Name',
+                error: `Name already exists for brand`
+            });
+    } else {
+        errors.push({ field: 'Name', error: 'Name not found' });
+    }
+
+    let address = true;
+
+    if (!data.address1) {
+        errors.push({
+            field: 'Address Line 1',
+            error: 'Address line 1 not found'
+        });
+        address = false;
+    }
+
+    if (!data.city) {
+        errors.push({
+            field: 'Suburb',
+            error: 'Suburb not found'
+        });
+        address = false;
+    }
+
+    if (!data.region) {
+        errors.push({
+            field: 'State',
+            error: 'State not found'
+        });
+        address = false;
+    }
+
+    if (!data.postalCode) {
+        errors.push({
+            field: 'Post Code',
+            error: 'Post Code not found'
+        });
+        address = false;
+    }
+
+    if (!data.country) {
+        errors.push({
+            field: 'Country',
+            error: 'Country not found'
+        });
+        address = false;
+    }
+
+    const countryCode = await db.country.findFirst({
+        where: { name: data.country }
+    });
+
+    if (!countryCode) {
+        errors.push({
+            field: 'Country',
+            error: 'Invalid country name'
+        });
+        address = false;
+    }
+
+    // if (address) {
+    //     try {
+    //         const validationResult = await validateAddress({
+    //             address1: data.address1,
+    //             address2: data.address2,
+    //             city: data.city,
+    //             region: data.region,
+    //             postalCode: data.postalCode,
+    //             country: countryCode?.isoCode || 'AU'
+    //         });
+
+    //         if (!validationResult.isValid) {
+    //             errors.push({
+    //                 field: 'Full address',
+    //                 error: 'Address could not be validated'
+    //             });
+    //         }
+    //     } catch (err) {
+    //         errors.push({
+    //             field: 'Address',
+    //             error: 'Failed to validate address with Google'
+    //         });
+    //     }
+    // }
+
+    if (data.abn) {
+        const validAbn = isValidABN(data.abn);
+        if (!validAbn) {
+            errors.push({
+                field: 'ABN',
+                error: 'Invalid ABN'
+            });
+        }
+    }
+
+    if (data.acn) {
+        const validAcn = isValidACN(data.acn);
+        console.log(validAcn);
+        if (!validAcn) {
+            errors.push({
+                field: 'ACN',
+                error: 'Invalid ACN'
+            });
+        }
+    }
+
+    return errors;
 };

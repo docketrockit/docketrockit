@@ -15,11 +15,11 @@ export const BrandStoresTableToolbarActions = ({
     slug
 }: BrandStoresTableToolbarActionsProps) => {
     let addUrl = `/admin/stores/add?brand=${slug}`;
-    let importUrl = '/admin/stores/import';
+    let importUrl = `/admin/stores/import?brand=${slug}`;
 
     if (user.merchantUser) {
         addUrl = `/merchant/stores/add?brand=${slug}`;
-        importUrl = '/merchant/stores/import';
+        importUrl = `/merchant/stores/import?brand=${slug}`;
     }
     let hasAccess = false;
 

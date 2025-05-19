@@ -29,3 +29,13 @@ export interface StoreMainProps {
     store: Store;
     user: User;
 }
+
+export interface RowError {
+    field: string;
+    error: string;
+}
+
+export interface RowErrors {
+    row: number;
+    errors: RowError[];
+}
