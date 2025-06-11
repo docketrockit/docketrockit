@@ -49,6 +49,12 @@ enum BrandRole {
   ACCOUNTS
 }
 
+enum PaymentType {
+  CASH
+  EFTPOS
+  CREDIT
+}
+
 model User {
   id                       String                     @id @default(cuid())
   firstName                String
@@ -292,23 +298,39 @@ model Store {
 }
 
 model Receipt {
-  id               String        @id @default(cuid())
-  consumer         Consumer      @relation(fields: [consumerId], references: [id], onDelete: Cascade)
+  id               String           @id @default(cuid())
+  receiptNumber    String
+  consumer         Consumer         @relation(fields: [consumerId], references: [id], onDelete: Cascade)
   consumerId       String
-  store            Store         @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  store            Store            @relation(fields: [storeId], references: [id], onDelete: Cascade)
   storeId          String
   subTotal         Float
   tax              Float
   cardSurcharge    Float
   otherInformation String[]
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
+  receiptDateTime  DateTime
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
   receiptItems     ReceiptItem[]
+  receiptPayments  ReceiptPayment[]
+}
+
+model ReceiptPayment {
+  id          String      @id @default(cuid())
+  receipt     Receipt     @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+  receiptId   String
+  paymentType PaymentType
+  amount      Float
+  terminal    String?
+  reference   String?
+  cardNo      String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 }
 
 model ReceiptItem {
-  id          String  @id @default(cuid())
-  receipt     Receipt @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+  id          String   @id @default(cuid())
+  receipt     Receipt  @relation(fields: [receiptId], references: [id], onDelete: Cascade)
   receiptId   String
   name        String
   sku         String?
@@ -319,4 +341,6 @@ model ReceiptItem {
   itemTax     Float
   subTotal    Float
   tax         Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
