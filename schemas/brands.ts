@@ -9,10 +9,7 @@ export const AddBrandSchema = z.object({
     tradingAsName: getStringSchema('Trading as Name'),
     phoneNumber: getStringSchema('Phone number'),
     genericEmail: getEmailSchema(),
-    invoiceEmail: z
-        .string()
-        .email({ message: 'Invalid email address' })
-        .optional(),
+    invoiceEmail: z.email({ message: 'Invalid email address' }).optional(),
     address1: getStringSchema('Address line 1'),
     address2: z.optional(z.string()),
     suburb: getStringSchema('Suburb'),
@@ -40,10 +37,7 @@ export const AddBrandSchemaCreate = z.object({
     name: getStringSchema('Name'),
     tradingAsName: getStringSchema('Trading as Name'),
     genericEmail: getEmailSchema(),
-    invoiceEmail: z
-        .string()
-        .email({ message: 'Invalid email address' })
-        .optional(),
+    invoiceEmail: z.email({ message: 'Invalid email address' }).optional(),
     phoneNumber: getStringSchema('Phone number'),
     address1: getStringSchema('Address line 1'),
     address2: z.optional(z.string()),
@@ -73,10 +67,7 @@ export const EditBrandSchema = z.object({
     tradingAsName: getStringSchema('Trading as Name'),
     phoneNumber: getStringSchema('Phone number'),
     genericEmail: getEmailSchema(),
-    invoiceEmail: z
-        .string()
-        .email({ message: 'Invalid email address' })
-        .optional(),
+    invoiceEmail: z.email({ message: 'Invalid email address' }).optional(),
     address1: getStringSchema('Address line 1'),
     address2: z.optional(z.string()),
     suburb: getStringSchema('Suburb'),

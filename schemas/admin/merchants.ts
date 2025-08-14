@@ -5,6 +5,7 @@ import {
     optional,
     string,
     coerce,
+    email,
     enum as enum_
 } from 'zod';
 
@@ -15,9 +16,7 @@ export const AddMerchantSchema = object({
     name: getStringSchema('Name'),
     phoneNumber: getStringSchema('Phone number'),
     genericEmail: getEmailSchema(),
-    invoiceEmail: string()
-        .email({ message: 'Invalid email address' })
-        .optional(),
+    invoiceEmail: email({ message: 'Invalid email address' }).optional(),
     address1: getStringSchema('Address line 1'),
     address2: optional(string()),
     suburb: getStringSchema('Suburb'),
@@ -43,9 +42,7 @@ export const AddMerchantSchemaCreate = object({
     name: getStringSchema('Name'),
     phoneNumber: getStringSchema('Phone number'),
     genericEmail: getEmailSchema(),
-    invoiceEmail: string()
-        .email({ message: 'Invalid email address' })
-        .optional(),
+    invoiceEmail: email({ message: 'Invalid email address' }).optional(),
     address1: getStringSchema('Address line 1'),
     address2: optional(string()),
     suburb: getStringSchema('Suburb'),

@@ -1,12 +1,12 @@
-import { object, array, nativeEnum, boolean } from 'zod';
+import { object, array, z, boolean } from 'zod';
 
 import { getStringSchema, getEmailSchema, getPasswordSchema } from './schemas';
 import { AdminRole, MerchantRole, BrandRole, Status } from '@/generated/prisma';
 
-const adminRoleSchema = nativeEnum(AdminRole);
-const merchantRoleSchema = nativeEnum(MerchantRole);
-const brandRoleSchema = nativeEnum(BrandRole);
-const statusSchema = nativeEnum(Status);
+const adminRoleSchema = z.enum(AdminRole);
+const merchantRoleSchema = z.enum(MerchantRole);
+const brandRoleSchema = z.enum(BrandRole);
+const statusSchema = z.enum(Status);
 
 export const AdminUserSchema = object({
     firstName: getStringSchema('First name'),

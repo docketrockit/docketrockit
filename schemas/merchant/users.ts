@@ -5,8 +5,8 @@ import { getMerchantUsers } from '@/actions/merchant/users';
 import { getStringSchema, getEmailSchema, getPasswordSchema } from '../schemas';
 import { User } from '@/lib/user';
 
-const merchantRoleSchema = z.nativeEnum(MerchantRole);
-const brandRoleSchema = z.nativeEnum(BrandRole);
+const merchantRoleSchema = z.enum(MerchantRole);
+const brandRoleSchema = z.enum(BrandRole);
 
 export const merchantUsersSearchParamsSchema = z.object({
     page: z.coerce.number().default(1),

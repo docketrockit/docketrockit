@@ -12,7 +12,7 @@ export const getPasswordSchema = (type: 'Password' | 'Confirm Password') =>
         );
 
 export const getEmailSchema = () =>
-    z.string().nonempty('Email is required').email('Invalid email');
+    z.email('Invalid email').nonempty('Email is required');
 
 export const getStringSchema = (type: string, min = 1) =>
     z

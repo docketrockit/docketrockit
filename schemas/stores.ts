@@ -1,5 +1,4 @@
 import * as z from 'zod';
-
 import { getStringSchema, getEmailSchema } from './schemas';
 import { isValidABN, isValidACN } from '@/utils/businessNumberValidation';
 
@@ -8,21 +7,29 @@ export const AddStoreSchema = z.object({
     name: getStringSchema('Name'),
     phoneNumber: getStringSchema('Phone number'),
     address1: getStringSchema('Address line 1'),
-    address2: z.optional(z.string()),
+    address2: z.string().optional(),
     formattedAddress: getStringSchema('Formatted address'),
-    latitude: z.number({
-        required_error: 'Latitude is required',
-        invalid_type_error: 'Latitude must be a number'
-    }),
-    longitude: z.number({
-        required_error: 'Longitude is required',
-        invalid_type_error: 'Longitude must be a number'
-    }),
+    latitude: z
+        .number()
+        .refine((val) => val !== undefined && val !== null, {
+            message: 'Latitude is required'
+        })
+        .refine((val) => typeof val === 'number' && !isNaN(val), {
+            message: 'Latitude must be a valid number'
+        }),
+    longitude: z
+        .number()
+        .refine((val) => val !== undefined && val !== null, {
+            message: 'Longitude is required'
+        })
+        .refine((val) => typeof val === 'number' && !isNaN(val), {
+            message: 'Longitude must be a valid number'
+        }),
     city: getStringSchema('City'),
     region: getStringSchema('Region'),
     postalCode: getStringSchema('Postal code'),
     country: getStringSchema('Country'),
-    countryCode: z.optional(z.string()),
+    countryCode: z.string().optional(),
     currencyId: getStringSchema('currency'),
     abn: getStringSchema('ABN')
         .length(11, 'ABN must be 11 digits')
@@ -40,21 +47,29 @@ export const EditStoreSchema = z.object({
     name: getStringSchema('Name'),
     phoneNumber: getStringSchema('Phone number'),
     address1: getStringSchema('Address line 1'),
-    address2: z.optional(z.string()),
+    address2: z.string().optional(),
     formattedAddress: getStringSchema('Formatted address'),
-    latitude: z.number({
-        required_error: 'Latitude is required',
-        invalid_type_error: 'Latitude must be a number'
-    }),
-    longitude: z.number({
-        required_error: 'Longitude is required',
-        invalid_type_error: 'Longitude must be a number'
-    }),
+    latitude: z
+        .number()
+        .refine((val) => val !== undefined && val !== null, {
+            message: 'Latitude is required'
+        })
+        .refine((val) => typeof val === 'number' && !isNaN(val), {
+            message: 'Latitude must be a valid number'
+        }),
+    longitude: z
+        .number()
+        .refine((val) => val !== undefined && val !== null, {
+            message: 'Longitude is required'
+        })
+        .refine((val) => typeof val === 'number' && !isNaN(val), {
+            message: 'Longitude must be a valid number'
+        }),
     city: getStringSchema('City'),
     region: getStringSchema('Region'),
     postalCode: getStringSchema('Postal code'),
     country: getStringSchema('Country'),
-    countryCode: z.optional(z.string()),
+    countryCode: z.string().optional(),
     currencyId: getStringSchema('currency'),
     abn: getStringSchema('ABN')
         .length(11, 'ABN must be 11 digits')
