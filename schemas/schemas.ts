@@ -1,21 +1,24 @@
-import { string } from 'zod';
+import { z } from 'zod';
 
 export const getPasswordSchema = (type: 'Password' | 'Confirm Password') =>
-    string({ required_error: `${type} is required` })
-        .min(8, `${type} must be atleast 8 characters`)
-        .max(32, `${type} can not exceed 32 characters`)
+    z
+        .string()
+        .nonempty(`${type} is required`)
+        .min(8, `${type} must be at least 8 characters`)
+        .max(32, `${type} cannot exceed 32 characters`)
         .regex(
             /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+[\]{};':"\\|,.<>?/~`])/,
-            'Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character.'
+            `${type} must contain at least one lowercase letter, one uppercase letter, one number, and one special character.`
         );
 
 export const getEmailSchema = () =>
-    string({ required_error: 'Email is required' })
-        .min(1, 'Email is required')
-        .email('Invalid email');
+    z.string().nonempty('Email is required').email('Invalid email');
 
 export const getStringSchema = (type: string, min = 1) =>
-    string({ required_error: `${type} is required` }).min(
-        min,
-        `${type} is required`
-    );
+    z
+        .string()
+        .nonempty(`${type} is required`)
+        .min(
+            min,
+            `${type} must be at least ${min} character${min > 1 ? 's' : ''}`
+        );
