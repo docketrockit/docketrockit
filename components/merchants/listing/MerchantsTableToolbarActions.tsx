@@ -2,7 +2,7 @@
 
 import { DownloadIcon, PlusIcon } from '@radix-ui/react-icons';
 import { type Table } from '@tanstack/react-table';
-import { AdminRole } from '@prisma/client';
+import { AdminRole } from '@/generated/prisma';
 import Link from 'next/link';
 
 import { exportTableToCSV } from '@/lib/export';

@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { Pencil } from 'lucide-react';
-import { AdminRole } from '@prisma/client';
+import { AdminRole } from '@/generated/prisma';
 import parsePhoneNumber, { PhoneNumber } from 'libphonenumber-js';
 
 import { MerchantMainProps } from '@/types/merchant';

@@ -1,6 +1,6 @@
 import * as z from 'zod';
-import { Country, State } from '@prisma/client';
-import { Prisma, Merchant } from '@prisma/client';
+import { Country, State } from '@/generated/prisma';
+import { Prisma, Merchant } from '@/generated/prisma';
 
 import { merchantsSearchParamsSchema } from '@/schemas/admin/merchants';
 import { getMerchantUsers } from '@/actions/admin/merchantUsers';

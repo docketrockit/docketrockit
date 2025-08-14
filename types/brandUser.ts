@@ -1,6 +1,6 @@
 import * as z from 'zod';
 
-import { Prisma } from '@prisma/client';
+import { Prisma } from '@/generated/prisma';
 import { type Table } from '@tanstack/react-table';
 
 import { getBrandUsers } from '@/actions/admin/brandUsers';

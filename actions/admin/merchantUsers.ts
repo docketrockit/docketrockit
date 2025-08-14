@@ -3,7 +3,7 @@
 import * as z from 'zod';
 import { format } from 'date-fns';
 import { revalidatePath } from 'next/cache';
-import { type User as UserType } from '@prisma/client';
+import { type User as UserType } from '@/generated/prisma';
 
 import db from '@/lib/db';
 import { GetMerchantUsersSchema } from '@/types/merchantUser';

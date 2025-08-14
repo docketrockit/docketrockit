@@ -3,7 +3,7 @@ import { twMerge } from 'tailwind-merge';
 import { encodeBase32UpperCaseNoPadding } from '@oslojs/encoding';
 import { randomBytes } from 'crypto';
 import { hash } from 'bcrypt-ts';
-import { Status } from '@prisma/client';
+import { Status } from '@/generated/prisma';
 
 import {
     CheckCircledIcon,

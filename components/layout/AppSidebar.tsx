@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Role, AdminRole, MerchantRole } from '@prisma/client';
+import { Role, AdminRole, MerchantRole } from '@/generated/prisma';
 
 import { useSidebar } from '@/context/SidebarContext';
 import {

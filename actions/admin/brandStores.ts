@@ -1,7 +1,7 @@
 'use server';
 
 import { format } from 'date-fns';
-import { type Brand as UserType } from '@prisma/client';
+import { type Brand as UserType } from '@/generated/prisma';
 
 import db from '@/lib/db';
 import { GetBrandStoresSchema } from '@/types/brandStore';

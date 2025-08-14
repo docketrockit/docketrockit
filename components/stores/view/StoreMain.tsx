@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Pencil } from 'lucide-react';
-import { AdminRole } from '@prisma/client';
+import { AdminRole } from '@/generated/prisma';
 import parsePhoneNumber, { PhoneNumber } from 'libphonenumber-js';
 import { AdvancedMarker, Map } from '@vis.gl/react-google-maps';
 

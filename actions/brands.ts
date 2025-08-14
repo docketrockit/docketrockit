@@ -2,7 +2,7 @@
 
 import * as z from 'zod';
 import { redirect } from 'next/navigation';
-import { Brand, Merchant } from '@prisma/client';
+import { Brand, Merchant } from '@/generated/prisma';
 import GithubSlugger from 'github-slugger';
 
 import db from '@/lib/db';

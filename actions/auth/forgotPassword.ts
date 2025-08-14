@@ -3,7 +3,7 @@
 import * as z from 'zod';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { Role } from '@prisma/client';
+import { Role } from '@/generated/prisma';
 
 import {
     createPasswordResetSession,

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import { type ColumnDef } from '@tanstack/react-table';
-import { AdminRole, Prisma } from '@prisma/client';
+import { AdminRole, Prisma } from '@/generated/prisma';
 import parsePhoneNumber from 'libphonenumber-js';
 
 import { formatDate } from '@/lib/utils';

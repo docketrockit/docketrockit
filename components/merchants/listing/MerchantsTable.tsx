@@ -2,7 +2,7 @@
 'use memo';
 
 import { use, useMemo } from 'react';
-import { Merchant } from '@prisma/client';
+import { Merchant } from '@/generated/prisma';
 
 import { type DataTableFilterField } from '@/types/data-table';
 import { statusLabels } from '@/types/global';

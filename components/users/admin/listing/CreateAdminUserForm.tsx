@@ -2,7 +2,7 @@
 
 import * as z from 'zod';
 import { type UseFormReturn } from 'react-hook-form';
-import { AdminRole } from '@prisma/client';
+import { AdminRole } from '@/generated/prisma';
 import {
     UserRound,
     Mail,

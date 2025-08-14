@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useTransition, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import { AdminRole } from '@prisma/client';
+import { AdminRole } from '@/generated/prisma';
 import { UserRound, Mail, Briefcase } from 'lucide-react';
 import { ReloadIcon } from '@radix-ui/react-icons';
 

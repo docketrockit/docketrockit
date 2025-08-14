@@ -1,6 +1,7 @@
 import { authCheckMerchant } from '@/lib/authCheck';
+import { Metadata } from 'next';
 
-export async function generateMetadata() {
+export async function generateMetadata(): Promise<Metadata> {
     const title = 'Dashboard';
     const description = 'The DocketRockit Merchant Admin Dashboard';
 

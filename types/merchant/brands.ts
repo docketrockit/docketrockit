@@ -1,7 +1,7 @@
 import * as z from 'zod';
 
 import { brandsSearchParamsSchema } from '@/schemas/merchant/brands';
-import { Prisma, Country, State } from '@prisma/client';
+import { Prisma, Country, State } from '@/generated/prisma';
 import { type Table } from '@tanstack/react-table';
 
 import { getBrands } from '@/actions/merchant/brands';

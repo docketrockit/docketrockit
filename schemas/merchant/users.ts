@@ -1,5 +1,5 @@
 import * as z from 'zod';
-import { MerchantRole, BrandRole } from '@prisma/client';
+import { MerchantRole, BrandRole } from '@/generated/prisma';
 
 import { getMerchantUsers } from '@/actions/merchant/users';
 import { getStringSchema, getEmailSchema, getPasswordSchema } from '../schemas';

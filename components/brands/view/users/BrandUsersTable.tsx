@@ -2,7 +2,7 @@
 'use memo';
 
 import { use, useMemo } from 'react';
-import { BrandRole } from '@prisma/client';
+import { BrandRole } from '@/generated/prisma';
 
 import { type DataTableFilterField } from '@/types/data-table';
 import { statusLabels } from '@/types/global';

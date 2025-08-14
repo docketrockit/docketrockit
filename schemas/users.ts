@@ -1,7 +1,7 @@
 import { object, array, nativeEnum, boolean } from 'zod';
 
 import { getStringSchema, getEmailSchema, getPasswordSchema } from './schemas';
-import { AdminRole, MerchantRole, BrandRole, Status } from '@prisma/client';
+import { AdminRole, MerchantRole, BrandRole, Status } from '@/generated/prisma';
 
 const adminRoleSchema = nativeEnum(AdminRole);
 const merchantRoleSchema = nativeEnum(MerchantRole);

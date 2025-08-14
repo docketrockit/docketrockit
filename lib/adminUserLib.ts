@@ -1,4 +1,4 @@
-import { Prisma, User, AdminUser } from '@prisma/client';
+import { Prisma, User, AdminUser } from '@/generated/prisma';
 import { filterColumn } from './filterColumn';
 import { AdminUsersFilterInput } from '@/types/adminUser';
 

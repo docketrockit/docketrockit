@@ -6,13 +6,13 @@ import {
     AdminRole,
     MerchantRole,
     BrandRole
-} from '@prisma/client';
+} from '@/generated/prisma';
 
 import db from './db';
 import { decrypt, encrypt } from './encryption';
 import { hashPassword } from './password';
 import { generateRandomRecoveryCodes } from './utils';
-import { User as PrismaUser } from '@prisma/client';
+import { User as PrismaUser } from '@/generated/prisma';
 
 export interface User {
     id: string;

@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { Prisma } from '@/generated/prisma';
 
 import { BrandStore } from './brandStore';
 import { User } from '@/lib/user';

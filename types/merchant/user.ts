@@ -1,5 +1,5 @@
 import * as z from 'zod';
-import { AdminRole, Prisma } from '@prisma/client';
+import { AdminRole, Prisma } from '@/generated/prisma';
 
 import { merchantUsersSearchParamsSchema } from '@/schemas/merchant/users';
 

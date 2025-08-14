@@ -1,4 +1,4 @@
-import { AdminRole, MerchantRole, BrandRole } from '@prisma/client';
+import { AdminRole, MerchantRole, BrandRole } from '@/generated/prisma';
 
 export enum UserRole {
     BUSINESSADMIN = 'Business Admin',

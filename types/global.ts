@@ -1,4 +1,4 @@
-import { Status } from '@prisma/client';
+import { Status } from '@/generated/prisma';
 
 import { Session } from '@/lib/session';
 import { User } from '@/lib/user';

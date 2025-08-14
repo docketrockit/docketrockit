@@ -1,4 +1,4 @@
-import { Prisma, Merchant } from '@prisma/client';
+import { Prisma, Merchant } from '@/generated/prisma';
 import { filterColumn } from './filterColumn';
 import { MerchantsFilterInput } from '@/types/merchant';
 

@@ -4,7 +4,7 @@ import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTransition, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { MerchantRole, Status } from '@prisma/client';
+import { MerchantRole, Status } from '@/generated/prisma';
 import { UserRound, Mail, Briefcase } from 'lucide-react';
 import { ReloadIcon } from '@radix-ui/react-icons';
 import { toast } from 'sonner';

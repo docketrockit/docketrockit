@@ -11,7 +11,7 @@ import {
     SquareAsterisk,
     Briefcase
 } from 'lucide-react';
-import { AdminRole } from '@prisma/client';
+import { AdminRole } from '@/generated/prisma';
 
 import {
     Form,

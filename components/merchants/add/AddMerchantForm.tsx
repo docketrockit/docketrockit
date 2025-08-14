@@ -4,7 +4,7 @@ import * as z from 'zod';
 import { useForm } from 'react-hook-form';
 import { useState, useTransition, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Country, State } from '@prisma/client';
+import { Country, State } from '@/generated/prisma';
 import { CaretSortIcon, CheckIcon } from '@radix-ui/react-icons';
 
 import {

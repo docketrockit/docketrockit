@@ -1,4 +1,4 @@
-import { Prisma, User, MerchantUser } from '@prisma/client';
+import { Prisma, User, MerchantUser } from '@/generated/prisma';
 import { filterColumn } from '../filterColumn';
 import { MerchantUsersFilterInput } from '@/types/merchant/user';
 

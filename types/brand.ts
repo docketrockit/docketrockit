@@ -1,4 +1,4 @@
-import { Prisma, Country, State } from '@prisma/client';
+import { Prisma, Country, State } from '@/generated/prisma';
 
 import { User } from '@/lib/user';
 import { getBrandUsers } from '@/actions/admin/brandUsers';

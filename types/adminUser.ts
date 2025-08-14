@@ -1,7 +1,7 @@
 import * as z from 'zod';
 
 import { adminUsersSearchParamsSchema } from '@/schemas/admin/adminUsers';
-import { Prisma } from '@prisma/client';
+import { Prisma } from '@/generated/prisma';
 
 export type GetAdminUsersSchema = z.infer<typeof adminUsersSearchParamsSchema>;
 

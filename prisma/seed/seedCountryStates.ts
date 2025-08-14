@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@/generated/prisma';
 import { Country, State } from 'country-state-city';
 
 const prisma = new PrismaClient();

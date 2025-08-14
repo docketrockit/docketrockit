@@ -8,7 +8,7 @@ import {
 import { SelectTrigger } from '@radix-ui/react-select';
 import { type Table } from '@tanstack/react-table';
 import { toast } from 'sonner';
-import { Prisma } from '@prisma/client';
+import { Prisma } from '@/generated/prisma';
 
 import { exportTableToCSV } from '@/lib/export';
 import { Button } from '@/components/ui/button';

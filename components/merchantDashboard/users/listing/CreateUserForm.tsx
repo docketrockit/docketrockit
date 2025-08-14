@@ -2,7 +2,7 @@
 
 import * as z from 'zod';
 import { type UseFormReturn } from 'react-hook-form';
-import { MerchantRole } from '@prisma/client';
+import { MerchantRole } from '@/generated/prisma';
 import {
     UserRound,
     Mail,

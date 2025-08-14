@@ -2,7 +2,7 @@
 
 import { DownloadIcon, PlusIcon } from '@radix-ui/react-icons';
 import Link from 'next/link';
-import { AdminRole, MerchantRole } from '@prisma/client';
+import { AdminRole, MerchantRole } from '@/generated/prisma';
 
 import { exportTableToCSV } from '@/lib/export';
 import { Button } from '@/components/ui/button';

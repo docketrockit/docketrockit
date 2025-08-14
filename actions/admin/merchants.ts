@@ -3,7 +3,7 @@
 import * as z from 'zod';
 import { format, subDays } from 'date-fns';
 import { redirect } from 'next/navigation';
-import { Merchant } from '@prisma/client';
+import { Merchant } from '@/generated/prisma';
 import GithubSlugger from 'github-slugger';
 import { revalidatePath } from 'next/cache';
 
