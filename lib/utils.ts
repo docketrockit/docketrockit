@@ -1,6 +1,5 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { encodeBase32UpperCaseNoPadding } from '@oslojs/encoding';
 import { randomBytes } from 'crypto';
 import { hash } from 'bcrypt-ts';
 import { Status } from '@/generated/prisma';
@@ -17,13 +16,6 @@ import {
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
 }
-
-export const generateRandomOTP = (): string => {
-    const bytes = new Uint8Array(5);
-    crypto.getRandomValues(bytes);
-    const code = encodeBase32UpperCaseNoPadding(bytes);
-    return code;
-};
 
 export const generateResetPasswordToken = (): string => {
     const token = randomBytes(16).toString('hex');
@@ -116,4 +108,12 @@ export function formatBytes(
             ? (accurateSizes[i] ?? 'Bytest')
             : (sizes[i] ?? 'Bytes')
     }`;
+}
+
+export function normalizeName(name: string) {
+    return name
+        .trim()
+        .replace(/\s+/g, ' ')
+        .replace(/[^a-zA-Z\s'-]/g, '')
+        .replace(/\b\w/g, (char) => char.toUpperCase());
 }

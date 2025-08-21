@@ -3,47 +3,16 @@
 import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-
 const domain = process.env.NEXT_PUBLIC_APP_URL;
-
-export const sendPasswordResetEmail = async ({
-    email,
-    code
-}: {
-    email: string;
-    code: string;
-}) => {
-    await resend.emails.send({
-        from: process.env.NEXT_PUBLIC_APP_EMAIL as string,
-        to: email,
-        subject: 'Reset your password',
-        html: `<p>Click <a href="${domain}/auth/reset-password/?token=${code}">here</a> to reset password.</p>`
-    });
-};
-
-export const sendVerificationEmail = async ({
-    email,
-    code
-}: {
-    email: string;
-    code: string;
-}) => {
-    await resend.emails.send({
-        from: process.env.NEXT_PUBLIC_APP_EMAIL as string,
-        to: email,
-        subject: 'Verification Code',
-        html: `Your verification code is ${code}`
-    });
-};
 
 export const sendCreateAdminUserAccountEmail = async ({
     email,
-    firstName,
+    name,
     password,
     code
 }: {
     email: string;
-    firstName: string;
+    name: string;
     password: string;
     code: string;
 }) => {
@@ -51,7 +20,7 @@ export const sendCreateAdminUserAccountEmail = async ({
         from: process.env.NEXT_PUBLIC_APP_EMAIL as string,
         to: email,
         subject: 'DocketRockit - Admin Dashboard - Account Created',
-        html: `<p>Hi ${firstName},</p>
+        html: `<p>Hi ${name},</p>
         <p>An account for the DocketRockit Admin Dashboard has been created for you.</p>
         <p>Please use the link below to login. Your temporary password is: ${password}</p>
         <p>You will need to change this on your first login.</p>
@@ -60,61 +29,64 @@ export const sendCreateAdminUserAccountEmail = async ({
     });
 };
 
-export const sendUpdatedUserToAdminEmail = async ({
+export const sendVerificationEmail = async ({
     email,
-    firstName
+    link
 }: {
     email: string;
-    firstName: string;
+    link: string;
 }) => {
     await resend.emails.send({
         from: process.env.NEXT_PUBLIC_APP_EMAIL as string,
         to: email,
-        subject: 'DocketRockit - Admin Dashboard - Account Created',
-        html: `<p>Hi ${firstName},</p>
-        <p>An account for the DocketRockit Admin Dashboard has been created for you.</p>
-        <p>Please use the link below to login. Your login is your DocketRockit login and password.</p>
-        <p>Click <a href="${domain}/auth/login">here</a> to login.</p>`
+        subject: 'Buxmate - Confirm your email',
+        html: `<p>Click <a href="${link}">here</a> to confirm email.</p>`
     });
 };
 
-export const sendUserPasswordResetEmail = async ({
+export const sendEmailVerificationOtpEmail = async ({
     email,
-    firstName,
-    password
+    otp
 }: {
     email: string;
-    firstName: string;
-    password: string;
+    otp: string;
+}) => {
+    const sent = await resend.emails.send({
+        from: process.env.NEXT_PUBLIC_APP_EMAIL as string,
+        to: email,
+        subject: `Buxmate - Email Verification - ${otp}`,
+        html: `<p>Your email verification code is ${otp}.</p>`
+    });
+
+    return sent;
+};
+
+export const sendResetEmail = async ({
+    email,
+    link,
+    name
+}: {
+    email: string;
+    link: string;
+    name: string;
 }) => {
     await resend.emails.send({
         from: process.env.NEXT_PUBLIC_APP_EMAIL as string,
         to: email,
-        subject: 'DocketRockit - Merchant Dashboard - Password Reset',
-        html: `<p>Hi ${firstName},</p>
-        <p>Your DocketRockit Merchant Dashboard password has been reset.</p>
-        <p>Please use the link below to login. Your temporary password is: ${password}</p>
-        <p>You will need to change this on your first login.</p>
-        <p>Click <a href="${domain}/auth/login">here</a> to login.</p>`
+        subject: 'Buxmate - Reset password',
+        html: `<p>Your password has been reset ${link}</p>`
     });
 };
 
-export const sendUserTwoFactorResetEmail = async ({
-    email,
-    firstName
+export const sendPasswordResetNotificationEmail = async ({
+    email
 }: {
     email: string;
-    firstName: string;
 }) => {
     await resend.emails.send({
         from: process.env.NEXT_PUBLIC_APP_EMAIL as string,
         to: email,
-        subject:
-            'DocketRockit - Merchant Dashboard - Two Factor Authentication Reset',
-        html: `<p>Hi ${firstName},</p>
-        <p>Your DocketRockit Merchant Dashboard two factor authentication has been reset.</p>
-        <p>Please use the link below to login.</p>
-        <p>You will need to reset this when you next login.</p>
-        <p>Click <a href="${domain}/auth/login">here</a> to login.</p>`
+        subject: 'Buxmate - Your password has been reset',
+        html: `<p>Your password has been reset</p>`
     });
 };

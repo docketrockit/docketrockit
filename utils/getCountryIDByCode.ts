@@ -1,7 +1,7 @@
-import db from '@/lib/db';
+import { prisma } from '@/lib/prisma';
 
 const getCountryIDByCode = async (isoCode: string) => {
-    const country = await db.country.findFirst({ where: { isoCode } });
+    const country = await prisma.country.findFirst({ where: { isoCode } });
 
     if (!country) return null;
 

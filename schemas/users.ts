@@ -1,90 +1,27 @@
-import { object, array, z, boolean } from 'zod';
+import * as z from 'zod';
+import { Status, Permission } from '@/generated/prisma';
 
 import { getStringSchema, getEmailSchema, getPasswordSchema } from './schemas';
-import { AdminRole, MerchantRole, BrandRole, Status } from '@/generated/prisma';
 
-const adminRoleSchema = z.enum(AdminRole);
-const merchantRoleSchema = z.enum(MerchantRole);
-const brandRoleSchema = z.enum(BrandRole);
+const permissionSchema = z.enum(Permission);
 const statusSchema = z.enum(Status);
 
-export const AdminUserSchema = object({
-    firstName: getStringSchema('First name'),
+export const AdminUserSchema = z.object({
+    name: getStringSchema('First name'),
     lastName: getStringSchema('Last name'),
     email: getEmailSchema(),
     password: getPasswordSchema('Password'),
     phoneNumber: getStringSchema('Phone number'),
     jobTitle: getStringSchema('Job title'),
-    adminRole: array(adminRoleSchema)
+    permissions: z.array(permissionSchema)
 });
 
-export const AdminUserSchemaUpdate = object({
+export const AdminUserSchemaUpdate = z.object({
     firstName: getStringSchema('First name'),
     lastName: getStringSchema('Last name'),
     email: getEmailSchema(),
     phoneNumber: getStringSchema('Phone number'),
     jobTitle: getStringSchema('Job title'),
-    adminRole: array(adminRoleSchema)
-});
-
-export const MerchantUserSchema = object({
-    firstName: getStringSchema('First name'),
-    lastName: getStringSchema('Last name'),
-    email: getEmailSchema(),
-    password: getPasswordSchema('Password'),
-    phoneNumber: getStringSchema('Phone number'),
-    jobTitle: getStringSchema('Job title'),
-    merchantRole: array(merchantRoleSchema),
-    primaryContact: boolean()
-});
-
-export const MerchantUserSchemaUpdate = object({
-    firstName: getStringSchema('First name'),
-    lastName: getStringSchema('Last name'),
-    email: getEmailSchema(),
-    jobTitle: getStringSchema('Job title'),
-    phoneNumber: getStringSchema('Phone number'),
-    merchantRole: array(merchantRoleSchema),
-    primaryContact: boolean(),
+    permissions: z.array(permissionSchema),
     status: statusSchema
-});
-
-export const BrandUserSchema = object({
-    firstName: getStringSchema('First name'),
-    lastName: getStringSchema('Last name'),
-    email: getEmailSchema(),
-    password: getPasswordSchema('Password'),
-    phoneNumber: getStringSchema('Phone number'),
-    jobTitle: getStringSchema('Job title'),
-    brandRole: array(brandRoleSchema),
-    primaryContact: boolean()
-});
-
-export const BrandUserSchemaUpdate = object({
-    firstName: getStringSchema('First name'),
-    lastName: getStringSchema('Last name'),
-    email: getEmailSchema(),
-    jobTitle: getStringSchema('Job title'),
-    phoneNumber: getStringSchema('Phone number'),
-    brandRole: array(brandRoleSchema),
-    primaryContact: boolean(),
-    status: statusSchema
-});
-
-export const UserProfileSchema = object({
-    firstName: getStringSchema('First name'),
-    lastName: getStringSchema('Last name'),
-    phoneNumber: getStringSchema('Phone number'),
-    jobTitle: getStringSchema('Job title'),
-    city: getStringSchema('City'),
-    state: getStringSchema('State'),
-    postcode: getStringSchema('Postcode')
-});
-
-export const EmailSchema = object({
-    email: getEmailSchema()
-});
-
-export const VerifyEmailSchema = object({
-    code: getStringSchema('Verification code')
 });

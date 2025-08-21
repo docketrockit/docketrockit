@@ -1,394 +1,172 @@
 'use server';
 
 import * as z from 'zod';
-import { format } from 'date-fns';
 import { revalidatePath } from 'next/cache';
-import { type User as UserType } from '@/generated/prisma';
 
-import db from '@/lib/db';
-import { GetAdminUsersSchema } from '@/types/adminUser';
-import { buildAdminUserWhere, buildOrderBy } from '@/lib/adminUserLib';
-import { authCheckAdmin } from '@/lib/authCheck';
+import { auth } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
+import { AdminUserSchema } from '@/schemas/users';
 import { getErrorMessage } from '@/lib/handleError';
-import { AdminUserSchema, AdminUserSchemaUpdate } from '@/schemas/users';
 import { checkEmailAvailability } from '@/lib/email';
-import { globalPOSTRateLimit } from '@/lib/request';
-import { createEmailVerificationRequest } from '@/lib/email-verification';
-import { verifyPasswordStrength } from '@/lib/password';
+import { authCheckServerAdmin } from '@/lib/authCheck';
+import { generateOTP } from '@/lib/otp';
 import { sendCreateAdminUserAccountEmail } from '@/lib/mail';
-import { createUser } from '@/lib/user';
-
-export const getAdminUsers = async (input: GetAdminUsersSchema) => {
-    const {
-        page,
-        per_page,
-        sort,
-        firstName,
-        lastName,
-        jobTitle,
-        email,
-        adminRole,
-        status,
-        operator,
-        from,
-        to
-    } = input;
-
-    try {
-        const offset = (page - 1) * per_page;
-        const orderBy = buildOrderBy(sort);
-
-        const fromDay = from ? format(new Date(from), 'yyyy-MM-dd') : undefined;
-        const toDay = to ? format(new Date(to), 'yyyy-MM-dd') : undefined;
-
-        const where = buildAdminUserWhere({
-            operator,
-            firstName,
-            lastName,
-            email,
-            jobTitle,
-            adminRole,
-            status,
-            from: fromDay,
-            to: toDay
-        });
-
-        const data = await db.user.findMany({
-            where,
-            include: { adminUser: true },
-            skip: offset,
-            take: per_page,
-            orderBy
-        });
-
-        const total = await db.user.count({ where });
-
-        const pageCount = Math.ceil(total / per_page);
-        return { data, pageCount };
-    } catch (err) {
-        return { data: [], pageCount: 0 };
-    }
-};
-
-export const updateAdminUsers = async (input: {
-    ids: string[];
-    status?: UserType['status'];
-}) => {
-    const { user } = await authCheckAdmin(['ADMIN']);
-
-    if (!user)
-        return {
-            data: null,
-            error: getErrorMessage('Unauthorized')
-        };
-
-    try {
-        await db.user.updateMany({
-            where: { id: { in: input.ids } },
-            data: { status: input.status }
-        });
-
-        revalidatePath('/admin/users/admin');
-
-        return {
-            data: null,
-            error: null
-        };
-    } catch (err) {
-        return {
-            data: null,
-            error: getErrorMessage(err)
-        };
-    }
-};
+import { logUserRegistered } from '@/actions/audit/audit-auth';
 
 export const createAdminUser = async (
     values: z.infer<typeof AdminUserSchema>
 ) => {
-    const { user: adminUser } = await authCheckAdmin(['ADMIN']);
+    const userSession = await authCheckServerAdmin();
 
-    if (!adminUser)
+    if (!userSession)
         return {
-            data: null,
             error: getErrorMessage('Unauthorized')
         };
 
     try {
-        if (!(await globalPOSTRateLimit())) {
-            return {
-                data: null,
-                error: getErrorMessage('Too many requests')
-            };
-        }
         const validatedFields = AdminUserSchema.safeParse(values);
 
         if (!validatedFields.success) {
-            return { data: null, error: getErrorMessage('Invalid fields') };
+            return { error: getErrorMessage('Invalid fields') };
         }
 
         const {
-            firstName,
+            name,
             lastName,
             email,
             password,
             jobTitle,
-            adminRole,
-            phoneNumber
+            phoneNumber,
+            permissions
         } = validatedFields.data;
 
         const emailAvailable = checkEmailAvailability(email);
+
         if (!emailAvailable) {
             return {
-                data: null,
                 error: getErrorMessage('Email is already used')
             };
         }
 
-        const strongPassword = await verifyPasswordStrength(password);
-        if (!strongPassword) {
-            return { data: null, error: getErrorMessage('Weak password') };
-        }
-        const user = await createUser({
-            email,
-            password,
-            firstName,
-            lastName,
-            role: 'ADMIN'
-        });
-        await db.user.update({ where: { id: user.id }, data: { phoneNumber } });
-        await db.adminUser.create({
-            data: {
-                jobTitle,
-                adminRole,
-                userId: user.id
+        const data = await auth.api.signUpEmail({
+            body: {
+                name,
+                lastName,
+                email,
+                password,
+                role: 'ADMIN'
             }
         });
-        const emailVerificationRequest = await createEmailVerificationRequest(
-            user.id,
-            user.email
-        );
+
+        await prisma.user.update({
+            where: { id: data.user.id },
+            data: { phoneNumber }
+        });
+        await prisma.businessUserAccess.create({
+            data: {
+                jobTitle,
+                accessLevel: 'ADMIN',
+                userId: data.user.id,
+                permissions,
+                createdById: userSession.user.id
+            }
+        });
+
+        const code = generateOTP();
+        const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+
+        await prisma.verification.create({
+            data: {
+                identifier: `email-otp:${data.user.id}`,
+                value: code,
+                expiresAt
+            }
+        });
+
         await sendCreateAdminUserAccountEmail({
             email,
-            firstName,
+            name,
             password,
-            code: emailVerificationRequest.code
+            code
+        });
+
+        await logUserRegistered(data.user.id, {
+            registeredBy: userSession.user.id
         });
 
         revalidatePath('/admin/users/admin');
 
         return {
-            data: null,
             error: null
         };
     } catch (error) {
         return {
-            data: null,
             error: getErrorMessage(error)
         };
     }
 };
 
-export const updateAdminUser = async (
-    values: z.infer<typeof AdminUserSchemaUpdate>,
-    id: string
-) => {
-    const { user: adminUser } = await authCheckAdmin(['ADMIN']);
+// export const updateAdminUser = async (
+//     values: z.infer<typeof AdminUserSchemaUpdate>,
+//     id: string
+// ) => {
+//     const { user: adminUser } = await authCheckAdmin(['ADMIN']);
 
-    if (!adminUser)
-        return {
-            data: null,
-            error: getErrorMessage('Unauthorized')
-        };
-
-    try {
-        if (!(await globalPOSTRateLimit())) {
-            return {
-                data: null,
-                error: getErrorMessage('Too many requests')
-            };
-        }
-        const validatedFields = AdminUserSchemaUpdate.safeParse(values);
-
-        if (!validatedFields.success) {
-            return { data: null, error: getErrorMessage('Invalid fields') };
-        }
-
-        const { firstName, lastName, email, jobTitle, adminRole, phoneNumber } =
-            validatedFields.data;
-
-        const emailAvailable = checkEmailAvailability(email);
-        if (!emailAvailable) {
-            return {
-                data: null,
-                error: getErrorMessage('Email is already used')
-            };
-        }
-        await db.user.update({
-            where: { id },
-            data: {
-                firstName,
-                lastName,
-                email,
-                phoneNumber,
-                adminUser: {
-                    update: {
-                        jobTitle,
-                        adminRole
-                    }
-                }
-            }
-        });
-
-        revalidatePath('/admin/users/admin');
-
-        return {
-            data: null,
-            error: null
-        };
-    } catch (err) {
-        return {
-            data: null,
-            error: getErrorMessage(err)
-        };
-    }
-};
-
-// export const getAdminUsers = async (input: GetAdminUsersSchema) => {
-//     const {
-//         page,
-//         per_page,
-//         sort,
-//         firstName,
-//         lastName,
-//         jobTitle,
-//         email,
-//         adminRole,
-//         status,
-//         operator,
-//         from,
-//         to
-//     } = input;
+//     if (!adminUser)
+//         return {
+//             data: null,
+//             error: getErrorMessage('Unauthorized')
+//         };
 
 //     try {
-//         const offset = (page - 1) * per_page;
-//         const [column, order] = (sort?.split('.').filter(Boolean) ?? [
-//             'name',
-//             'asc'
-//         ]) as [keyof User | undefined, 'asc' | 'desc' | undefined];
+//         if (!(await globalPOSTRateLimit())) {
+//             return {
+//                 data: null,
+//                 error: getErrorMessage('Too many requests')
+//             };
+//         }
+//         const validatedFields = AdminUserSchemaUpdate.safeParse(values);
 
-//         const fromDay = from ? format(new Date(from), 'yyyy-MM-dd') : undefined;
-//         const toDay = to ? format(new Date(to), 'yyyy-MM-dd') : undefined;
-
-//         const whereFilter = [];
-//         const adminWhereFilter = [];
-
-//         if (firstName) {
-//             whereFilter.push(
-//                 filterColumn({
-//                     column: 'firstName',
-//                     value: firstName
-//                 })
-//             );
+//         if (!validatedFields.success) {
+//             return { data: null, error: getErrorMessage('Invalid fields') };
 //         }
 
-//         if (lastName) {
-//             whereFilter.push(
-//                 filterColumn({
-//                     column: 'lastName',
-//                     value: lastName
-//                 })
-//             );
+//         const { firstName, lastName, email, jobTitle, adminRole, phoneNumber } =
+//             validatedFields.data;
+
+//         const emailAvailable = checkEmailAvailability(email);
+//         if (!emailAvailable) {
+//             return {
+//                 data: null,
+//                 error: getErrorMessage('Email is already used')
+//             };
 //         }
-
-//         if (email) {
-//             whereFilter.push(
-//                 filterColumn({
-//                     column: 'email',
-//                     value: email
-//                 })
-//             );
-//         }
-
-//         if (jobTitle) {
-//             adminWhereFilter.push(
-//                 filterColumn({
-//                     column: 'jobTitle',
-//                     value: jobTitle
-//                 })
-//             );
-//         }
-
-//         if (adminRole) {
-//             adminWhereFilter.push(
-//                 filterColumn({
-//                     column: 'adminRole',
-//                     value: adminRole,
-//                     isSelectable: true
-//                 })
-//             );
-//         }
-
-//         if (status) {
-//             whereFilter.push(
-//                 filterColumn({
-//                     column: 'status',
-//                     value: status,
-//                     isSelectable: true
-//                 })
-//             );
-//         }
-
-//         if (fromDay) whereFilter.push({ createdAt: { gte: fromDay } });
-
-//         if (toDay) whereFilter.push({ createdAt: { lte: toDay } });
-
-//         let usedFilter;
-//         let adminUserFilter;
-
-//         if (!operator || operator === 'and') {
-//             usedFilter = { AND: [...whereFilter] };
-//             adminUserFilter = { AND: [...adminWhereFilter] };
-//         } else {
-//             usedFilter = { OR: [...whereFilter] };
-//             adminUserFilter = { AND: [...adminWhereFilter] };
-//         }
-
-//         const orderBy = [{ [`${column}`]: `${order}` }];
-
-//         const adminUserExistsFilter =
-//             adminWhereFilter.length > 0
-//                 ? {
-//                       NOT: { adminUser: null },
-//                       adminUser: adminUserFilter
-//                   }
-//                 : {
-//                       NOT: { adminUser: null }
-//                   };
-
-//         const data = await db.user.findMany({
-//             where: {
-//                 ...usedFilter,
-//                 ...adminUserExistsFilter
-//             },
-//             include: { adminUser: true },
-//             skip: offset,
-//             take: per_page,
-//             orderBy
-//         });
-
-//         const total = await db.user.count({
-//             where: {
-//                 ...usedFilter,
+//         await db.user.update({
+//             where: { id },
+//             data: {
+//                 firstName,
+//                 lastName,
+//                 email,
+//                 phoneNumber,
 //                 adminUser: {
-//                     isNot: null,
-//                     ...adminUserFilter
+//                     update: {
+//                         jobTitle,
+//                         adminRole
+//                     }
 //                 }
 //             }
 //         });
 
-//         const pageCount = Math.ceil(total / per_page);
-//         return { data, pageCount };
+//         revalidatePath('/admin/users/admin');
+
+//         return {
+//             data: null,
+//             error: null
+//         };
 //     } catch (err) {
-//         return { data: [], pageCount: 0 };
+//         return {
+//             data: null,
+//             error: getErrorMessage(err)
+//         };
 //     }
 // };

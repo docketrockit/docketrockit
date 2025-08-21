@@ -2,16 +2,22 @@
 
 import Image from 'next/image';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { ChevronDown, CircleUser, Settings, Info, LogOut } from 'lucide-react';
 
 import { Dropdown } from '@/components/ui/dropdown/Dropdown';
 import { DropdownItem } from '@/components/ui/dropdown/DropdownItem';
-import { logoutAction } from '@/actions/auth/logout';
-import { SessionUserProps } from '@/types/global';
+import { signOut, useSession } from '@/lib/auth-client';
 
-const UserDropdown = ({ session, user }: SessionUserProps) => {
+const UserDropdown = () => {
     const [isOpen, setIsOpen] = useState(false);
+    const [isPending, setIsPending] = useState(false);
+    const router = useRouter();
+
+    const { data: userSession, refetch } = useSession();
+
+    if (!userSession) return null;
 
     const toggleDropdown = (
         e: React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -24,14 +30,28 @@ const UserDropdown = ({ session, user }: SessionUserProps) => {
         setIsOpen(false);
     };
 
-    const onLogout = async () => {
-        const data = await logoutAction();
-        if (data.message) {
-            toast.error(data.message);
-        }
-    };
+    async function onLogout() {
+        await signOut({
+            fetchOptions: {
+                onRequest: () => {
+                    setIsPending(true);
+                },
+                onResponse: () => {
+                    setIsPending(false);
+                },
+                onError: (ctx) => {
+                    toast.error(ctx.error.message);
+                },
+                onSuccess: () => {
+                    toast.success("You've logged out. See you soon!");
+                    router.push('/auth/login');
+                }
+            }
+        });
+    }
 
-    const urlLocation = user.adminUser ? 'admin' : 'merchant';
+    const urlLocation =
+        userSession.user.role === 'ADMIN' ? 'admin' : 'merchant';
 
     return (
         <div className="relative">
@@ -43,18 +63,20 @@ const UserDropdown = ({ session, user }: SessionUserProps) => {
                     <Image
                         width={44}
                         height={44}
-                        src={user.image || '/images/user/profile.jpg'}
+                        src={
+                            userSession.user.image || '/images/user/profile.jpg'
+                        }
                         alt="User"
                     />
                 </span>
 
                 <div className="flex flex-col">
                     <span className="text-theme-sm mr-1 block font-medium">
-                        {`${user.firstName} ${user.lastName}`}
+                        {`${userSession.user.name} ${userSession.user.lastName}`}
                     </span>
                     <span className="font-sm text-theme-sm mr-1 block">
-                        {user.merchantUser
-                            ? user.merchantUser?.merchant
+                        {userSession.user.role === 'MERCHANT'
+                            ? 'Merchant'
                             : 'DocketRockit'}
                     </span>
                 </div>
@@ -73,10 +95,10 @@ const UserDropdown = ({ session, user }: SessionUserProps) => {
             >
                 <div>
                     <span className="text-theme-sm block font-medium text-gray-700 dark:text-gray-400">
-                        {`${user.firstName} ${user.lastName}`}
+                        {`${userSession.user.name} ${userSession.user.lastName}`}
                     </span>
                     <span className="text-theme-xs mt-0.5 block text-gray-500 dark:text-gray-400">
-                        {user.email}
+                        {userSession.user.email}
                     </span>
                 </div>
 

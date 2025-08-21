@@ -1,10 +1,10 @@
 'use server';
 
-import db from '@/lib/db';
+import { prisma } from '@/lib/prisma';
 
 export const getAllCountries = async () => {
     try {
-        const countries = await db.country.findMany({
+        const countries = await prisma.country.findMany({
             orderBy: { name: 'asc' }
         });
 
@@ -16,7 +16,7 @@ export const getAllCountries = async () => {
 
 export const getCountryByName = async (name: string) => {
     try {
-        const country = await db.country.findFirst({
+        const country = await prisma.country.findFirst({
             where: { name }
         });
 
@@ -28,7 +28,7 @@ export const getCountryByName = async (name: string) => {
 
 export const getCountryById = async (id: string) => {
     try {
-        const country = await db.country.findFirst({
+        const country = await prisma.country.findFirst({
             where: { id }
         });
 
@@ -40,7 +40,7 @@ export const getCountryById = async (id: string) => {
 
 export const getCountryByCode = async (isoCode: string) => {
     try {
-        const country = await db.country.findFirst({
+        const country = await prisma.country.findFirst({
             where: { isoCode }
         });
 
@@ -50,9 +50,9 @@ export const getCountryByCode = async (isoCode: string) => {
     }
 };
 
-export const getStatesByCountry = async (id: string) => {
+export const getRegionsByCountry = async (id: string) => {
     try {
-        const states = await db.state.findMany({
+        const states = await prisma.region.findMany({
             where: { countryId: id },
             orderBy: { name: 'asc' }
         });
@@ -63,9 +63,9 @@ export const getStatesByCountry = async (id: string) => {
     }
 };
 
-export const getStateById = async (id: string) => {
+export const getRegionsById = async (id: string) => {
     try {
-        const state = await db.state.findFirst({
+        const state = await prisma.region.findFirst({
             where: { id }
         });
 

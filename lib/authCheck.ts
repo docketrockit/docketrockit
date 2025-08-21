@@ -1,121 +1,120 @@
 import { redirect } from 'next/navigation';
+import { headers } from 'next/headers';
 
-import { User } from '@/lib/user';
-import { Session, getCurrentSession } from '@/lib/session';
-import { globalGETRateLimit } from '@/lib/request';
+import { auth } from '@/lib/auth';
 
-interface AuthCheckLayoutReturn {
-    result: boolean;
-    message?: string;
-    session: Session | null;
-    user: User | null;
-}
+export const isLoggedIn = async () => {
+    const headerList = await headers();
 
-interface AuthCheckReturn {
-    session: Session;
-    user: User;
-}
+    const session = await auth.api.getSession({
+        headers: headerList
+    });
 
-export const authCheckLayout = async (): Promise<AuthCheckLayoutReturn> => {
-    if (!(await globalGETRateLimit())) {
-        return {
-            result: false,
-            message: 'Too many requests',
-            session: null,
-            user: null
-        };
-    }
-    const { session, user } = await getCurrentSession();
-    if (session === null) {
-        return redirect('/auth/login');
-    }
-    if (!user.emailVerified) {
-        return redirect('/auth/verify-email');
-    }
-    if (!user.registered2FA) {
-        return redirect('/auth/twofactor/setup');
-    }
-    if (!session.twoFactorVerified) {
-        return redirect('/auth/twofactor');
-    }
-    if (!session) redirect('/auth/login');
+    if (session) {
+        if (!session.user.emailVerified) return redirect('/auth/verify-email');
 
-    return { result: true, session, user };
+        if (!session.user.phoneVerified) return redirect('/auth/verify-phone');
+
+        return redirect('/');
+    }
 };
 
-export const authCheck = async (): Promise<AuthCheckReturn> => {
-    const { session, user } = await getCurrentSession();
+export const authCheck = async (callbackUrl?: string) => {
+    const headerList = await headers();
 
-    if (!session || !user) redirect('/auth/login');
+    const session = await auth.api.getSession({
+        headers: headerList
+    });
 
-    return { session, user };
-};
-
-export const authCheckAdmin = async (
-    access: string[] = []
-): Promise<AuthCheckReturn> => {
-    const { session, user } = await getCurrentSession();
-
-    if (!session || !user) redirect('/auth/login');
-    if (!user.role.includes('ADMIN')) redirect('/auth/login');
-    if (!user.adminUser) redirect('/auth/login');
-    if (access.length !== 0) {
-        const hasAccess = user.adminUser.adminRole.some((role) =>
-            access.includes(role)
-        );
-
-        if (!hasAccess) redirect('/admin');
-    }
-
-    return { session, user };
-};
-
-export const authCheckMerchant = async (
-    access: string[] = []
-): Promise<AuthCheckReturn> => {
-    const { session, user } = await getCurrentSession();
-
-    if (!session || !user) redirect('/auth/login');
-
-    if (!user.role.includes('MERCHANT')) redirect('/auth/login');
-
-    if (!user.merchantUser) redirect('/auth/login');
-
-    if (access.length !== 0) {
-        const hasAccess = user.merchantUser.merchantRole.some((role) =>
-            access.includes(role)
-        );
-
-        if (!hasAccess) redirect('/merchant');
-    }
-
-    return { session, user };
-};
-
-export const authCheckBoth = async (access: string[] = []) => {
-    const { session, user } = await getCurrentSession();
-
-    if (!session || !user) redirect('/auth/login');
-    if (!user.role.includes('ADMIN') && !user.role.includes('MERCHANT'))
-        redirect('/auth/login');
-    if (!user.merchantUser && !user.adminUser) redirect('/auth/login');
-    let hasAccess = false;
-
-    if (access.length !== 0) {
-        if (user.merchantUser) {
-            hasAccess = user.merchantUser.merchantRole.some((role) =>
-                access.includes(role)
+    if (!session) {
+        if (callbackUrl) {
+            return redirect(
+                `/auth/login?callbackURL=${encodeURIComponent(callbackUrl)}`
             );
+        } else {
+            return redirect('/auth/login');
         }
-
-        if (user.adminUser) {
-            hasAccess = user.adminUser.adminRole.some((role) =>
-                access.includes(role)
-            );
-        }
-
-        if (!hasAccess) redirect('/merchant');
     }
 
-    return { session, user };
+    if (!session.user.emailVerified) return redirect('/auth/verify-email');
+
+    if (!session.user.phoneVerified) return redirect('/auth/verify-phone');
+
+    return session;
+};
+
+export const authCheckAdmin = async (callbackUrl?: string) => {
+    const headerList = await headers();
+
+    const session = await auth.api.getSession({
+        headers: headerList
+    });
+
+    if (!session) {
+        if (callbackUrl) {
+            return redirect(
+                `/auth/login?callbackURL=${encodeURIComponent(callbackUrl)}`
+            );
+        } else {
+            return redirect('/auth/login');
+        }
+    }
+
+    if (session.user.role !== 'ADMIN') {
+        if (callbackUrl) {
+            return redirect(
+                `/auth/login?callbackURL=${encodeURIComponent(callbackUrl)}`
+            );
+        } else {
+            return redirect('/auth/login');
+        }
+    }
+
+    if (!session.user.emailVerified) return redirect('/auth/verify-email');
+
+    if (!session.user.phoneVerified) return redirect('/auth/verify-phone');
+
+    return session;
+};
+
+export const authCheckLayout = async () => {
+    const headerList = await headers();
+
+    const session = await auth.api.getSession({
+        headers: headerList
+    });
+
+    if (!session) return redirect('/auth/login');
+
+    if (!session.user.emailVerified) return redirect('/auth/verify-email');
+
+    if (!session.user.phoneVerified) return redirect('/auth/verify-phone');
+
+    return session;
+};
+
+export const authCheckServer = async () => {
+    const headerList = await headers();
+
+    const session = await auth.api.getSession({
+        headers: headerList
+    });
+
+    if (!session) return false;
+
+    return session;
+};
+
+export const authCheckServerAdmin = async () => {
+    const headerList = await headers();
+
+    const session = await auth.api.getSession({
+        headers: headerList
+    });
+
+    if (!session) return false;
+
+    if (session.user.role !== 'ADMIN') return false;
+
+    return session;
 };

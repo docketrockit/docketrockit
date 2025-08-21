@@ -1,4 +1,5 @@
-import { PrismaClient } from '@/generated/prisma';
+// import { PrismaClient } from '@/generated/prisma';
+import { PrismaClient } from '@prisma/client';
 
 // import { currencies } from './currencies';
 
@@ -1986,7 +1987,7 @@ export const currencies = [
         numToBasic: 100
     },
     {
-        code: 'SLL',
+        code: 'SLE',
         name: 'Sierra Leonean Leone',
         demonym: 'Sierra Leonean',
         majorSingle: 'Leone',

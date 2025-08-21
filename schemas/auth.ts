@@ -1,38 +1,65 @@
-import { object, boolean, string } from 'zod';
+import * as z from 'zod';
 
-import { getEmailSchema, getPasswordSchema, getStringSchema } from './schemas';
-
-export const ForgotPasswordSchema = object({
-    email: getEmailSchema()
+export const LoginSchema = z.object({
+    email: z.email({
+        message: 'Email is required'
+    }),
+    password: z.string().min(1, {
+        message: 'Password is required'
+    }),
+    token: z.optional(z.string()),
+    rememberMe: z.optional(z.boolean()),
+    backupCode: z.optional(z.string())
 });
 
-export const ResetPasswordSchema = object({
-    password: getPasswordSchema('Password'),
-    confirmPassword: getPasswordSchema('Confirm Password')
-}).refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ['confirmPassword']
+export const EmailSchema = z.object({
+    email: z.email({
+        message: 'Email must be valid'
+    })
 });
 
-export const LoginSchema = object({
-    email: getEmailSchema(),
-    password: getPasswordSchema('Password'),
-    rememberMe: boolean()
-});
+export const ResetPasswordSchema = z
+    .object({
+        password: z.string().min(6, {
+            message: 'Password must be at least 6 characters'
+        }),
+        confirmPassword: z.string()
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+        path: ['confirmPassword'],
+        message: 'Passwords do not match'
+    });
+// .superRefine(({ password }, checkPassComplexity) => {
+//     const containsUppercase = (ch: string) => /[A-Z]/.test(ch);
+//     const containsLowercase = (ch: string) => /[a-z]/.test(ch);
+//     const containsSpecialChar = (ch: string) =>
+//         /[`!@#$%^&*()_\-+=\[\]{};':"\\|,.<>\/?~ ]/.test(ch);
+//     let countOfUpperCase = 0,
+//         countOfLowerCase = 0,
+//         countOfNumbers = 0,
+//         countOfSpecialChar = 0;
+//     for (let i = 0; i < password.length; i++) {
+//         const ch = password.charAt(i);
+//         if (!isNaN(+ch)) countOfNumbers++;
+//         else if (containsUppercase(ch)) countOfUpperCase++;
+//         else if (containsLowercase(ch)) countOfLowerCase++;
+//         else if (containsSpecialChar(ch)) countOfSpecialChar++;
+//     }
+//     if (
+//         countOfLowerCase < 1 ||
+//         countOfUpperCase < 1 ||
+//         countOfSpecialChar < 1 ||
+//         countOfNumbers < 1
+//     ) {
+//         checkPassComplexity.addIssue({
+//             code: 'custom',
+//             message: 'password does not meet complexity requirements'
+//         });
+//     }
+// });
 
-export const VerifyEmailSchema = object({
-    code: getStringSchema('Verification code')
-});
-
-export const RecoveryCodeSchema = object({
-    code: getStringSchema('Recovery code')
-});
-
-export const TwoFactorSetupSchema = object({
-    code: getStringSchema('Verification code'),
-    encodedKey: getStringSchema('Key', 28)
-});
-
-export const TwoFactorVerficationSchema = object({
-    code: getStringSchema('Verification code')
+export const TwoFactorSchema = z.object({
+    token: z.string().min(1, {
+        message: 'Token is required'
+    })
 });

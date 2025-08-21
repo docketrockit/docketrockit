@@ -122,54 +122,89 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
 
 exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
-  firstName: 'firstName',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  name: 'name',
   lastName: 'lastName',
   email: 'email',
   emailVerified: 'emailVerified',
-  emailVerifiedTime: 'emailVerifiedTime',
-  passwordVerified: 'passwordVerified',
-  postcode: 'postcode',
-  city: 'city',
-  stateId: 'stateId',
-  phoneNumber: 'phoneNumber',
-  password: 'password',
   image: 'image',
   role: 'role',
-  totpKey: 'totpKey',
-  recoveryCodes: 'recoveryCodes',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  status: 'status'
+  postalCode: 'postalCode',
+  city: 'city',
+  regionId: 'regionId',
+  phoneNumber: 'phoneNumber',
+  phoneVerified: 'phoneVerified',
+  timezone: 'timezone',
+  locale: 'locale',
+  status: 'status',
+  createdById: 'createdById'
 };
 
 exports.Prisma.SessionScalarFieldEnum = {
   id: 'id',
-  expiresAt: 'expiresAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
+  expiresAt: 'expiresAt',
+  token: 'token',
   ipAddress: 'ipAddress',
   userAgent: 'userAgent',
-  twoFactorVerified: 'twoFactorVerified',
-  userId: 'userId',
-  rememberMe: 'rememberMe'
+  impersonatedBy: 'impersonatedBy',
+  userId: 'userId'
 };
 
-exports.Prisma.EmailVerificationRequestScalarFieldEnum = {
+exports.Prisma.AccountScalarFieldEnum = {
   id: 'id',
-  userId: 'userId',
-  email: 'email',
-  expiresAt: 'expiresAt',
-  code: 'code',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  accountId: 'accountId',
+  providerId: 'providerId',
+  accessToken: 'accessToken',
+  refreshToken: 'refreshToken',
+  idToken: 'idToken',
+  accessTokenExpiresAt: 'accessTokenExpiresAt',
+  refreshTokenExpiresAt: 'refreshTokenExpiresAt',
+  scope: 'scope',
+  password: 'password',
+  userId: 'userId'
 };
 
-exports.Prisma.PasswordResetSessionScalarFieldEnum = {
+exports.Prisma.VerificationScalarFieldEnum = {
   id: 'id',
-  userId: 'userId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  identifier: 'identifier',
+  value: 'value',
+  expiresAt: 'expiresAt'
+};
+
+exports.Prisma.EmailChangeRecordScalarFieldEnum = {
+  id: 'id',
   email: 'email',
+  newEmail: 'newEmail',
+  otp: 'otp',
   expiresAt: 'expiresAt',
-  code: 'code',
+  attempts: 'attempts',
+  createdAt: 'createdAt',
+  userId: 'userId'
+};
+
+exports.Prisma.PhoneChangeRecordScalarFieldEnum = {
+  id: 'id',
+  phoneNumber: 'phoneNumber',
+  newPhoneNumber: 'newPhoneNumber',
+  otp: 'otp',
+  expiresAt: 'expiresAt',
+  attempts: 'attempts',
+  createdAt: 'createdAt',
+  userId: 'userId'
+};
+
+exports.Prisma.RateLimitScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  count: 'count',
+  resetTime: 'resetTime',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -184,65 +219,78 @@ exports.Prisma.ConsumerScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
-exports.Prisma.MerchantUserScalarFieldEnum = {
+exports.Prisma.BusinessUserAccessScalarFieldEnum = {
   id: 'id',
+  userId: 'userId',
+  accessLevel: 'accessLevel',
+  permissions: 'permissions',
   jobTitle: 'jobTitle',
   merchantId: 'merchantId',
-  merchantRole: 'merchantRole',
-  userId: 'userId',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.AdminUserScalarFieldEnum = {
-  id: 'id',
-  jobTitle: 'jobTitle',
-  adminRole: 'adminRole',
-  userId: 'userId',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.BrandUserScalarFieldEnum = {
-  id: 'id',
   brandId: 'brandId',
-  merchantUserId: 'merchantUserId',
-  brandRole: 'brandRole',
+  storeId: 'storeId',
+  isActive: 'isActive',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  createdById: 'createdById'
 };
 
 exports.Prisma.CurrencyScalarFieldEnum = {
   id: 'id',
   name: 'name',
   code: 'code',
+  symbol: 'symbol',
+  decimals: 'decimals',
   demonym: 'demonym',
   majorSingle: 'majorSingle',
   majorPlural: 'majorPlural',
   ISOnum: 'ISOnum',
-  symbol: 'symbol',
   symbolNative: 'symbolNative',
   minorSingle: 'minorSingle',
   minorPlural: 'minorPlural',
   ISOdigits: 'ISOdigits',
-  decimals: 'decimals',
   numToBasic: 'numToBasic'
+};
+
+exports.Prisma.ContinentScalarFieldEnum = {
+  id: 'id',
+  name: 'name'
 };
 
 exports.Prisma.CountryScalarFieldEnum = {
   id: 'id',
   isoCode: 'isoCode',
+  isoCode3: 'isoCode3',
   name: 'name',
-  currency: 'currency',
+  flag: 'flag',
+  latitude: 'latitude',
+  longitude: 'longitude',
+  currencyId: 'currencyId',
+  continentId: 'continentId',
+  phonePrefix: 'phonePrefix',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
 
-exports.Prisma.StateScalarFieldEnum = {
+exports.Prisma.RegionScalarFieldEnum = {
   id: 'id',
-  isoCode: 'isoCode',
+  code: 'code',
   name: 'name',
   countryId: 'countryId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.BusinessRegistrationScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  number: 'number',
+  issuingBody: 'issuingBody',
+  validFrom: 'validFrom',
+  validUntil: 'validUntil',
+  isActive: 'isActive',
+  merchantId: 'merchantId',
+  brandId: 'brandId',
+  storeId: 'storeId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -255,16 +303,16 @@ exports.Prisma.MerchantScalarFieldEnum = {
   phoneNumber: 'phoneNumber',
   genericEmail: 'genericEmail',
   invoiceEmail: 'invoiceEmail',
-  address1: 'address1',
-  address2: 'address2',
-  suburb: 'suburb',
-  postcode: 'postcode',
-  stateId: 'stateId',
+  addressLine1: 'addressLine1',
+  addressLine2: 'addressLine2',
+  addressLine3: 'addressLine3',
+  city: 'city',
+  postalCode: 'postalCode',
+  regionId: 'regionId',
   countryId: 'countryId',
-  abn: 'abn',
-  acn: 'acn',
-  logoUrl: 'logoUrl',
-  primaryContactId: 'primaryContactId',
+  timezone: 'timezone',
+  logo: 'logo',
+  website: 'website',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -278,19 +326,19 @@ exports.Prisma.BrandScalarFieldEnum = {
   genericEmail: 'genericEmail',
   invoiceEmail: 'invoiceEmail',
   tradingAsName: 'tradingAsName',
-  logoUrl: 'logoUrl',
-  address1: 'address1',
-  address2: 'address2',
-  suburb: 'suburb',
-  postcode: 'postcode',
-  stateId: 'stateId',
+  logo: 'logo',
+  website: 'website',
+  addressLine1: 'addressLine1',
+  addressLine2: 'addressLine2',
+  addressLine3: 'addressLine3',
+  city: 'city',
+  postalCode: 'postalCode',
+  regionId: 'regionId',
   countryId: 'countryId',
-  abn: 'abn',
-  acn: 'acn',
   phoneNumber: 'phoneNumber',
+  timezone: 'timezone',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  primaryContactId: 'primaryContactId'
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.StoreScalarFieldEnum = {
@@ -299,18 +347,18 @@ exports.Prisma.StoreScalarFieldEnum = {
   slug: 'slug',
   status: 'status',
   brandId: 'brandId',
-  address1: 'address1',
-  address2: 'address2',
+  addressLine1: 'addressLine1',
+  addressLine2: 'addressLine2',
+  addressLine3: 'addressLine3',
   city: 'city',
-  region: 'region',
+  regionId: 'regionId',
   postalCode: 'postalCode',
   countryId: 'countryId',
   formattedAddress: 'formattedAddress',
   latitude: 'latitude',
   longitude: 'longitude',
-  abn: 'abn',
-  acn: 'acn',
   phoneNumber: 'phoneNumber',
+  timezone: 'timezone',
   currencyId: 'currencyId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -322,10 +370,27 @@ exports.Prisma.ReceiptScalarFieldEnum = {
   consumerId: 'consumerId',
   storeId: 'storeId',
   subTotal: 'subTotal',
-  tax: 'tax',
+  totalTax: 'totalTax',
   cardSurcharge: 'cardSurcharge',
+  discount: 'discount',
+  tip: 'tip',
+  roundingAdjustment: 'roundingAdjustment',
+  finalTotal: 'finalTotal',
   otherInformation: 'otherInformation',
   receiptDateTime: 'receiptDateTime',
+  timezone: 'timezone',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ReceiptTaxScalarFieldEnum = {
+  id: 'id',
+  receiptId: 'receiptId',
+  taxType: 'taxType',
+  taxName: 'taxName',
+  taxRate: 'taxRate',
+  taxableAmount: 'taxableAmount',
+  taxAmount: 'taxAmount',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -338,6 +403,8 @@ exports.Prisma.ReceiptPaymentScalarFieldEnum = {
   terminal: 'terminal',
   reference: 'reference',
   cardNo: 'cardNo',
+  authCode: 'authCode',
+  paymentMethod: 'paymentMethod',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -349,11 +416,37 @@ exports.Prisma.ReceiptItemScalarFieldEnum = {
   sku: 'sku',
   description: 'description',
   modelNumber: 'modelNumber',
+  category: 'category',
   quantity: 'quantity',
-  itemCost: 'itemCost',
-  itemTax: 'itemTax',
-  subTotal: 'subTotal',
-  tax: 'tax',
+  unitPrice: 'unitPrice',
+  itemTotal: 'itemTotal',
+  itemDiscount: 'itemDiscount',
+  taxAmount: 'taxAmount',
+  finalAmount: 'finalAmount',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AuditLogScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  action: 'action',
+  category: 'category',
+  description: 'description',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent',
+  metadata: 'metadata',
+  sessionId: 'sessionId',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.ImageScalarFieldEnum = {
+  id: 'id',
+  image: 'image',
+  imageName: 'imageName',
+  imageType: 'imageType',
+  relatedEntity: 'relatedEntity',
+  bucket: 'bucket',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -361,6 +454,10 @@ exports.Prisma.ReceiptItemScalarFieldEnum = {
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
+};
+
+exports.Prisma.JsonNullValueInput = {
+  JsonNull: Prisma.JsonNull
 };
 
 exports.Prisma.QueryMode = {
@@ -375,37 +472,65 @@ exports.Prisma.NullsOrder = {
 
 exports.Prisma.UserOrderByRelevanceFieldEnum = {
   id: 'id',
-  firstName: 'firstName',
+  name: 'name',
   lastName: 'lastName',
   email: 'email',
-  postcode: 'postcode',
-  city: 'city',
-  stateId: 'stateId',
-  phoneNumber: 'phoneNumber',
-  password: 'password',
   image: 'image',
-  recoveryCodes: 'recoveryCodes'
+  postalCode: 'postalCode',
+  city: 'city',
+  regionId: 'regionId',
+  phoneNumber: 'phoneNumber',
+  timezone: 'timezone',
+  locale: 'locale',
+  createdById: 'createdById'
 };
 
 exports.Prisma.SessionOrderByRelevanceFieldEnum = {
   id: 'id',
+  token: 'token',
   ipAddress: 'ipAddress',
   userAgent: 'userAgent',
+  impersonatedBy: 'impersonatedBy',
   userId: 'userId'
 };
 
-exports.Prisma.EmailVerificationRequestOrderByRelevanceFieldEnum = {
+exports.Prisma.AccountOrderByRelevanceFieldEnum = {
   id: 'id',
-  userId: 'userId',
-  email: 'email',
-  code: 'code'
+  accountId: 'accountId',
+  providerId: 'providerId',
+  accessToken: 'accessToken',
+  refreshToken: 'refreshToken',
+  idToken: 'idToken',
+  scope: 'scope',
+  password: 'password',
+  userId: 'userId'
 };
 
-exports.Prisma.PasswordResetSessionOrderByRelevanceFieldEnum = {
+exports.Prisma.VerificationOrderByRelevanceFieldEnum = {
   id: 'id',
-  userId: 'userId',
+  identifier: 'identifier',
+  value: 'value'
+};
+
+exports.Prisma.EmailChangeRecordOrderByRelevanceFieldEnum = {
+  id: 'id',
   email: 'email',
-  code: 'code'
+  newEmail: 'newEmail',
+  otp: 'otp',
+  userId: 'userId'
+};
+
+exports.Prisma.PhoneChangeRecordOrderByRelevanceFieldEnum = {
+  id: 'id',
+  phoneNumber: 'phoneNumber',
+  newPhoneNumber: 'newPhoneNumber',
+  otp: 'otp',
+  userId: 'userId'
+};
+
+exports.Prisma.RateLimitOrderByRelevanceFieldEnum = {
+  id: 'id',
+  key: 'key'
 };
 
 exports.Prisma.ConsumerOrderByRelevanceFieldEnum = {
@@ -414,50 +539,59 @@ exports.Prisma.ConsumerOrderByRelevanceFieldEnum = {
   userId: 'userId'
 };
 
-exports.Prisma.MerchantUserOrderByRelevanceFieldEnum = {
+exports.Prisma.BusinessUserAccessOrderByRelevanceFieldEnum = {
   id: 'id',
+  userId: 'userId',
   jobTitle: 'jobTitle',
   merchantId: 'merchantId',
-  userId: 'userId'
-};
-
-exports.Prisma.AdminUserOrderByRelevanceFieldEnum = {
-  id: 'id',
-  jobTitle: 'jobTitle',
-  userId: 'userId'
-};
-
-exports.Prisma.BrandUserOrderByRelevanceFieldEnum = {
-  id: 'id',
   brandId: 'brandId',
-  merchantUserId: 'merchantUserId'
+  storeId: 'storeId',
+  createdById: 'createdById'
 };
 
 exports.Prisma.CurrencyOrderByRelevanceFieldEnum = {
   id: 'id',
   name: 'name',
   code: 'code',
+  symbol: 'symbol',
   demonym: 'demonym',
   majorSingle: 'majorSingle',
   majorPlural: 'majorPlural',
-  symbol: 'symbol',
   symbolNative: 'symbolNative',
   minorSingle: 'minorSingle',
   minorPlural: 'minorPlural'
 };
 
+exports.Prisma.ContinentOrderByRelevanceFieldEnum = {
+  id: 'id',
+  name: 'name'
+};
+
 exports.Prisma.CountryOrderByRelevanceFieldEnum = {
   id: 'id',
   isoCode: 'isoCode',
+  isoCode3: 'isoCode3',
   name: 'name',
-  currency: 'currency'
+  flag: 'flag',
+  currencyId: 'currencyId',
+  continentId: 'continentId',
+  phonePrefix: 'phonePrefix'
 };
 
-exports.Prisma.StateOrderByRelevanceFieldEnum = {
+exports.Prisma.RegionOrderByRelevanceFieldEnum = {
   id: 'id',
-  isoCode: 'isoCode',
+  code: 'code',
   name: 'name',
   countryId: 'countryId'
+};
+
+exports.Prisma.BusinessRegistrationOrderByRelevanceFieldEnum = {
+  id: 'id',
+  number: 'number',
+  issuingBody: 'issuingBody',
+  merchantId: 'merchantId',
+  brandId: 'brandId',
+  storeId: 'storeId'
 };
 
 exports.Prisma.MerchantOrderByRelevanceFieldEnum = {
@@ -467,16 +601,16 @@ exports.Prisma.MerchantOrderByRelevanceFieldEnum = {
   phoneNumber: 'phoneNumber',
   genericEmail: 'genericEmail',
   invoiceEmail: 'invoiceEmail',
-  address1: 'address1',
-  address2: 'address2',
-  suburb: 'suburb',
-  postcode: 'postcode',
-  stateId: 'stateId',
+  addressLine1: 'addressLine1',
+  addressLine2: 'addressLine2',
+  addressLine3: 'addressLine3',
+  city: 'city',
+  postalCode: 'postalCode',
+  regionId: 'regionId',
   countryId: 'countryId',
-  abn: 'abn',
-  acn: 'acn',
-  logoUrl: 'logoUrl',
-  primaryContactId: 'primaryContactId'
+  timezone: 'timezone',
+  logo: 'logo',
+  website: 'website'
 };
 
 exports.Prisma.BrandOrderByRelevanceFieldEnum = {
@@ -487,17 +621,17 @@ exports.Prisma.BrandOrderByRelevanceFieldEnum = {
   genericEmail: 'genericEmail',
   invoiceEmail: 'invoiceEmail',
   tradingAsName: 'tradingAsName',
-  logoUrl: 'logoUrl',
-  address1: 'address1',
-  address2: 'address2',
-  suburb: 'suburb',
-  postcode: 'postcode',
-  stateId: 'stateId',
+  logo: 'logo',
+  website: 'website',
+  addressLine1: 'addressLine1',
+  addressLine2: 'addressLine2',
+  addressLine3: 'addressLine3',
+  city: 'city',
+  postalCode: 'postalCode',
+  regionId: 'regionId',
   countryId: 'countryId',
-  abn: 'abn',
-  acn: 'acn',
   phoneNumber: 'phoneNumber',
-  primaryContactId: 'primaryContactId'
+  timezone: 'timezone'
 };
 
 exports.Prisma.StoreOrderByRelevanceFieldEnum = {
@@ -505,16 +639,16 @@ exports.Prisma.StoreOrderByRelevanceFieldEnum = {
   name: 'name',
   slug: 'slug',
   brandId: 'brandId',
-  address1: 'address1',
-  address2: 'address2',
+  addressLine1: 'addressLine1',
+  addressLine2: 'addressLine2',
+  addressLine3: 'addressLine3',
   city: 'city',
-  region: 'region',
+  regionId: 'regionId',
   postalCode: 'postalCode',
   countryId: 'countryId',
   formattedAddress: 'formattedAddress',
-  abn: 'abn',
-  acn: 'acn',
   phoneNumber: 'phoneNumber',
+  timezone: 'timezone',
   currencyId: 'currencyId'
 };
 
@@ -523,7 +657,14 @@ exports.Prisma.ReceiptOrderByRelevanceFieldEnum = {
   receiptNumber: 'receiptNumber',
   consumerId: 'consumerId',
   storeId: 'storeId',
-  otherInformation: 'otherInformation'
+  otherInformation: 'otherInformation',
+  timezone: 'timezone'
+};
+
+exports.Prisma.ReceiptTaxOrderByRelevanceFieldEnum = {
+  id: 'id',
+  receiptId: 'receiptId',
+  taxName: 'taxName'
 };
 
 exports.Prisma.ReceiptPaymentOrderByRelevanceFieldEnum = {
@@ -531,7 +672,9 @@ exports.Prisma.ReceiptPaymentOrderByRelevanceFieldEnum = {
   receiptId: 'receiptId',
   terminal: 'terminal',
   reference: 'reference',
-  cardNo: 'cardNo'
+  cardNo: 'cardNo',
+  authCode: 'authCode',
+  paymentMethod: 'paymentMethod'
 };
 
 exports.Prisma.ReceiptItemOrderByRelevanceFieldEnum = {
@@ -540,20 +683,45 @@ exports.Prisma.ReceiptItemOrderByRelevanceFieldEnum = {
   name: 'name',
   sku: 'sku',
   description: 'description',
-  modelNumber: 'modelNumber'
+  modelNumber: 'modelNumber',
+  category: 'category'
 };
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
+};
+
+exports.Prisma.AuditLogOrderByRelevanceFieldEnum = {
+  userId: 'userId',
+  action: 'action',
+  category: 'category',
+  description: 'description',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent',
+  sessionId: 'sessionId'
+};
+
+exports.Prisma.ImageOrderByRelevanceFieldEnum = {
+  id: 'id',
+  image: 'image',
+  imageName: 'imageName',
+  relatedEntity: 'relatedEntity',
+  bucket: 'bucket'
+};
+exports.UserRole = exports.$Enums.UserRole = {
+  USER: 'USER',
+  MERCHANT: 'MERCHANT',
+  ADMIN: 'ADMIN'
+};
+
 exports.Status = exports.$Enums.Status = {
   DRAFT: 'DRAFT',
   PENDING: 'PENDING',
   APPROVED: 'APPROVED',
   DISABLED: 'DISABLED',
   REJECTED: 'REJECTED'
-};
-
-exports.Role = exports.$Enums.Role = {
-  CONSUMER: 'CONSUMER',
-  MERCHANT: 'MERCHANT',
-  ADMIN: 'ADMIN'
 };
 
 exports.Gender = exports.$Enums.Gender = {
@@ -563,49 +731,89 @@ exports.Gender = exports.$Enums.Gender = {
   NOTSAY: 'NOTSAY'
 };
 
-exports.MerchantRole = exports.$Enums.MerchantRole = {
+exports.AccessLevel = exports.$Enums.AccessLevel = {
   ADMIN: 'ADMIN',
-  TECHNICAL: 'TECHNICAL',
-  ACCOUNTS: 'ACCOUNTS'
+  MERCHANT: 'MERCHANT',
+  BRAND: 'BRAND',
+  STORE: 'STORE'
 };
 
-exports.AdminRole = exports.$Enums.AdminRole = {
-  ADMIN: 'ADMIN',
-  SALES: 'SALES',
-  TECHNICAL: 'TECHNICAL',
-  ACCOUNTS: 'ACCOUNTS'
+exports.Permission = exports.$Enums.Permission = {
+  READ: 'READ',
+  WRITE: 'WRITE',
+  DELETE: 'DELETE',
+  MANAGE_USERS: 'MANAGE_USERS',
+  MANAGE_SETTINGS: 'MANAGE_SETTINGS',
+  VIEW_REPORTS: 'VIEW_REPORTS',
+  MANAGE_RECEIPTS: 'MANAGE_RECEIPTS'
 };
 
-exports.BrandRole = exports.$Enums.BrandRole = {
-  ADMIN: 'ADMIN',
-  TECHNICAL: 'TECHNICAL',
-  ACCOUNTS: 'ACCOUNTS'
+exports.BusinessRegistrationType = exports.$Enums.BusinessRegistrationType = {
+  COMPANY_NUMBER: 'COMPANY_NUMBER',
+  TAX_ID: 'TAX_ID',
+  VAT_NUMBER: 'VAT_NUMBER',
+  BUSINESS_NUMBER: 'BUSINESS_NUMBER',
+  ABN: 'ABN',
+  ACN: 'ACN',
+  GST_NUMBER: 'GST_NUMBER',
+  TRADE_LICENSE: 'TRADE_LICENSE',
+  NATIONAL_ID: 'NATIONAL_ID',
+  OTHER: 'OTHER'
+};
+
+exports.TaxType = exports.$Enums.TaxType = {
+  VAT: 'VAT',
+  GST: 'GST',
+  SALES_TAX: 'SALES_TAX',
+  SERVICE_TAX: 'SERVICE_TAX',
+  EXCISE_TAX: 'EXCISE_TAX',
+  IMPORT_DUTY: 'IMPORT_DUTY',
+  OTHER: 'OTHER'
 };
 
 exports.PaymentType = exports.$Enums.PaymentType = {
   CASH: 'CASH',
-  EFTPOS: 'EFTPOS',
-  CREDIT: 'CREDIT'
+  CARD_CHIP: 'CARD_CHIP',
+  CARD_CONTACTLESS: 'CARD_CONTACTLESS',
+  CARD_SWIPE: 'CARD_SWIPE',
+  MOBILE_PAYMENT: 'MOBILE_PAYMENT',
+  BANK_TRANSFER: 'BANK_TRANSFER',
+  DIGITAL_WALLET: 'DIGITAL_WALLET',
+  VOUCHER: 'VOUCHER',
+  GIFT_CARD: 'GIFT_CARD',
+  OTHER: 'OTHER'
+};
+
+exports.ImageType = exports.$Enums.ImageType = {
+  MERCHANT: 'MERCHANT',
+  BRAND: 'BRAND',
+  STORE: 'STORE'
 };
 
 exports.Prisma.ModelName = {
   User: 'User',
   Session: 'Session',
-  EmailVerificationRequest: 'EmailVerificationRequest',
-  PasswordResetSession: 'PasswordResetSession',
+  Account: 'Account',
+  Verification: 'Verification',
+  EmailChangeRecord: 'EmailChangeRecord',
+  PhoneChangeRecord: 'PhoneChangeRecord',
+  RateLimit: 'RateLimit',
   Consumer: 'Consumer',
-  MerchantUser: 'MerchantUser',
-  AdminUser: 'AdminUser',
-  BrandUser: 'BrandUser',
+  BusinessUserAccess: 'BusinessUserAccess',
   Currency: 'Currency',
+  Continent: 'Continent',
   Country: 'Country',
-  State: 'State',
+  Region: 'Region',
+  BusinessRegistration: 'BusinessRegistration',
   Merchant: 'Merchant',
   Brand: 'Brand',
   Store: 'Store',
   Receipt: 'Receipt',
+  ReceiptTax: 'ReceiptTax',
   ReceiptPayment: 'ReceiptPayment',
-  ReceiptItem: 'ReceiptItem'
+  ReceiptItem: 'ReceiptItem',
+  AuditLog: 'AuditLog',
+  Image: 'Image'
 };
 
 /**

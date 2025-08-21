@@ -1,6 +1,7 @@
 import { authCheckAdmin } from '@/lib/authCheck';
+import { Metadata } from 'next';
 
-export async function generateMetadata() {
+export async function generateMetadata(): Promise<Metadata> {
     const title = 'Dashboard';
     const description = 'The DocketRockit Merchant Admin Dashboard';
 
@@ -13,6 +14,6 @@ export async function generateMetadata() {
 const AdminDashboardMainPage = async () => {
     const { user } = await authCheckAdmin();
 
-    return <div>page {user.firstName}</div>;
+    return <div>page {user.name}</div>;
 };
 export default AdminDashboardMainPage;
