@@ -128,11 +128,13 @@ exports.Prisma.UserScalarFieldEnum = {
   lastName: 'lastName',
   email: 'email',
   emailVerified: 'emailVerified',
+  passwordVerified: 'passwordVerified',
   image: 'image',
   role: 'role',
   postalCode: 'postalCode',
   city: 'city',
   regionId: 'regionId',
+  countryId: 'countryId',
   phoneNumber: 'phoneNumber',
   phoneVerified: 'phoneVerified',
   timezone: 'timezone',
@@ -479,6 +481,7 @@ exports.Prisma.UserOrderByRelevanceFieldEnum = {
   postalCode: 'postalCode',
   city: 'city',
   regionId: 'regionId',
+  countryId: 'countryId',
   phoneNumber: 'phoneNumber',
   timezone: 'timezone',
   locale: 'locale',
@@ -710,18 +713,18 @@ exports.Prisma.ImageOrderByRelevanceFieldEnum = {
   relatedEntity: 'relatedEntity',
   bucket: 'bucket'
 };
-exports.UserRole = exports.$Enums.UserRole = {
-  USER: 'USER',
-  MERCHANT: 'MERCHANT',
-  ADMIN: 'ADMIN'
-};
-
 exports.Status = exports.$Enums.Status = {
   DRAFT: 'DRAFT',
   PENDING: 'PENDING',
   APPROVED: 'APPROVED',
   DISABLED: 'DISABLED',
   REJECTED: 'REJECTED'
+};
+
+exports.UserRole = exports.$Enums.UserRole = {
+  USER: 'USER',
+  MERCHANT: 'MERCHANT',
+  ADMIN: 'ADMIN'
 };
 
 exports.Gender = exports.$Enums.Gender = {

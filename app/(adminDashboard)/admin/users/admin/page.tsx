@@ -1,18 +1,16 @@
 import { Suspense } from 'react';
+import { Metadata } from 'next';
 
-import { Skeleton } from '@/components/ui/skeleton';
 import { authCheckAdmin } from '@/lib/authCheck';
 import PageBreadcrumb from '@/components/common/PageBreadCrumb';
 import ComponentCard from '@/components/common/ComponentCard';
-import { SearchParams } from '@/types/global';
 import { AdminUsersTable } from '@/components/users/admin/listing/AdminUsersTable';
-import { AdminUsersTableProvider } from '@/components/users/admin/listing/AdminUsersTableProviders';
-import { DateRangePicker } from '@/components/datatable/DateRangePicker';
-import { DataTableSkeleton } from '@/components/datatable/DataTableSkeleton';
-import { adminUsersSearchParamsSchema } from '@/schemas/admin/adminUsers';
-import { getAdminUsers } from '@/actions/admin/adminUsers';
+import { AdminUsersFilters } from '@/components/users/admin/listing/AdminUsersFilters';
+import { UserManagementWrapper } from '@/components/users/admin/listing/UserManagementWrapper';
+import { getFilterOptions } from '@/actions/admin/adminUsers';
+import AdminUsersContent from '@/components/users/admin/listing/AdminUsersContent';
 
-export async function generateMetadata() {
+export async function generateMetadata(): Promise<Metadata> {
     const title = 'Admin Users';
     const description = 'The DocketRockit Merchant Admin Dashboard';
 
@@ -22,50 +20,30 @@ export async function generateMetadata() {
     };
 }
 
-const AdminUsersPage = async (props: { searchParams: SearchParams }) => {
-    await authCheckAdmin(['ADMIN']);
-    const searchParams = await props.searchParams;
+interface AdminUsersPageProps {
+    searchParams: {
+        search?: string;
+        country?: string;
+        status?: string;
+        permissions?: string;
+        page?: string;
+        limit?: string;
+        sortBy?: string;
+        sortOrder?: string;
+    };
+}
 
-    const search = adminUsersSearchParamsSchema.parse(searchParams);
-
-    const adminUsersPromise = getAdminUsers(search);
+export default async function AdminUsersPage({
+    searchParams
+}: AdminUsersPageProps) {
+    const filterOptions = await getFilterOptions();
 
     return (
-        <div>
-            <PageBreadcrumb pageTitle="Admin Users" />
-            <ComponentCard>
-                <AdminUsersTableProvider>
-                    <Suspense fallback={<Skeleton className="h-7 w-52" />}>
-                        <DateRangePicker
-                            triggerSize="sm"
-                            triggerClassName="ml-auto w-56 sm:w-60"
-                            align="end"
-                        />
-                    </Suspense>
-                    <Suspense
-                        fallback={
-                            <DataTableSkeleton
-                                columnCount={5}
-                                searchableColumnCount={1}
-                                filterableColumnCount={2}
-                                cellWidths={[
-                                    '10rem',
-                                    '40rem',
-                                    '12rem',
-                                    '12rem',
-                                    '8rem'
-                                ]}
-                                shrinkZero
-                            />
-                        }
-                    >
-                        <AdminUsersTable
-                            adminUsersPromise={adminUsersPromise}
-                        />
-                    </Suspense>
-                </AdminUsersTableProvider>
-            </ComponentCard>
-        </div>
+        <UserManagementWrapper>
+            <AdminUsersContent
+                filterOptions={filterOptions}
+                searchParams={searchParams}
+            />
+        </UserManagementWrapper>
     );
-};
-export default AdminUsersPage;
+}

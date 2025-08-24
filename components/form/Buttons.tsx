@@ -14,6 +14,12 @@ type SubmitButtonProps = {
     disabledCheck?: boolean;
 };
 
+type ProfileButtonProps = {
+    text?: string;
+    newImage: boolean;
+    isPending: boolean;
+};
+
 export const AuthSubmitButton = ({
     className = '',
     text = 'submit',
@@ -52,7 +58,7 @@ export const SubmitButton = ({
         <Button
             type="submit"
             disabled={isPending}
-            className={cn(className)}
+            className={cn('capitalize', className)}
             size={size}
         >
             {isPending ? (
@@ -66,3 +72,22 @@ export const SubmitButton = ({
         </Button>
     );
 };
+
+export function ProfileButton({
+    text = 'submit',
+    newImage,
+    isPending
+}: ProfileButtonProps) {
+    return (
+        <Button type="submit" disabled={!newImage || isPending}>
+            {isPending ? (
+                <>
+                    <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                    Please wait...
+                </>
+            ) : (
+                text
+            )}
+        </Button>
+    );
+}

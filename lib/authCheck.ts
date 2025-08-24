@@ -11,9 +11,19 @@ export const isLoggedIn = async () => {
     });
 
     if (session) {
+        if (
+            !session.user.role.includes('ADMIN') &&
+            !session.user.role.includes('MERCHANT')
+        )
+            return false;
+
         if (!session.user.emailVerified) return redirect('/auth/verify-email');
 
         if (!session.user.phoneVerified) return redirect('/auth/verify-phone');
+
+        if (session.user.role.includes('ADMIN')) redirect('/admin');
+
+        if (session.user.role.includes('MERCHANT')) redirect('/merchant');
 
         return redirect('/');
     }
@@ -60,7 +70,7 @@ export const authCheckAdmin = async (callbackUrl?: string) => {
         }
     }
 
-    if (session.user.role !== 'ADMIN') {
+    if (!session.user.role.includes('ADMIN')) {
         if (callbackUrl) {
             return redirect(
                 `/auth/login?callbackURL=${encodeURIComponent(callbackUrl)}`
@@ -114,7 +124,7 @@ export const authCheckServerAdmin = async () => {
 
     if (!session) return false;
 
-    if (session.user.role !== 'ADMIN') return false;
+    if (!session.user.role.includes('ADMIN')) return false;
 
     return session;
 };

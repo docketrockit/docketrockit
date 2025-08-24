@@ -6,14 +6,14 @@ import Backdrop from '@/components/layout/Backdrop';
 import { authCheckLayout } from '@/lib/authCheck';
 
 const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
-    const { result, message, session, user } = await authCheckLayout();
+    const { session, user } = await authCheckLayout();
 
-    if (!result || !session || !user) return message;
+    if (!session || !user) return <div>Not allowed here</div>;
 
     return (
         <div className="min-h-screen xl:flex">
             {/* Sidebar and Backdrop */}
-            <AppSidebar session={session} user={user} />
+            <AppSidebar user={user} />
             <Backdrop />
             {/* Main Content Area */}
             <LayoutProvider>

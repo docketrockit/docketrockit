@@ -50,8 +50,9 @@ const UserDropdown = () => {
         });
     }
 
-    const urlLocation =
-        userSession.user.role === 'ADMIN' ? 'admin' : 'merchant';
+    const urlLocation = userSession.user.role.includes('ADMIN')
+        ? 'admin'
+        : 'merchant';
 
     return (
         <div className="relative">
@@ -75,7 +76,7 @@ const UserDropdown = () => {
                         {`${userSession.user.name} ${userSession.user.lastName}`}
                     </span>
                     <span className="font-sm text-theme-sm mr-1 block">
-                        {userSession.user.role === 'MERCHANT'
+                        {userSession.user.role.includes('MERCHANT')
                             ? 'Merchant'
                             : 'DocketRockit'}
                     </span>

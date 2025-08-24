@@ -3,7 +3,7 @@ import { State } from 'country-state-city';
 
 const prisma = new PrismaClient();
 
-async function seedFromJSON() {
+async function seedRegions() {
     try {
         let count = 0;
         const countries = await prisma.country.findMany();
@@ -34,7 +34,7 @@ async function seedFromJSON() {
     }
 }
 
-seedFromJSON()
+seedRegions()
     .catch((error) => {
         console.error('💥 Seed failed:', error);
         process.exit(1);

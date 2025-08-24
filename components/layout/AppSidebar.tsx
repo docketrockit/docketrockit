@@ -4,7 +4,6 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Role, AdminRole, MerchantRole } from '@/generated/prisma';
 
 import { useSidebar } from '@/context/SidebarContext';
 import {
@@ -18,8 +17,7 @@ import {
     UsersRound,
     Component
 } from 'lucide-react';
-import { SessionUserProps } from '@/types/global';
-import { User } from '@/lib/user';
+import { SessionNavProps, User } from '@/types/session';
 
 import logo from '../../public/images/logo/logo.png';
 import logoWhite from '../../public/images/logo/logo-white.png';
@@ -30,7 +28,7 @@ type NavItem = {
     name: string;
     icon?: React.ReactNode;
     path?: string;
-    rolesAllowed: AdminRole[] | MerchantRole[];
+    rolesAllowed: string[];
     subItems?: NavItem[];
 };
 
@@ -129,40 +127,40 @@ const navItemsMerchant: NavItem[] = [
     }
 ];
 
-const checkRoles = (
-    rolesAllowed: AdminRole[] | MerchantRole[],
-    user: User
-): boolean => {
-    if (rolesAllowed.length === 0) return true;
+const checkRoles = (rolesAllowed: string[], user: User): boolean => {
+    // if (rolesAllowed.length === 0) return true;
 
-    if (user.adminUser) {
-        return rolesAllowed.some((role) =>
-            user.adminUser?.adminRole.includes(role as AdminRole)
-        );
-    }
+    // if (user.role.includes('ADMIN')) {
+    //     return rolesAllowed.some((role) =>
+    //         user.businessUserAccess?.permissions.includes(role)
+    //     );
+    // }
 
-    if (user.merchantUser) {
-        return rolesAllowed.some((role) =>
-            user.merchantUser?.merchantRole.includes(role as MerchantRole)
-        );
-    }
+    // if (user.role.includes('MERCHANT')) {
+    //     return rolesAllowed.some((role) =>
+    //         user.merchantUser?.merchantRole.includes(role as MerchantRole)
+    //     );
+    // }
 
-    return false;
+    // return false;
+    return true;
 };
 
 const hasAccess = (nav: NavItem, user: User): boolean => {
-    return (
-        (checkRoles(nav.rolesAllowed, user) ||
-            nav.subItems?.some((sub) => checkRoles(sub.rolesAllowed, user))) ??
-        false
-    );
+    // return (
+    //     (checkRoles(nav.rolesAllowed, user) ||
+    //         nav.subItems?.some((sub) => checkRoles(sub.rolesAllowed, user))) ??
+    //     false
+    // );
+    return true;
 };
 
 const getAccessibleSubItems = (subItems: NavItem[] = [], user: User) => {
-    return subItems.filter((sub) => checkRoles(sub.rolesAllowed, user));
+    // return subItems.filter((sub) => checkRoles(sub.rolesAllowed, user));
+    return subItems;
 };
 
-const AppSidebar: React.FC<SessionUserProps> = ({ session, user }) => {
+const AppSidebar: React.FC<SessionNavProps> = ({ user }) => {
     const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
     const pathname = usePathname();
 
@@ -195,7 +193,9 @@ const AppSidebar: React.FC<SessionUserProps> = ({ session, user }) => {
 
     useEffect(() => {
         ['main', 'others'].forEach((menuType) => {
-            const items = user.adminUser ? navItemsAdmin : navItemsMerchant;
+            const items = user.role.includes('ADMIN')
+                ? navItemsAdmin
+                : navItemsMerchant;
             items.forEach((nav, index) => {
                 const accessibleSubItems = getAccessibleSubItems(
                     nav.subItems,
@@ -382,7 +382,7 @@ const AppSidebar: React.FC<SessionUserProps> = ({ session, user }) => {
                                 Menu
                             </h2>
                             {renderMenuItems(
-                                user.adminUser
+                                user.role.includes('ADMIN')
                                     ? navItemsAdmin
                                     : navItemsMerchant,
                                 'main'

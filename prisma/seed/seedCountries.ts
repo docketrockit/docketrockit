@@ -1982,7 +1982,7 @@ const countries = [
     }
 ];
 
-async function seedFromJSON() {
+async function seedCoutries() {
     const totalCountries = countries.length;
     let count = 0;
     try {
@@ -2022,7 +2022,7 @@ async function seedFromJSON() {
     }
 }
 
-seedFromJSON()
+seedCoutries()
     .catch((error) => {
         console.error('💥 Seed failed:', error);
         process.exit(1);

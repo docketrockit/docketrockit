@@ -1,4 +1,5 @@
 import * as z from 'zod';
+import { UserRole } from '@/generated/prisma';
 
 export const LoginSchema = z.object({
     email: z.email({
@@ -62,4 +63,16 @@ export const TwoFactorSchema = z.object({
     token: z.string().min(1, {
         message: 'Token is required'
     })
+});
+
+// Define the valid roles as a Zod enum
+const UserRoleSchema = z.enum([
+    UserRole.USER,
+    UserRole.MERCHANT,
+    UserRole.ADMIN
+]);
+
+// Schema for the role field (array of UserRole values)
+export const RoleArraySchema = z.array(UserRoleSchema).nonempty({
+    message: 'At least one role is required'
 });

@@ -24,7 +24,7 @@ const ProfilePage = async () => {
                     Profile
                 </h3>
                 <div className="space-y-6">
-                    <UserDetailsCard user={userDetails.data} />
+                    {/* <UserDetailsCard user={userDetails.data} /> */}
                 </div>
             </div>
         </div>

@@ -1,172 +1,265 @@
 'use server';
 
-import * as z from 'zod';
+import { Status, Permission, AccessLevel } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
 
-import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { AdminUserSchema } from '@/schemas/users';
-import { getErrorMessage } from '@/lib/handleError';
-import { checkEmailAvailability } from '@/lib/email';
-import { authCheckServerAdmin } from '@/lib/authCheck';
-import { generateOTP } from '@/lib/otp';
-import { sendCreateAdminUserAccountEmail } from '@/lib/mail';
-import { logUserRegistered } from '@/actions/audit/audit-auth';
+import type {
+    UserFilters,
+    CreateUserData,
+    UpdateUserData,
+    AdminUser,
+    UserWithDetails
+} from '@/types/adminUser';
 
-export const createAdminUser = async (
-    values: z.infer<typeof AdminUserSchema>
-) => {
-    const userSession = await authCheckServerAdmin();
+export async function getAdminUsers(filters: UserFilters = {}) {
+    console.log('[v0] getAdminUsers received filters:', filters);
 
-    if (!userSession)
-        return {
-            error: getErrorMessage('Unauthorized')
-        };
+    const {
+        search = '',
+        country,
+        status,
+        permissions = [],
+        page = 1,
+        limit = 10,
+        sortBy = 'createdAt',
+        sortOrder = 'desc'
+    } = filters;
 
-    try {
-        const validatedFields = AdminUserSchema.safeParse(values);
+    const skip = limit === -1 ? 0 : (page - 1) * limit;
+    const take = limit === -1 ? undefined : limit;
 
-        if (!validatedFields.success) {
-            return { error: getErrorMessage('Invalid fields') };
-        }
+    // Build where clause
+    const where: any = {
+        OR: search
+            ? [
+                  { name: { contains: search, mode: 'insensitive' } },
+                  { lastName: { contains: search, mode: 'insensitive' } },
+                  { email: { contains: search, mode: 'insensitive' } }
+              ]
+            : undefined,
+        countryId: country && country !== 'all' ? country : undefined,
+        status:
+            status &&
+            status !== 'all' &&
+            Object.values(Status).includes(status as Status)
+                ? status
+                : undefined
+    };
 
-        const {
-            name,
-            lastName,
-            email,
-            password,
-            jobTitle,
-            phoneNumber,
-            permissions
-        } = validatedFields.data;
-
-        const emailAvailable = checkEmailAvailability(email);
-
-        if (!emailAvailable) {
-            return {
-                error: getErrorMessage('Email is already used')
-            };
-        }
-
-        const data = await auth.api.signUpEmail({
-            body: {
-                name,
-                lastName,
-                email,
-                password,
-                role: 'ADMIN'
+    // Filter by permissions if specified
+    if (permissions.length > 0) {
+        where.businessAccess = {
+            some: {
+                permissions: {
+                    hasSome: permissions
+                }
             }
-        });
-
-        await prisma.user.update({
-            where: { id: data.user.id },
-            data: { phoneNumber }
-        });
-        await prisma.businessUserAccess.create({
-            data: {
-                jobTitle,
-                accessLevel: 'ADMIN',
-                userId: data.user.id,
-                permissions,
-                createdById: userSession.user.id
-            }
-        });
-
-        const code = generateOTP();
-        const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
-
-        await prisma.verification.create({
-            data: {
-                identifier: `email-otp:${data.user.id}`,
-                value: code,
-                expiresAt
-            }
-        });
-
-        await sendCreateAdminUserAccountEmail({
-            email,
-            name,
-            password,
-            code
-        });
-
-        await logUserRegistered(data.user.id, {
-            registeredBy: userSession.user.id
-        });
-
-        revalidatePath('/admin/users/admin');
-
-        return {
-            error: null
-        };
-    } catch (error) {
-        return {
-            error: getErrorMessage(error)
         };
     }
-};
 
-// export const updateAdminUser = async (
-//     values: z.infer<typeof AdminUserSchemaUpdate>,
-//     id: string
-// ) => {
-//     const { user: adminUser } = await authCheckAdmin(['ADMIN']);
+    // Remove undefined values
+    Object.keys(where).forEach(
+        (key) => where[key] === undefined && delete where[key]
+    );
 
-//     if (!adminUser)
-//         return {
-//             data: null,
-//             error: getErrorMessage('Unauthorized')
-//         };
+    const [users, total] = await Promise.all([
+        prisma.user.findMany({
+            where,
+            include: {
+                businessAccess: {
+                    include: {
+                        merchant: { select: { name: true } },
+                        brand: { select: { name: true } },
+                        store: { select: { name: true } }
+                    }
+                },
+                country: true,
+                region: true
+            },
+            orderBy: { [sortBy]: sortOrder },
+            skip,
+            take
+        }),
+        prisma.user.count({ where })
+    ]);
 
-//     try {
-//         if (!(await globalPOSTRateLimit())) {
-//             return {
-//                 data: null,
-//                 error: getErrorMessage('Too many requests')
-//             };
-//         }
-//         const validatedFields = AdminUserSchemaUpdate.safeParse(values);
+    return {
+        users: users as AdminUser[],
+        total,
+        pages: limit === -1 ? 1 : Math.ceil(total / limit)
+    };
+}
 
-//         if (!validatedFields.success) {
-//             return { data: null, error: getErrorMessage('Invalid fields') };
-//         }
+export async function getUserById(id: string): Promise<UserWithDetails | null> {
+    const user = await prisma.user.findUnique({
+        where: { id },
+        include: {
+            businessAccess: {
+                include: {
+                    merchant: { select: { name: true, id: true } },
+                    brand: { select: { name: true, id: true } },
+                    store: { select: { name: true, id: true } }
+                }
+            },
+            country: true,
+            region: true,
+            createdBy: { select: { name: true, lastName: true } }
+        }
+    });
 
-//         const { firstName, lastName, email, jobTitle, adminRole, phoneNumber } =
-//             validatedFields.data;
+    return user as UserWithDetails | null;
+}
 
-//         const emailAvailable = checkEmailAvailability(email);
-//         if (!emailAvailable) {
-//             return {
-//                 data: null,
-//                 error: getErrorMessage('Email is already used')
-//             };
-//         }
-//         await db.user.update({
-//             where: { id },
-//             data: {
-//                 firstName,
-//                 lastName,
-//                 email,
-//                 phoneNumber,
-//                 adminUser: {
-//                     update: {
-//                         jobTitle,
-//                         adminRole
-//                     }
-//                 }
-//             }
-//         });
+export async function createUser(data: CreateUserData) {
+    try {
+        const user = await prisma.user.create({
+            data: {
+                name: data.name,
+                lastName: data.lastName,
+                email: data.email,
+                phoneNumber: data.phoneNumber,
+                countryId: data.countryId,
+                regionId: data.regionId,
+                role: data.role,
+                status: data.status,
+                businessAccess: {
+                    create: data.businessAccess.map((access) => ({
+                        accessLevel: access.accessLevel,
+                        permissions: access.permissions,
+                        merchantId: access.merchantId,
+                        brandId: access.brandId,
+                        storeId: access.storeId,
+                        jobTitle: access.jobTitle
+                    }))
+                }
+            },
+            include: {
+                businessAccess: {
+                    include: {
+                        merchant: { select: { name: true } },
+                        brand: { select: { name: true } },
+                        store: { select: { name: true } }
+                    }
+                },
+                country: true,
+                region: true
+            }
+        });
 
-//         revalidatePath('/admin/users/admin');
+        revalidatePath('/admin/users');
+        return { success: true, user };
+    } catch (error) {
+        console.error('Error creating user:', error);
+        return { success: false, error: 'Failed to create user' };
+    }
+}
 
-//         return {
-//             data: null,
-//             error: null
-//         };
-//     } catch (err) {
-//         return {
-//             data: null,
-//             error: getErrorMessage(err)
-//         };
-//     }
-// };
+export async function updateUser(data: UpdateUserData) {
+    try {
+        const { id, businessAccess, ...updateData } = data;
+
+        // Update user and handle business access separately
+        const user = await prisma.$transaction(async (tx) => {
+            // Update basic user data
+            const updatedUser = await tx.user.update({
+                where: { id },
+                data: updateData
+            });
+
+            // Update business access if provided
+            if (businessAccess) {
+                // Delete existing business access
+                await tx.businessUserAccess.deleteMany({
+                    where: { userId: id }
+                });
+
+                // Create new business access
+                await tx.businessUserAccess.createMany({
+                    data: businessAccess.map((access) => ({
+                        userId: id,
+                        accessLevel: access.accessLevel,
+                        permissions: access.permissions,
+                        merchantId: access.merchantId,
+                        brandId: access.brandId,
+                        storeId: access.storeId,
+                        jobTitle: access.jobTitle
+                    }))
+                });
+            }
+
+            return updatedUser;
+        });
+
+        revalidatePath('/admin/users');
+        revalidatePath(`/admin/users/${id}`);
+        return { success: true, user };
+    } catch (error) {
+        console.error('Error updating user:', error);
+        return { success: false, error: 'Failed to update user' };
+    }
+}
+
+export async function deleteUser(id: string) {
+    try {
+        await prisma.user.delete({
+            where: { id }
+        });
+
+        revalidatePath('/admin/users');
+        return { success: true };
+    } catch (error) {
+        console.error('Error deleting user:', error);
+        return { success: false, error: 'Failed to delete user' };
+    }
+}
+
+export async function getCountries() {
+    return await prisma.country.findMany({
+        orderBy: { name: 'asc' },
+        include: {
+            regions: {
+                orderBy: { name: 'asc' }
+            }
+        }
+    });
+}
+
+export async function getMerchants() {
+    return await prisma.merchant.findMany({
+        where: { status: 'APPROVED' },
+        orderBy: { name: 'asc' },
+        include: {
+            brands: {
+                where: { status: 'APPROVED' },
+                orderBy: { name: 'asc' },
+                include: {
+                    stores: {
+                        where: { status: 'APPROVED' },
+                        orderBy: { name: 'asc' }
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Helper function to get filter options
+export async function getFilterOptions() {
+    const [countries, statuses, permissions, accessLevels] = await Promise.all([
+        prisma.country.findMany({
+            orderBy: { name: 'asc' },
+            select: { id: true, name: true }
+        }),
+        Promise.resolve(Object.values(Status)),
+        Promise.resolve(Object.values(Permission)),
+        Promise.resolve(Object.values(AccessLevel))
+    ]);
+
+    return {
+        countries,
+        statuses,
+        permissions,
+        accessLevels
+    };
+}

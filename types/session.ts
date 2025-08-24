@@ -6,3 +6,9 @@ export type SessionType = Awaited<ReturnType<typeof auth.api.getSession>>;
 export type SessionProps = {
     userSession: SessionType | null;
 };
+
+export type SessionNavProps = {
+    user: NonNullable<SessionType>['user'];
+};
+
+export type User = NonNullable<SessionType>['user'];

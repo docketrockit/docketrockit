@@ -8,6 +8,11 @@ const nextConfig: NextConfig = {
                 hostname: 'jqjansoiljeihdzydhpg.supabase.co'
             }
         ]
+    },
+    experimental: {
+        serverActions: {
+            bodySizeLimit: '3mb'
+        }
     }
     /* config options here */
 };

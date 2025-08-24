@@ -95,12 +95,13 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  name          String
-  lastName      String
-  email         String   @unique
-  emailVerified Boolean  @default(false)
-  image         String?
-  role          UserRole @default(USER)
+  name             String
+  lastName         String
+  email            String     @unique
+  emailVerified    Boolean    @default(false)
+  passwordVerified Boolean    @default(false)
+  image            String?
+  role             UserRole[] @default([USER])
 
   sessions             Session[]
   accounts             Account[]
@@ -108,6 +109,8 @@ model User {
   city                 String?
   region               Region?              @relation(fields: [regionId], references: [id], onDelete: Cascade)
   regionId             String?
+  country              Country?             @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  countryId            String?
   phoneNumber          String?
   phoneVerified        Boolean              @default(false)
   timezone             String? // IANA timezone identifier
@@ -307,6 +310,7 @@ model Country {
   stores      Store[]
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
+  users       User[]
 
   @@map("countries")
 }

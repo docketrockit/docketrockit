@@ -19,3 +19,10 @@ export type ParamsStore = Promise<{
 }>;
 
 export type ParamsToken = Promise<{ token: string }>;
+
+export type ActionResult<T = any> = {
+    success: boolean;
+    message: string;
+    data?: T;
+    cooldownTime?: number;
+};

@@ -1,11 +1,12 @@
 'use client';
 
-import * as z from 'zod';
-import { useForm } from 'react-hook-form';
-import { useState, useTransition } from 'react';
-import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
+import { useForm, SubmitErrorHandler } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { useTransition, useState } from 'react';
 import { toast } from 'sonner';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import {
     Form,
@@ -24,10 +25,14 @@ import { AuthSubmitButton } from '@/components/form/Buttons';
 import { LoginSchema } from '@/schemas/auth';
 import FormError from '@/components/form/FormError';
 import { login } from '@/actions/auth/login';
+import { authClient } from '@/lib/auth-client';
 
 const LoginForm = () => {
-    const [error, setError] = useState<string | undefined>('');
+    const [error, setError] = useState('');
     const [isPending, startTransition] = useTransition();
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const callbackURL = searchParams.get('callbackURL') || '';
 
     const form = useForm<z.infer<typeof LoginSchema>>({
         resolver: zodResolver(LoginSchema),
@@ -39,14 +44,58 @@ const LoginForm = () => {
     });
 
     const onSubmit = (values: z.infer<typeof LoginSchema>) => {
-        setError('');
         startTransition(async () => {
             const data = await login(values);
-            if (!data.result) {
-                form.setValue('password', '');
-                toast.error(data.message);
-                setError(data.message);
+            const { error, emailVerified, phoneVerified, token } = data;
+
+            if (error) {
+                if (token) {
+                    await authClient.revokeSession({
+                        token
+                    });
+                }
+                form.reset();
+                setError(error);
+                toast.error(error, { position: 'top-center' });
+            } else {
+                setError('');
+                toast.success('Log in successful', {
+                    position: 'top-center'
+                });
+
+                if (!emailVerified) {
+                    router.push('/auth/verify-email');
+                } else if (!phoneVerified) {
+                    router.push('/auth/verify-phone');
+                } else if (emailVerified && phoneVerified) {
+                    if (callbackURL) {
+                        router.push(callbackURL);
+                    } else if (data.role.includes('ADMIN')) {
+                        router.push('/admin');
+                    } else if (data.role.includes('MERCHANT')) {
+                        router.push('/merchant');
+                    }
+                }
             }
+        });
+    };
+
+    const onError: SubmitErrorHandler<z.infer<typeof LoginSchema>> = (
+        errors
+    ) => {
+        const errorMessages = Object.entries(errors).map(([field, error]) => (
+            <li key={field}>{error.message || `Invalid ${field}`}</li>
+        ));
+
+        toast.dismiss();
+
+        toast.error('There were errors in your login', {
+            position: 'top-center',
+            description: (
+                <ul className="list-disc ml-4 space-y-1">{errorMessages}</ul>
+            ),
+            closeButton: true,
+            duration: Infinity
         });
     };
 
@@ -71,7 +120,7 @@ const LoginForm = () => {
                             <FormError message={error} />
                             <form
                                 className="space-y-6"
-                                onSubmit={form.handleSubmit(onSubmit)}
+                                onSubmit={form.handleSubmit(onSubmit, onError)}
                             >
                                 <div className="relative">
                                     <FormField

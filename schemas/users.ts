@@ -25,3 +25,21 @@ export const AdminUserSchemaUpdate = z.object({
     permissions: z.array(permissionSchema),
     status: statusSchema
 });
+
+export const UserProfileSchema = z.object({
+    name: getStringSchema('First name'),
+    lastName: getStringSchema('Last name'),
+    phoneNumber: getStringSchema('Phone number'),
+    jobTitle: getStringSchema('Job title'),
+    city: getStringSchema('City'),
+    state: getStringSchema('State'),
+    postcode: getStringSchema('Postcode')
+});
+
+export const EmailSchema = z.object({
+    email: getEmailSchema()
+});
+
+export const VerifyEmailSchema = z.object({
+    code: getStringSchema('Verification code')
+});

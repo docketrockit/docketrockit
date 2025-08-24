@@ -2594,7 +2594,7 @@ function toSafeNumber(value: unknown): number | null {
     return isNaN(num) ? null : num;
 }
 
-async function main() {
+async function seedCurrencies() {
     const total = currencies.length;
     let count = 1;
 
@@ -2641,7 +2641,7 @@ async function main() {
     // }
 }
 
-main()
+seedCurrencies()
     .catch((e) => {
         console.error(e);
         process.exit(1);

@@ -1,123 +1,95 @@
 'use client';
-'use memo';
 
-import { use, useMemo } from 'react';
-import { Prisma, AdminRole } from '@/generated/prisma';
+import { useEffect, useState } from 'react';
+import type { Permission, Status } from '@prisma/client';
 
-import { type DataTableFilterField } from '@/types/data-table';
-import { statusLabels } from '@/types/global';
-
-import { useDataTable } from '@/hooks/useDataTable';
-import { DataTableAdvancedToolbar } from '@/components/datatable/advanced/DataTableAdvancedToolbar';
-import { DataTable } from '@/components/datatable/DataTable';
-import { DataTableToolbar } from '@/components/datatable/DataTableToolbar';
-
-import { type getAdminUsers } from '@/actions/admin/adminUsers';
-import { getStatusIcon } from '@/lib/utils';
-import { getColumns } from './AdminUsersTableColumns';
-import { AdminUsersTableFloatingBar } from './AdminUsersTableFloatingBar';
-import { useAdminUsersTable } from './AdminUsersTableProviders';
-import { AdminUsersTableToolbarActions } from './AdminUsersTableToolbarActions';
-
-type AdminUser = Prisma.UserGetPayload<{
-    include: { adminUser: true };
-}>;
+import { getAdminUsers } from '@/actions/admin/adminUsers';
+import { DataTable } from '@/components/ui/data-table';
+import { createColumns } from '@/components/users/admin/listing/UserColumns';
 
 interface AdminUsersTableProps {
-    adminUsersPromise: ReturnType<typeof getAdminUsers>;
+    searchParams: {
+        search?: string;
+        country?: string;
+        status?: string;
+        permissions?: string;
+        page?: string;
+        limit?: string;
+        sortBy?: string;
+        sortOrder?: string;
+    };
+    onEditUser?: (user: any) => void;
 }
 
-export const AdminUsersTable = ({
-    adminUsersPromise
-}: AdminUsersTableProps) => {
-    // Feature flags for showcasing some additional features. Feel free to remove them.
-    const { featureFlags } = useAdminUsersTable();
+export function AdminUsersTable({
+    searchParams,
+    onEditUser
+}: AdminUsersTableProps) {
+    const [data, setData] = useState<{
+        users: any[];
+        total: number;
+        pages: number;
+    }>({ users: [], total: 0, pages: 0 });
+    const [loading, setLoading] = useState(true);
 
-    const { data, pageCount } = use(adminUsersPromise);
+    useEffect(() => {
+        async function fetchData() {
+            setLoading(true);
+            const filters = {
+                search: searchParams.search,
+                country: searchParams.country,
+                status: searchParams.status as Status | undefined,
+                permissions: searchParams.permissions
+                    ?.split(',')
+                    .filter(Boolean) as Permission[] | undefined,
+                page: Number.parseInt(searchParams.page || '1'),
+                limit:
+                    searchParams.limit === 'all'
+                        ? -1
+                        : Number.parseInt(searchParams.limit || '10'),
+                sortBy: searchParams.sortBy || 'createdAt',
+                sortOrder: (searchParams.sortOrder as 'asc' | 'desc') || 'desc'
+            };
 
-    // Memoize the columns so they don't re-render on every render
-    const columns = useMemo(() => getColumns(), []);
+            console.log('[v0] AdminUsersTable searchParams:', searchParams);
+            console.log('[v0] AdminUsersTable processed filters:', filters);
 
-    /**
-     * This component can render either a faceted filter or a search filter based on the `options` prop.
-     *
-     * @prop options - An array of objects, each representing a filter option. If provided, a faceted filter is rendered. If not, a search filter is rendered.
-     *
-     * Each `option` object has the following properties:
-     * @prop {string} label - The label for the filter option.
-     * @prop {string} value - The value for the filter option.
-     * @prop {React.ReactNode} [icon] - An optional icon to display next to the label.
-     * @prop {boolean} [withCount] - An optional boolean to display the count of the filter option.
-     */
+            const result = await getAdminUsers(filters);
 
-    const formatRoleLabel = (role: string) =>
-        role
-            .toLowerCase()
-            .replace(/_/g, ' ')
-            .replace(/\b\w/g, (c) => c.toUpperCase());
-
-    const adminRoleOptions = Object.values(AdminRole).map((role) => ({
-        label: formatRoleLabel(role),
-        value: role,
-        withCount: true
-    }));
-
-    const filterFields: DataTableFilterField<AdminUser>[] = [
-        {
-            label: 'Search Names...',
-            value: 'firstName',
-            placeholder: 'Search names...'
-        },
-        {
-            label: 'Status',
-            value: 'status',
-            options: statusLabels.map((status) => ({
-                label: status.label,
-                value: status.value,
-                icon: getStatusIcon(status.value),
-                withCount: true
-            }))
+            console.log('[v0] AdminUsersTable server result:', result);
+            setData(result);
+            setLoading(false);
         }
-    ];
 
-    const { table } = useDataTable({
-        data,
-        columns,
-        pageCount,
-        /* optional props */
-        filterFields,
-        enableAdvancedFilter: featureFlags.includes('advancedFilter'),
-        initialState: {
-            sorting: [{ id: 'firstName', desc: false }],
-            columnPinning: { right: ['actions'] }
-        },
-        // For remembering the previous row selection on page change
-        getRowId: (originalRow, index) => `${originalRow.id}-${index}`
+        fetchData();
+    }, [searchParams]);
 
-        /* */
-    });
+    const filters = {
+        page: Number.parseInt(searchParams.page || '1'),
+        limit:
+            searchParams.limit === 'all'
+                ? -1
+                : Number.parseInt(searchParams.limit || '10')
+    };
+
+    const columns = createColumns(onEditUser);
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center p-8">
+                Loading...
+            </div>
+        );
+    }
 
     return (
         <DataTable
-            table={table}
-            floatingBar={
-                featureFlags.includes('floatingBar') ? (
-                    <AdminUsersTableFloatingBar table={table} />
-                ) : null
-            }
-        >
-            {featureFlags.includes('advancedFilter') ? (
-                <DataTableAdvancedToolbar
-                    table={table}
-                    filterFields={filterFields}
-                >
-                    <AdminUsersTableToolbarActions table={table} />
-                </DataTableAdvancedToolbar>
-            ) : (
-                <DataTableToolbar table={table} filterFields={filterFields}>
-                    <AdminUsersTableToolbarActions table={table} />
-                </DataTableToolbar>
-            )}
-        </DataTable>
+            columns={columns}
+            data={data.users}
+            total={data.total}
+            pages={data.pages}
+            currentPage={filters.page}
+            pageSize={filters.limit === -1 ? data.total : filters.limit}
+        />
     );
-};
+}

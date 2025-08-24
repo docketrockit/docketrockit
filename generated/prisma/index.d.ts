@@ -3206,6 +3206,7 @@ export namespace Prisma {
     merchants: number
     brands: number
     stores: number
+    users: number
   }
 
   export type CountryCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3213,6 +3214,7 @@ export namespace Prisma {
     merchants?: boolean | CountryCountOutputTypeCountMerchantsArgs
     brands?: boolean | CountryCountOutputTypeCountBrandsArgs
     stores?: boolean | CountryCountOutputTypeCountStoresArgs
+    users?: boolean | CountryCountOutputTypeCountUsersArgs
   }
 
   // Custom InputTypes
@@ -3252,6 +3254,13 @@ export namespace Prisma {
    */
   export type CountryCountOutputTypeCountStoresArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: StoreWhereInput
+  }
+
+  /**
+   * CountryCountOutputType without action
+   */
+  export type CountryCountOutputTypeCountUsersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserWhereInput
   }
 
 
@@ -3531,11 +3540,12 @@ export namespace Prisma {
     lastName: string | null
     email: string | null
     emailVerified: boolean | null
+    passwordVerified: boolean | null
     image: string | null
-    role: $Enums.UserRole | null
     postalCode: string | null
     city: string | null
     regionId: string | null
+    countryId: string | null
     phoneNumber: string | null
     phoneVerified: boolean | null
     timezone: string | null
@@ -3552,11 +3562,12 @@ export namespace Prisma {
     lastName: string | null
     email: string | null
     emailVerified: boolean | null
+    passwordVerified: boolean | null
     image: string | null
-    role: $Enums.UserRole | null
     postalCode: string | null
     city: string | null
     regionId: string | null
+    countryId: string | null
     phoneNumber: string | null
     phoneVerified: boolean | null
     timezone: string | null
@@ -3573,11 +3584,13 @@ export namespace Prisma {
     lastName: number
     email: number
     emailVerified: number
+    passwordVerified: number
     image: number
     role: number
     postalCode: number
     city: number
     regionId: number
+    countryId: number
     phoneNumber: number
     phoneVerified: number
     timezone: number
@@ -3596,11 +3609,12 @@ export namespace Prisma {
     lastName?: true
     email?: true
     emailVerified?: true
+    passwordVerified?: true
     image?: true
-    role?: true
     postalCode?: true
     city?: true
     regionId?: true
+    countryId?: true
     phoneNumber?: true
     phoneVerified?: true
     timezone?: true
@@ -3617,11 +3631,12 @@ export namespace Prisma {
     lastName?: true
     email?: true
     emailVerified?: true
+    passwordVerified?: true
     image?: true
-    role?: true
     postalCode?: true
     city?: true
     regionId?: true
+    countryId?: true
     phoneNumber?: true
     phoneVerified?: true
     timezone?: true
@@ -3638,11 +3653,13 @@ export namespace Prisma {
     lastName?: true
     email?: true
     emailVerified?: true
+    passwordVerified?: true
     image?: true
     role?: true
     postalCode?: true
     city?: true
     regionId?: true
+    countryId?: true
     phoneNumber?: true
     phoneVerified?: true
     timezone?: true
@@ -3732,11 +3749,13 @@ export namespace Prisma {
     lastName: string
     email: string
     emailVerified: boolean
+    passwordVerified: boolean
     image: string | null
-    role: $Enums.UserRole
+    role: $Enums.UserRole[]
     postalCode: string | null
     city: string | null
     regionId: string | null
+    countryId: string | null
     phoneNumber: string | null
     phoneVerified: boolean
     timezone: string | null
@@ -3770,11 +3789,13 @@ export namespace Prisma {
     lastName?: boolean
     email?: boolean
     emailVerified?: boolean
+    passwordVerified?: boolean
     image?: boolean
     role?: boolean
     postalCode?: boolean
     city?: boolean
     regionId?: boolean
+    countryId?: boolean
     phoneNumber?: boolean
     phoneVerified?: boolean
     timezone?: boolean
@@ -3784,6 +3805,7 @@ export namespace Prisma {
     sessions?: boolean | User$sessionsArgs<ExtArgs>
     accounts?: boolean | User$accountsArgs<ExtArgs>
     region?: boolean | User$regionArgs<ExtArgs>
+    country?: boolean | User$countryArgs<ExtArgs>
     consumerProfile?: boolean | User$consumerProfileArgs<ExtArgs>
     businessAccess?: boolean | User$businessAccessArgs<ExtArgs>
     createdBy?: boolean | User$createdByArgs<ExtArgs>
@@ -3803,11 +3825,13 @@ export namespace Prisma {
     lastName?: boolean
     email?: boolean
     emailVerified?: boolean
+    passwordVerified?: boolean
     image?: boolean
     role?: boolean
     postalCode?: boolean
     city?: boolean
     regionId?: boolean
+    countryId?: boolean
     phoneNumber?: boolean
     phoneVerified?: boolean
     timezone?: boolean
@@ -3815,6 +3839,7 @@ export namespace Prisma {
     status?: boolean
     createdById?: boolean
     region?: boolean | User$regionArgs<ExtArgs>
+    country?: boolean | User$countryArgs<ExtArgs>
     createdBy?: boolean | User$createdByArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -3826,11 +3851,13 @@ export namespace Prisma {
     lastName?: boolean
     email?: boolean
     emailVerified?: boolean
+    passwordVerified?: boolean
     image?: boolean
     role?: boolean
     postalCode?: boolean
     city?: boolean
     regionId?: boolean
+    countryId?: boolean
     phoneNumber?: boolean
     phoneVerified?: boolean
     timezone?: boolean
@@ -3838,6 +3865,7 @@ export namespace Prisma {
     status?: boolean
     createdById?: boolean
     region?: boolean | User$regionArgs<ExtArgs>
+    country?: boolean | User$countryArgs<ExtArgs>
     createdBy?: boolean | User$createdByArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -3849,11 +3877,13 @@ export namespace Prisma {
     lastName?: boolean
     email?: boolean
     emailVerified?: boolean
+    passwordVerified?: boolean
     image?: boolean
     role?: boolean
     postalCode?: boolean
     city?: boolean
     regionId?: boolean
+    countryId?: boolean
     phoneNumber?: boolean
     phoneVerified?: boolean
     timezone?: boolean
@@ -3862,11 +3892,12 @@ export namespace Prisma {
     createdById?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "name" | "lastName" | "email" | "emailVerified" | "image" | "role" | "postalCode" | "city" | "regionId" | "phoneNumber" | "phoneVerified" | "timezone" | "locale" | "status" | "createdById", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "name" | "lastName" | "email" | "emailVerified" | "passwordVerified" | "image" | "role" | "postalCode" | "city" | "regionId" | "countryId" | "phoneNumber" | "phoneVerified" | "timezone" | "locale" | "status" | "createdById", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     sessions?: boolean | User$sessionsArgs<ExtArgs>
     accounts?: boolean | User$accountsArgs<ExtArgs>
     region?: boolean | User$regionArgs<ExtArgs>
+    country?: boolean | User$countryArgs<ExtArgs>
     consumerProfile?: boolean | User$consumerProfileArgs<ExtArgs>
     businessAccess?: boolean | User$businessAccessArgs<ExtArgs>
     createdBy?: boolean | User$createdByArgs<ExtArgs>
@@ -3879,10 +3910,12 @@ export namespace Prisma {
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     region?: boolean | User$regionArgs<ExtArgs>
+    country?: boolean | User$countryArgs<ExtArgs>
     createdBy?: boolean | User$createdByArgs<ExtArgs>
   }
   export type UserIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     region?: boolean | User$regionArgs<ExtArgs>
+    country?: boolean | User$countryArgs<ExtArgs>
     createdBy?: boolean | User$createdByArgs<ExtArgs>
   }
 
@@ -3892,6 +3925,7 @@ export namespace Prisma {
       sessions: Prisma.$SessionPayload<ExtArgs>[]
       accounts: Prisma.$AccountPayload<ExtArgs>[]
       region: Prisma.$RegionPayload<ExtArgs> | null
+      country: Prisma.$CountryPayload<ExtArgs> | null
       consumerProfile: Prisma.$ConsumerPayload<ExtArgs> | null
       businessAccess: Prisma.$BusinessUserAccessPayload<ExtArgs>[]
       createdBy: Prisma.$UserPayload<ExtArgs> | null
@@ -3909,11 +3943,13 @@ export namespace Prisma {
       lastName: string
       email: string
       emailVerified: boolean
+      passwordVerified: boolean
       image: string | null
-      role: $Enums.UserRole
+      role: $Enums.UserRole[]
       postalCode: string | null
       city: string | null
       regionId: string | null
+      countryId: string | null
       phoneNumber: string | null
       phoneVerified: boolean
       timezone: string | null
@@ -4317,6 +4353,7 @@ export namespace Prisma {
     sessions<T extends User$sessionsArgs<ExtArgs> = {}>(args?: Subset<T, User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     accounts<T extends User$accountsArgs<ExtArgs> = {}>(args?: Subset<T, User$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     region<T extends User$regionArgs<ExtArgs> = {}>(args?: Subset<T, User$regionArgs<ExtArgs>>): Prisma__RegionClient<$Result.GetResult<Prisma.$RegionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    country<T extends User$countryArgs<ExtArgs> = {}>(args?: Subset<T, User$countryArgs<ExtArgs>>): Prisma__CountryClient<$Result.GetResult<Prisma.$CountryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     consumerProfile<T extends User$consumerProfileArgs<ExtArgs> = {}>(args?: Subset<T, User$consumerProfileArgs<ExtArgs>>): Prisma__ConsumerClient<$Result.GetResult<Prisma.$ConsumerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     businessAccess<T extends User$businessAccessArgs<ExtArgs> = {}>(args?: Subset<T, User$businessAccessArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BusinessUserAccessPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     createdBy<T extends User$createdByArgs<ExtArgs> = {}>(args?: Subset<T, User$createdByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
@@ -4361,11 +4398,13 @@ export namespace Prisma {
     readonly lastName: FieldRef<"User", 'String'>
     readonly email: FieldRef<"User", 'String'>
     readonly emailVerified: FieldRef<"User", 'Boolean'>
+    readonly passwordVerified: FieldRef<"User", 'Boolean'>
     readonly image: FieldRef<"User", 'String'>
-    readonly role: FieldRef<"User", 'UserRole'>
+    readonly role: FieldRef<"User", 'UserRole[]'>
     readonly postalCode: FieldRef<"User", 'String'>
     readonly city: FieldRef<"User", 'String'>
     readonly regionId: FieldRef<"User", 'String'>
+    readonly countryId: FieldRef<"User", 'String'>
     readonly phoneNumber: FieldRef<"User", 'String'>
     readonly phoneVerified: FieldRef<"User", 'Boolean'>
     readonly timezone: FieldRef<"User", 'String'>
@@ -4832,6 +4871,25 @@ export namespace Prisma {
      */
     include?: RegionInclude<ExtArgs> | null
     where?: RegionWhereInput
+  }
+
+  /**
+   * User.country
+   */
+  export type User$countryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Country
+     */
+    select?: CountrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Country
+     */
+    omit?: CountryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CountryInclude<ExtArgs> | null
+    where?: CountryWhereInput
   }
 
   /**
@@ -16542,6 +16600,7 @@ export namespace Prisma {
     merchants?: boolean | Country$merchantsArgs<ExtArgs>
     brands?: boolean | Country$brandsArgs<ExtArgs>
     stores?: boolean | Country$storesArgs<ExtArgs>
+    users?: boolean | Country$usersArgs<ExtArgs>
     _count?: boolean | CountryCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["country"]>
 
@@ -16602,6 +16661,7 @@ export namespace Prisma {
     merchants?: boolean | Country$merchantsArgs<ExtArgs>
     brands?: boolean | Country$brandsArgs<ExtArgs>
     stores?: boolean | Country$storesArgs<ExtArgs>
+    users?: boolean | Country$usersArgs<ExtArgs>
     _count?: boolean | CountryCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type CountryIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -16622,6 +16682,7 @@ export namespace Prisma {
       merchants: Prisma.$MerchantPayload<ExtArgs>[]
       brands: Prisma.$BrandPayload<ExtArgs>[]
       stores: Prisma.$StorePayload<ExtArgs>[]
+      users: Prisma.$UserPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -17036,6 +17097,7 @@ export namespace Prisma {
     merchants<T extends Country$merchantsArgs<ExtArgs> = {}>(args?: Subset<T, Country$merchantsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MerchantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     brands<T extends Country$brandsArgs<ExtArgs> = {}>(args?: Subset<T, Country$brandsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BrandPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     stores<T extends Country$storesArgs<ExtArgs> = {}>(args?: Subset<T, Country$storesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StorePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    users<T extends Country$usersArgs<ExtArgs> = {}>(args?: Subset<T, Country$usersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -17566,6 +17628,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: StoreScalarFieldEnum | StoreScalarFieldEnum[]
+  }
+
+  /**
+   * Country.users
+   */
+  export type Country$usersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+    orderBy?: UserOrderByWithRelationInput | UserOrderByWithRelationInput[]
+    cursor?: UserWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: UserScalarFieldEnum | UserScalarFieldEnum[]
   }
 
   /**
@@ -31295,11 +31381,13 @@ export namespace Prisma {
     lastName: 'lastName',
     email: 'email',
     emailVerified: 'emailVerified',
+    passwordVerified: 'passwordVerified',
     image: 'image',
     role: 'role',
     postalCode: 'postalCode',
     city: 'city',
     regionId: 'regionId',
+    countryId: 'countryId',
     phoneNumber: 'phoneNumber',
     phoneVerified: 'phoneVerified',
     timezone: 'timezone',
@@ -31727,6 +31815,7 @@ export namespace Prisma {
     postalCode: 'postalCode',
     city: 'city',
     regionId: 'regionId',
+    countryId: 'countryId',
     phoneNumber: 'phoneNumber',
     timezone: 'timezone',
     locale: 'locale',
@@ -32072,16 +32161,16 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'UserRole'
+   * Reference to a field of type 'UserRole[]'
    */
-  export type EnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole'>
+  export type ListEnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole[]'>
     
 
 
   /**
-   * Reference to a field of type 'UserRole[]'
+   * Reference to a field of type 'UserRole'
    */
-  export type ListEnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole[]'>
+  export type EnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole'>
     
 
 
@@ -32253,11 +32342,13 @@ export namespace Prisma {
     lastName?: StringFilter<"User"> | string
     email?: StringFilter<"User"> | string
     emailVerified?: BoolFilter<"User"> | boolean
+    passwordVerified?: BoolFilter<"User"> | boolean
     image?: StringNullableFilter<"User"> | string | null
-    role?: EnumUserRoleFilter<"User"> | $Enums.UserRole
+    role?: EnumUserRoleNullableListFilter<"User">
     postalCode?: StringNullableFilter<"User"> | string | null
     city?: StringNullableFilter<"User"> | string | null
     regionId?: StringNullableFilter<"User"> | string | null
+    countryId?: StringNullableFilter<"User"> | string | null
     phoneNumber?: StringNullableFilter<"User"> | string | null
     phoneVerified?: BoolFilter<"User"> | boolean
     timezone?: StringNullableFilter<"User"> | string | null
@@ -32267,6 +32358,7 @@ export namespace Prisma {
     sessions?: SessionListRelationFilter
     accounts?: AccountListRelationFilter
     region?: XOR<RegionNullableScalarRelationFilter, RegionWhereInput> | null
+    country?: XOR<CountryNullableScalarRelationFilter, CountryWhereInput> | null
     consumerProfile?: XOR<ConsumerNullableScalarRelationFilter, ConsumerWhereInput> | null
     businessAccess?: BusinessUserAccessListRelationFilter
     createdBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
@@ -32285,11 +32377,13 @@ export namespace Prisma {
     lastName?: SortOrder
     email?: SortOrder
     emailVerified?: SortOrder
+    passwordVerified?: SortOrder
     image?: SortOrderInput | SortOrder
     role?: SortOrder
     postalCode?: SortOrderInput | SortOrder
     city?: SortOrderInput | SortOrder
     regionId?: SortOrderInput | SortOrder
+    countryId?: SortOrderInput | SortOrder
     phoneNumber?: SortOrderInput | SortOrder
     phoneVerified?: SortOrder
     timezone?: SortOrderInput | SortOrder
@@ -32299,6 +32393,7 @@ export namespace Prisma {
     sessions?: SessionOrderByRelationAggregateInput
     accounts?: AccountOrderByRelationAggregateInput
     region?: RegionOrderByWithRelationInput
+    country?: CountryOrderByWithRelationInput
     consumerProfile?: ConsumerOrderByWithRelationInput
     businessAccess?: BusinessUserAccessOrderByRelationAggregateInput
     createdBy?: UserOrderByWithRelationInput
@@ -32321,11 +32416,13 @@ export namespace Prisma {
     name?: StringFilter<"User"> | string
     lastName?: StringFilter<"User"> | string
     emailVerified?: BoolFilter<"User"> | boolean
+    passwordVerified?: BoolFilter<"User"> | boolean
     image?: StringNullableFilter<"User"> | string | null
-    role?: EnumUserRoleFilter<"User"> | $Enums.UserRole
+    role?: EnumUserRoleNullableListFilter<"User">
     postalCode?: StringNullableFilter<"User"> | string | null
     city?: StringNullableFilter<"User"> | string | null
     regionId?: StringNullableFilter<"User"> | string | null
+    countryId?: StringNullableFilter<"User"> | string | null
     phoneNumber?: StringNullableFilter<"User"> | string | null
     phoneVerified?: BoolFilter<"User"> | boolean
     timezone?: StringNullableFilter<"User"> | string | null
@@ -32335,6 +32432,7 @@ export namespace Prisma {
     sessions?: SessionListRelationFilter
     accounts?: AccountListRelationFilter
     region?: XOR<RegionNullableScalarRelationFilter, RegionWhereInput> | null
+    country?: XOR<CountryNullableScalarRelationFilter, CountryWhereInput> | null
     consumerProfile?: XOR<ConsumerNullableScalarRelationFilter, ConsumerWhereInput> | null
     businessAccess?: BusinessUserAccessListRelationFilter
     createdBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
@@ -32353,11 +32451,13 @@ export namespace Prisma {
     lastName?: SortOrder
     email?: SortOrder
     emailVerified?: SortOrder
+    passwordVerified?: SortOrder
     image?: SortOrderInput | SortOrder
     role?: SortOrder
     postalCode?: SortOrderInput | SortOrder
     city?: SortOrderInput | SortOrder
     regionId?: SortOrderInput | SortOrder
+    countryId?: SortOrderInput | SortOrder
     phoneNumber?: SortOrderInput | SortOrder
     phoneVerified?: SortOrder
     timezone?: SortOrderInput | SortOrder
@@ -32380,11 +32480,13 @@ export namespace Prisma {
     lastName?: StringWithAggregatesFilter<"User"> | string
     email?: StringWithAggregatesFilter<"User"> | string
     emailVerified?: BoolWithAggregatesFilter<"User"> | boolean
+    passwordVerified?: BoolWithAggregatesFilter<"User"> | boolean
     image?: StringNullableWithAggregatesFilter<"User"> | string | null
-    role?: EnumUserRoleWithAggregatesFilter<"User"> | $Enums.UserRole
+    role?: EnumUserRoleNullableListFilter<"User">
     postalCode?: StringNullableWithAggregatesFilter<"User"> | string | null
     city?: StringNullableWithAggregatesFilter<"User"> | string | null
     regionId?: StringNullableWithAggregatesFilter<"User"> | string | null
+    countryId?: StringNullableWithAggregatesFilter<"User"> | string | null
     phoneNumber?: StringNullableWithAggregatesFilter<"User"> | string | null
     phoneVerified?: BoolWithAggregatesFilter<"User"> | boolean
     timezone?: StringNullableWithAggregatesFilter<"User"> | string | null
@@ -33171,6 +33273,7 @@ export namespace Prisma {
     merchants?: MerchantListRelationFilter
     brands?: BrandListRelationFilter
     stores?: StoreListRelationFilter
+    users?: UserListRelationFilter
   }
 
   export type CountryOrderByWithRelationInput = {
@@ -33192,6 +33295,7 @@ export namespace Prisma {
     merchants?: MerchantOrderByRelationAggregateInput
     brands?: BrandOrderByRelationAggregateInput
     stores?: StoreOrderByRelationAggregateInput
+    users?: UserOrderByRelationAggregateInput
     _relevance?: CountryOrderByRelevanceInput
   }
 
@@ -33217,6 +33321,7 @@ export namespace Prisma {
     merchants?: MerchantListRelationFilter
     brands?: BrandListRelationFilter
     stores?: StoreListRelationFilter
+    users?: UserListRelationFilter
   }, "id" | "isoCode" | "isoCode3">
 
   export type CountryOrderByWithAggregationInput = {
@@ -34429,8 +34534,9 @@ export namespace Prisma {
     lastName: string
     email: string
     emailVerified?: boolean
+    passwordVerified?: boolean
     image?: string | null
-    role?: $Enums.UserRole
+    role?: UserCreateroleInput | $Enums.UserRole[]
     postalCode?: string | null
     city?: string | null
     phoneNumber?: string | null
@@ -34441,6 +34547,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     region?: RegionCreateNestedOneWithoutUsersInput
+    country?: CountryCreateNestedOneWithoutUsersInput
     consumerProfile?: ConsumerCreateNestedOneWithoutUserInput
     businessAccess?: BusinessUserAccessCreateNestedManyWithoutUserInput
     createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
@@ -34459,11 +34566,13 @@ export namespace Prisma {
     lastName: string
     email: string
     emailVerified?: boolean
+    passwordVerified?: boolean
     image?: string | null
-    role?: $Enums.UserRole
+    role?: UserCreateroleInput | $Enums.UserRole[]
     postalCode?: string | null
     city?: string | null
     regionId?: string | null
+    countryId?: string | null
     phoneNumber?: string | null
     phoneVerified?: boolean
     timezone?: string | null
@@ -34489,8 +34598,9 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    passwordVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    role?: UserUpdateroleInput | $Enums.UserRole[]
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -34501,6 +34611,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     region?: RegionUpdateOneWithoutUsersNestedInput
+    country?: CountryUpdateOneWithoutUsersNestedInput
     consumerProfile?: ConsumerUpdateOneWithoutUserNestedInput
     businessAccess?: BusinessUserAccessUpdateManyWithoutUserNestedInput
     createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
@@ -34519,11 +34630,13 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    passwordVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    role?: UserUpdateroleInput | $Enums.UserRole[]
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     regionId?: NullableStringFieldUpdateOperationsInput | string | null
+    countryId?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     phoneVerified?: BoolFieldUpdateOperationsInput | boolean
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -34549,11 +34662,13 @@ export namespace Prisma {
     lastName: string
     email: string
     emailVerified?: boolean
+    passwordVerified?: boolean
     image?: string | null
-    role?: $Enums.UserRole
+    role?: UserCreateroleInput | $Enums.UserRole[]
     postalCode?: string | null
     city?: string | null
     regionId?: string | null
+    countryId?: string | null
     phoneNumber?: string | null
     phoneVerified?: boolean
     timezone?: string | null
@@ -34570,8 +34685,9 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    passwordVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    role?: UserUpdateroleInput | $Enums.UserRole[]
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -34589,11 +34705,13 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    passwordVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    role?: UserUpdateroleInput | $Enums.UserRole[]
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     regionId?: NullableStringFieldUpdateOperationsInput | string | null
+    countryId?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     phoneVerified?: BoolFieldUpdateOperationsInput | boolean
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -35430,6 +35548,7 @@ export namespace Prisma {
     merchants?: MerchantCreateNestedManyWithoutCountryInput
     brands?: BrandCreateNestedManyWithoutCountryInput
     stores?: StoreCreateNestedManyWithoutCountryInput
+    users?: UserCreateNestedManyWithoutCountryInput
   }
 
   export type CountryUncheckedCreateInput = {
@@ -35449,6 +35568,7 @@ export namespace Prisma {
     merchants?: MerchantUncheckedCreateNestedManyWithoutCountryInput
     brands?: BrandUncheckedCreateNestedManyWithoutCountryInput
     stores?: StoreUncheckedCreateNestedManyWithoutCountryInput
+    users?: UserUncheckedCreateNestedManyWithoutCountryInput
   }
 
   export type CountryUpdateInput = {
@@ -35468,6 +35588,7 @@ export namespace Prisma {
     merchants?: MerchantUpdateManyWithoutCountryNestedInput
     brands?: BrandUpdateManyWithoutCountryNestedInput
     stores?: StoreUpdateManyWithoutCountryNestedInput
+    users?: UserUpdateManyWithoutCountryNestedInput
   }
 
   export type CountryUncheckedUpdateInput = {
@@ -35487,6 +35608,7 @@ export namespace Prisma {
     merchants?: MerchantUncheckedUpdateManyWithoutCountryNestedInput
     brands?: BrandUncheckedUpdateManyWithoutCountryNestedInput
     stores?: StoreUncheckedUpdateManyWithoutCountryNestedInput
+    users?: UserUncheckedUpdateManyWithoutCountryNestedInput
   }
 
   export type CountryCreateManyInput = {
@@ -36882,11 +37004,12 @@ export namespace Prisma {
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
-  export type EnumUserRoleFilter<$PrismaModel = never> = {
-    equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel>
-    in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
-    notIn?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
-    not?: NestedEnumUserRoleFilter<$PrismaModel> | $Enums.UserRole
+  export type EnumUserRoleNullableListFilter<$PrismaModel = never> = {
+    equals?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel> | null
+    has?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel> | null
+    hasEvery?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
+    hasSome?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
+    isEmpty?: boolean
   }
 
   export type EnumStatusFilter<$PrismaModel = never> = {
@@ -36911,6 +37034,11 @@ export namespace Prisma {
   export type RegionNullableScalarRelationFilter = {
     is?: RegionWhereInput | null
     isNot?: RegionWhereInput | null
+  }
+
+  export type CountryNullableScalarRelationFilter = {
+    is?: CountryWhereInput | null
+    isNot?: CountryWhereInput | null
   }
 
   export type ConsumerNullableScalarRelationFilter = {
@@ -37000,11 +37128,13 @@ export namespace Prisma {
     lastName?: SortOrder
     email?: SortOrder
     emailVerified?: SortOrder
+    passwordVerified?: SortOrder
     image?: SortOrder
     role?: SortOrder
     postalCode?: SortOrder
     city?: SortOrder
     regionId?: SortOrder
+    countryId?: SortOrder
     phoneNumber?: SortOrder
     phoneVerified?: SortOrder
     timezone?: SortOrder
@@ -37021,11 +37151,12 @@ export namespace Prisma {
     lastName?: SortOrder
     email?: SortOrder
     emailVerified?: SortOrder
+    passwordVerified?: SortOrder
     image?: SortOrder
-    role?: SortOrder
     postalCode?: SortOrder
     city?: SortOrder
     regionId?: SortOrder
+    countryId?: SortOrder
     phoneNumber?: SortOrder
     phoneVerified?: SortOrder
     timezone?: SortOrder
@@ -37042,11 +37173,12 @@ export namespace Prisma {
     lastName?: SortOrder
     email?: SortOrder
     emailVerified?: SortOrder
+    passwordVerified?: SortOrder
     image?: SortOrder
-    role?: SortOrder
     postalCode?: SortOrder
     city?: SortOrder
     regionId?: SortOrder
+    countryId?: SortOrder
     phoneNumber?: SortOrder
     phoneVerified?: SortOrder
     timezone?: SortOrder
@@ -37113,16 +37245,6 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedStringNullableFilter<$PrismaModel>
     _max?: NestedStringNullableFilter<$PrismaModel>
-  }
-
-  export type EnumUserRoleWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel>
-    in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
-    notIn?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
-    not?: NestedEnumUserRoleWithAggregatesFilter<$PrismaModel> | $Enums.UserRole
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumUserRoleFilter<$PrismaModel>
-    _max?: NestedEnumUserRoleFilter<$PrismaModel>
   }
 
   export type EnumStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -38805,6 +38927,10 @@ export namespace Prisma {
     _max?: NestedEnumImageTypeFilter<$PrismaModel>
   }
 
+  export type UserCreateroleInput = {
+    set: $Enums.UserRole[]
+  }
+
   export type SessionCreateNestedManyWithoutUserInput = {
     create?: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput> | SessionCreateWithoutUserInput[] | SessionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: SessionCreateOrConnectWithoutUserInput | SessionCreateOrConnectWithoutUserInput[]
@@ -38823,6 +38949,12 @@ export namespace Prisma {
     create?: XOR<RegionCreateWithoutUsersInput, RegionUncheckedCreateWithoutUsersInput>
     connectOrCreate?: RegionCreateOrConnectWithoutUsersInput
     connect?: RegionWhereUniqueInput
+  }
+
+  export type CountryCreateNestedOneWithoutUsersInput = {
+    create?: XOR<CountryCreateWithoutUsersInput, CountryUncheckedCreateWithoutUsersInput>
+    connectOrCreate?: CountryCreateOrConnectWithoutUsersInput
+    connect?: CountryWhereUniqueInput
   }
 
   export type ConsumerCreateNestedOneWithoutUserInput = {
@@ -38957,8 +39089,9 @@ export namespace Prisma {
     set?: string | null
   }
 
-  export type EnumUserRoleFieldUpdateOperationsInput = {
-    set?: $Enums.UserRole
+  export type UserUpdateroleInput = {
+    set?: $Enums.UserRole[]
+    push?: $Enums.UserRole | $Enums.UserRole[]
   }
 
   export type EnumStatusFieldUpdateOperationsInput = {
@@ -39001,6 +39134,16 @@ export namespace Prisma {
     delete?: RegionWhereInput | boolean
     connect?: RegionWhereUniqueInput
     update?: XOR<XOR<RegionUpdateToOneWithWhereWithoutUsersInput, RegionUpdateWithoutUsersInput>, RegionUncheckedUpdateWithoutUsersInput>
+  }
+
+  export type CountryUpdateOneWithoutUsersNestedInput = {
+    create?: XOR<CountryCreateWithoutUsersInput, CountryUncheckedCreateWithoutUsersInput>
+    connectOrCreate?: CountryCreateOrConnectWithoutUsersInput
+    upsert?: CountryUpsertWithoutUsersInput
+    disconnect?: CountryWhereInput | boolean
+    delete?: CountryWhereInput | boolean
+    connect?: CountryWhereUniqueInput
+    update?: XOR<XOR<CountryUpdateToOneWithWhereWithoutUsersInput, CountryUpdateWithoutUsersInput>, CountryUncheckedUpdateWithoutUsersInput>
   }
 
   export type ConsumerUpdateOneWithoutUserNestedInput = {
@@ -39622,6 +39765,13 @@ export namespace Prisma {
     connect?: StoreWhereUniqueInput | StoreWhereUniqueInput[]
   }
 
+  export type UserCreateNestedManyWithoutCountryInput = {
+    create?: XOR<UserCreateWithoutCountryInput, UserUncheckedCreateWithoutCountryInput> | UserCreateWithoutCountryInput[] | UserUncheckedCreateWithoutCountryInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutCountryInput | UserCreateOrConnectWithoutCountryInput[]
+    createMany?: UserCreateManyCountryInputEnvelope
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+  }
+
   export type RegionUncheckedCreateNestedManyWithoutCountryInput = {
     create?: XOR<RegionCreateWithoutCountryInput, RegionUncheckedCreateWithoutCountryInput> | RegionCreateWithoutCountryInput[] | RegionUncheckedCreateWithoutCountryInput[]
     connectOrCreate?: RegionCreateOrConnectWithoutCountryInput | RegionCreateOrConnectWithoutCountryInput[]
@@ -39648,6 +39798,13 @@ export namespace Prisma {
     connectOrCreate?: StoreCreateOrConnectWithoutCountryInput | StoreCreateOrConnectWithoutCountryInput[]
     createMany?: StoreCreateManyCountryInputEnvelope
     connect?: StoreWhereUniqueInput | StoreWhereUniqueInput[]
+  }
+
+  export type UserUncheckedCreateNestedManyWithoutCountryInput = {
+    create?: XOR<UserCreateWithoutCountryInput, UserUncheckedCreateWithoutCountryInput> | UserCreateWithoutCountryInput[] | UserUncheckedCreateWithoutCountryInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutCountryInput | UserCreateOrConnectWithoutCountryInput[]
+    createMany?: UserCreateManyCountryInputEnvelope
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
   }
 
   export type FloatFieldUpdateOperationsInput = {
@@ -39730,6 +39887,20 @@ export namespace Prisma {
     deleteMany?: StoreScalarWhereInput | StoreScalarWhereInput[]
   }
 
+  export type UserUpdateManyWithoutCountryNestedInput = {
+    create?: XOR<UserCreateWithoutCountryInput, UserUncheckedCreateWithoutCountryInput> | UserCreateWithoutCountryInput[] | UserUncheckedCreateWithoutCountryInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutCountryInput | UserCreateOrConnectWithoutCountryInput[]
+    upsert?: UserUpsertWithWhereUniqueWithoutCountryInput | UserUpsertWithWhereUniqueWithoutCountryInput[]
+    createMany?: UserCreateManyCountryInputEnvelope
+    set?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    disconnect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    delete?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    update?: UserUpdateWithWhereUniqueWithoutCountryInput | UserUpdateWithWhereUniqueWithoutCountryInput[]
+    updateMany?: UserUpdateManyWithWhereWithoutCountryInput | UserUpdateManyWithWhereWithoutCountryInput[]
+    deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
+  }
+
   export type RegionUncheckedUpdateManyWithoutCountryNestedInput = {
     create?: XOR<RegionCreateWithoutCountryInput, RegionUncheckedCreateWithoutCountryInput> | RegionCreateWithoutCountryInput[] | RegionUncheckedCreateWithoutCountryInput[]
     connectOrCreate?: RegionCreateOrConnectWithoutCountryInput | RegionCreateOrConnectWithoutCountryInput[]
@@ -39784,6 +39955,20 @@ export namespace Prisma {
     update?: StoreUpdateWithWhereUniqueWithoutCountryInput | StoreUpdateWithWhereUniqueWithoutCountryInput[]
     updateMany?: StoreUpdateManyWithWhereWithoutCountryInput | StoreUpdateManyWithWhereWithoutCountryInput[]
     deleteMany?: StoreScalarWhereInput | StoreScalarWhereInput[]
+  }
+
+  export type UserUncheckedUpdateManyWithoutCountryNestedInput = {
+    create?: XOR<UserCreateWithoutCountryInput, UserUncheckedCreateWithoutCountryInput> | UserCreateWithoutCountryInput[] | UserUncheckedCreateWithoutCountryInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutCountryInput | UserCreateOrConnectWithoutCountryInput[]
+    upsert?: UserUpsertWithWhereUniqueWithoutCountryInput | UserUpsertWithWhereUniqueWithoutCountryInput[]
+    createMany?: UserCreateManyCountryInputEnvelope
+    set?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    disconnect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    delete?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    update?: UserUpdateWithWhereUniqueWithoutCountryInput | UserUpdateWithWhereUniqueWithoutCountryInput[]
+    updateMany?: UserUpdateManyWithWhereWithoutCountryInput | UserUpdateManyWithWhereWithoutCountryInput[]
+    deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
   }
 
   export type CountryCreateNestedOneWithoutRegionsInput = {
@@ -40817,13 +41002,6 @@ export namespace Prisma {
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
-  export type NestedEnumUserRoleFilter<$PrismaModel = never> = {
-    equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel>
-    in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
-    notIn?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
-    not?: NestedEnumUserRoleFilter<$PrismaModel> | $Enums.UserRole
-  }
-
   export type NestedEnumStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.Status | EnumStatusFieldRefInput<$PrismaModel>
     in?: $Enums.Status[] | ListEnumStatusFieldRefInput<$PrismaModel>
@@ -40909,16 +41087,6 @@ export namespace Prisma {
     gt?: number | IntFieldRefInput<$PrismaModel>
     gte?: number | IntFieldRefInput<$PrismaModel>
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
-  }
-
-  export type NestedEnumUserRoleWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel>
-    in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
-    notIn?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
-    not?: NestedEnumUserRoleWithAggregatesFilter<$PrismaModel> | $Enums.UserRole
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumUserRoleFilter<$PrismaModel>
-    _max?: NestedEnumUserRoleFilter<$PrismaModel>
   }
 
   export type NestedEnumStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -41268,6 +41436,49 @@ export namespace Prisma {
     create: XOR<RegionCreateWithoutUsersInput, RegionUncheckedCreateWithoutUsersInput>
   }
 
+  export type CountryCreateWithoutUsersInput = {
+    id?: string
+    isoCode: string
+    isoCode3: string
+    name: string
+    flag: string
+    latitude: number
+    longitude: number
+    phonePrefix?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    currency: CurrencyCreateNestedOneWithoutCountriesInput
+    continent: ContinentCreateNestedOneWithoutCountriesInput
+    regions?: RegionCreateNestedManyWithoutCountryInput
+    merchants?: MerchantCreateNestedManyWithoutCountryInput
+    brands?: BrandCreateNestedManyWithoutCountryInput
+    stores?: StoreCreateNestedManyWithoutCountryInput
+  }
+
+  export type CountryUncheckedCreateWithoutUsersInput = {
+    id?: string
+    isoCode: string
+    isoCode3: string
+    name: string
+    flag: string
+    latitude: number
+    longitude: number
+    currencyId: string
+    continentId: string
+    phonePrefix?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    regions?: RegionUncheckedCreateNestedManyWithoutCountryInput
+    merchants?: MerchantUncheckedCreateNestedManyWithoutCountryInput
+    brands?: BrandUncheckedCreateNestedManyWithoutCountryInput
+    stores?: StoreUncheckedCreateNestedManyWithoutCountryInput
+  }
+
+  export type CountryCreateOrConnectWithoutUsersInput = {
+    where: CountryWhereUniqueInput
+    create: XOR<CountryCreateWithoutUsersInput, CountryUncheckedCreateWithoutUsersInput>
+  }
+
   export type ConsumerCreateWithoutUserInput = {
     id?: string
     barcode: string
@@ -41339,8 +41550,9 @@ export namespace Prisma {
     lastName: string
     email: string
     emailVerified?: boolean
+    passwordVerified?: boolean
     image?: string | null
-    role?: $Enums.UserRole
+    role?: UserCreateroleInput | $Enums.UserRole[]
     postalCode?: string | null
     city?: string | null
     phoneNumber?: string | null
@@ -41351,6 +41563,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     region?: RegionCreateNestedOneWithoutUsersInput
+    country?: CountryCreateNestedOneWithoutUsersInput
     consumerProfile?: ConsumerCreateNestedOneWithoutUserInput
     businessAccess?: BusinessUserAccessCreateNestedManyWithoutUserInput
     createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
@@ -41368,11 +41581,13 @@ export namespace Prisma {
     lastName: string
     email: string
     emailVerified?: boolean
+    passwordVerified?: boolean
     image?: string | null
-    role?: $Enums.UserRole
+    role?: UserCreateroleInput | $Enums.UserRole[]
     postalCode?: string | null
     city?: string | null
     regionId?: string | null
+    countryId?: string | null
     phoneNumber?: string | null
     phoneVerified?: boolean
     timezone?: string | null
@@ -41402,8 +41617,9 @@ export namespace Prisma {
     lastName: string
     email: string
     emailVerified?: boolean
+    passwordVerified?: boolean
     image?: string | null
-    role?: $Enums.UserRole
+    role?: UserCreateroleInput | $Enums.UserRole[]
     postalCode?: string | null
     city?: string | null
     phoneNumber?: string | null
@@ -41414,6 +41630,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     region?: RegionCreateNestedOneWithoutUsersInput
+    country?: CountryCreateNestedOneWithoutUsersInput
     consumerProfile?: ConsumerCreateNestedOneWithoutUserInput
     businessAccess?: BusinessUserAccessCreateNestedManyWithoutUserInput
     createdUsers?: UserCreateNestedManyWithoutCreatedByInput
@@ -41431,11 +41648,13 @@ export namespace Prisma {
     lastName: string
     email: string
     emailVerified?: boolean
+    passwordVerified?: boolean
     image?: string | null
-    role?: $Enums.UserRole
+    role?: UserCreateroleInput | $Enums.UserRole[]
     postalCode?: string | null
     city?: string | null
     regionId?: string | null
+    countryId?: string | null
     phoneNumber?: string | null
     phoneVerified?: boolean
     timezone?: string | null
@@ -41694,6 +41913,55 @@ export namespace Prisma {
     stores?: StoreUncheckedUpdateManyWithoutRegionNestedInput
   }
 
+  export type CountryUpsertWithoutUsersInput = {
+    update: XOR<CountryUpdateWithoutUsersInput, CountryUncheckedUpdateWithoutUsersInput>
+    create: XOR<CountryCreateWithoutUsersInput, CountryUncheckedCreateWithoutUsersInput>
+    where?: CountryWhereInput
+  }
+
+  export type CountryUpdateToOneWithWhereWithoutUsersInput = {
+    where?: CountryWhereInput
+    data: XOR<CountryUpdateWithoutUsersInput, CountryUncheckedUpdateWithoutUsersInput>
+  }
+
+  export type CountryUpdateWithoutUsersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    isoCode?: StringFieldUpdateOperationsInput | string
+    isoCode3?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    flag?: StringFieldUpdateOperationsInput | string
+    latitude?: FloatFieldUpdateOperationsInput | number
+    longitude?: FloatFieldUpdateOperationsInput | number
+    phonePrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    currency?: CurrencyUpdateOneRequiredWithoutCountriesNestedInput
+    continent?: ContinentUpdateOneRequiredWithoutCountriesNestedInput
+    regions?: RegionUpdateManyWithoutCountryNestedInput
+    merchants?: MerchantUpdateManyWithoutCountryNestedInput
+    brands?: BrandUpdateManyWithoutCountryNestedInput
+    stores?: StoreUpdateManyWithoutCountryNestedInput
+  }
+
+  export type CountryUncheckedUpdateWithoutUsersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    isoCode?: StringFieldUpdateOperationsInput | string
+    isoCode3?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    flag?: StringFieldUpdateOperationsInput | string
+    latitude?: FloatFieldUpdateOperationsInput | number
+    longitude?: FloatFieldUpdateOperationsInput | number
+    currencyId?: StringFieldUpdateOperationsInput | string
+    continentId?: StringFieldUpdateOperationsInput | string
+    phonePrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    regions?: RegionUncheckedUpdateManyWithoutCountryNestedInput
+    merchants?: MerchantUncheckedUpdateManyWithoutCountryNestedInput
+    brands?: BrandUncheckedUpdateManyWithoutCountryNestedInput
+    stores?: StoreUncheckedUpdateManyWithoutCountryNestedInput
+  }
+
   export type ConsumerUpsertWithoutUserInput = {
     update: XOR<ConsumerUpdateWithoutUserInput, ConsumerUncheckedUpdateWithoutUserInput>
     create: XOR<ConsumerCreateWithoutUserInput, ConsumerUncheckedCreateWithoutUserInput>
@@ -41778,8 +42046,9 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    passwordVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    role?: UserUpdateroleInput | $Enums.UserRole[]
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -41790,6 +42059,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     region?: RegionUpdateOneWithoutUsersNestedInput
+    country?: CountryUpdateOneWithoutUsersNestedInput
     consumerProfile?: ConsumerUpdateOneWithoutUserNestedInput
     businessAccess?: BusinessUserAccessUpdateManyWithoutUserNestedInput
     createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
@@ -41807,11 +42077,13 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    passwordVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    role?: UserUpdateroleInput | $Enums.UserRole[]
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     regionId?: NullableStringFieldUpdateOperationsInput | string | null
+    countryId?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     phoneVerified?: BoolFieldUpdateOperationsInput | boolean
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -41855,11 +42127,13 @@ export namespace Prisma {
     lastName?: StringFilter<"User"> | string
     email?: StringFilter<"User"> | string
     emailVerified?: BoolFilter<"User"> | boolean
+    passwordVerified?: BoolFilter<"User"> | boolean
     image?: StringNullableFilter<"User"> | string | null
-    role?: EnumUserRoleFilter<"User"> | $Enums.UserRole
+    role?: EnumUserRoleNullableListFilter<"User">
     postalCode?: StringNullableFilter<"User"> | string | null
     city?: StringNullableFilter<"User"> | string | null
     regionId?: StringNullableFilter<"User"> | string | null
+    countryId?: StringNullableFilter<"User"> | string | null
     phoneNumber?: StringNullableFilter<"User"> | string | null
     phoneVerified?: BoolFilter<"User"> | boolean
     timezone?: StringNullableFilter<"User"> | string | null
@@ -41984,8 +42258,9 @@ export namespace Prisma {
     lastName: string
     email: string
     emailVerified?: boolean
+    passwordVerified?: boolean
     image?: string | null
-    role?: $Enums.UserRole
+    role?: UserCreateroleInput | $Enums.UserRole[]
     postalCode?: string | null
     city?: string | null
     phoneNumber?: string | null
@@ -41995,6 +42270,7 @@ export namespace Prisma {
     status?: $Enums.Status
     accounts?: AccountCreateNestedManyWithoutUserInput
     region?: RegionCreateNestedOneWithoutUsersInput
+    country?: CountryCreateNestedOneWithoutUsersInput
     consumerProfile?: ConsumerCreateNestedOneWithoutUserInput
     businessAccess?: BusinessUserAccessCreateNestedManyWithoutUserInput
     createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
@@ -42013,11 +42289,13 @@ export namespace Prisma {
     lastName: string
     email: string
     emailVerified?: boolean
+    passwordVerified?: boolean
     image?: string | null
-    role?: $Enums.UserRole
+    role?: UserCreateroleInput | $Enums.UserRole[]
     postalCode?: string | null
     city?: string | null
     regionId?: string | null
+    countryId?: string | null
     phoneNumber?: string | null
     phoneVerified?: boolean
     timezone?: string | null
@@ -42058,8 +42336,9 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    passwordVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    role?: UserUpdateroleInput | $Enums.UserRole[]
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -42069,6 +42348,7 @@ export namespace Prisma {
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     accounts?: AccountUpdateManyWithoutUserNestedInput
     region?: RegionUpdateOneWithoutUsersNestedInput
+    country?: CountryUpdateOneWithoutUsersNestedInput
     consumerProfile?: ConsumerUpdateOneWithoutUserNestedInput
     businessAccess?: BusinessUserAccessUpdateManyWithoutUserNestedInput
     createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
@@ -42087,11 +42367,13 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    passwordVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    role?: UserUpdateroleInput | $Enums.UserRole[]
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     regionId?: NullableStringFieldUpdateOperationsInput | string | null
+    countryId?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     phoneVerified?: BoolFieldUpdateOperationsInput | boolean
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -42116,8 +42398,9 @@ export namespace Prisma {
     lastName: string
     email: string
     emailVerified?: boolean
+    passwordVerified?: boolean
     image?: string | null
-    role?: $Enums.UserRole
+    role?: UserCreateroleInput | $Enums.UserRole[]
     postalCode?: string | null
     city?: string | null
     phoneNumber?: string | null
@@ -42127,6 +42410,7 @@ export namespace Prisma {
     status?: $Enums.Status
     sessions?: SessionCreateNestedManyWithoutUserInput
     region?: RegionCreateNestedOneWithoutUsersInput
+    country?: CountryCreateNestedOneWithoutUsersInput
     consumerProfile?: ConsumerCreateNestedOneWithoutUserInput
     businessAccess?: BusinessUserAccessCreateNestedManyWithoutUserInput
     createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
@@ -42145,11 +42429,13 @@ export namespace Prisma {
     lastName: string
     email: string
     emailVerified?: boolean
+    passwordVerified?: boolean
     image?: string | null
-    role?: $Enums.UserRole
+    role?: UserCreateroleInput | $Enums.UserRole[]
     postalCode?: string | null
     city?: string | null
     regionId?: string | null
+    countryId?: string | null
     phoneNumber?: string | null
     phoneVerified?: boolean
     timezone?: string | null
@@ -42190,8 +42476,9 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    passwordVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    role?: UserUpdateroleInput | $Enums.UserRole[]
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -42201,6 +42488,7 @@ export namespace Prisma {
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     sessions?: SessionUpdateManyWithoutUserNestedInput
     region?: RegionUpdateOneWithoutUsersNestedInput
+    country?: CountryUpdateOneWithoutUsersNestedInput
     consumerProfile?: ConsumerUpdateOneWithoutUserNestedInput
     businessAccess?: BusinessUserAccessUpdateManyWithoutUserNestedInput
     createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
@@ -42219,11 +42507,13 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    passwordVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    role?: UserUpdateroleInput | $Enums.UserRole[]
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     regionId?: NullableStringFieldUpdateOperationsInput | string | null
+    countryId?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     phoneVerified?: BoolFieldUpdateOperationsInput | boolean
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -42248,8 +42538,9 @@ export namespace Prisma {
     lastName: string
     email: string
     emailVerified?: boolean
+    passwordVerified?: boolean
     image?: string | null
-    role?: $Enums.UserRole
+    role?: UserCreateroleInput | $Enums.UserRole[]
     postalCode?: string | null
     city?: string | null
     phoneNumber?: string | null
@@ -42260,6 +42551,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     region?: RegionCreateNestedOneWithoutUsersInput
+    country?: CountryCreateNestedOneWithoutUsersInput
     consumerProfile?: ConsumerCreateNestedOneWithoutUserInput
     businessAccess?: BusinessUserAccessCreateNestedManyWithoutUserInput
     createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
@@ -42277,11 +42569,13 @@ export namespace Prisma {
     lastName: string
     email: string
     emailVerified?: boolean
+    passwordVerified?: boolean
     image?: string | null
-    role?: $Enums.UserRole
+    role?: UserCreateroleInput | $Enums.UserRole[]
     postalCode?: string | null
     city?: string | null
     regionId?: string | null
+    countryId?: string | null
     phoneNumber?: string | null
     phoneVerified?: boolean
     timezone?: string | null
@@ -42322,8 +42616,9 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    passwordVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    role?: UserUpdateroleInput | $Enums.UserRole[]
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -42334,6 +42629,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     region?: RegionUpdateOneWithoutUsersNestedInput
+    country?: CountryUpdateOneWithoutUsersNestedInput
     consumerProfile?: ConsumerUpdateOneWithoutUserNestedInput
     businessAccess?: BusinessUserAccessUpdateManyWithoutUserNestedInput
     createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
@@ -42351,11 +42647,13 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    passwordVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    role?: UserUpdateroleInput | $Enums.UserRole[]
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     regionId?: NullableStringFieldUpdateOperationsInput | string | null
+    countryId?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     phoneVerified?: BoolFieldUpdateOperationsInput | boolean
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -42380,8 +42678,9 @@ export namespace Prisma {
     lastName: string
     email: string
     emailVerified?: boolean
+    passwordVerified?: boolean
     image?: string | null
-    role?: $Enums.UserRole
+    role?: UserCreateroleInput | $Enums.UserRole[]
     postalCode?: string | null
     city?: string | null
     phoneNumber?: string | null
@@ -42392,6 +42691,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     region?: RegionCreateNestedOneWithoutUsersInput
+    country?: CountryCreateNestedOneWithoutUsersInput
     consumerProfile?: ConsumerCreateNestedOneWithoutUserInput
     businessAccess?: BusinessUserAccessCreateNestedManyWithoutUserInput
     createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
@@ -42409,11 +42709,13 @@ export namespace Prisma {
     lastName: string
     email: string
     emailVerified?: boolean
+    passwordVerified?: boolean
     image?: string | null
-    role?: $Enums.UserRole
+    role?: UserCreateroleInput | $Enums.UserRole[]
     postalCode?: string | null
     city?: string | null
     regionId?: string | null
+    countryId?: string | null
     phoneNumber?: string | null
     phoneVerified?: boolean
     timezone?: string | null
@@ -42454,8 +42756,9 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    passwordVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    role?: UserUpdateroleInput | $Enums.UserRole[]
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -42466,6 +42769,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     region?: RegionUpdateOneWithoutUsersNestedInput
+    country?: CountryUpdateOneWithoutUsersNestedInput
     consumerProfile?: ConsumerUpdateOneWithoutUserNestedInput
     businessAccess?: BusinessUserAccessUpdateManyWithoutUserNestedInput
     createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
@@ -42483,11 +42787,13 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    passwordVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    role?: UserUpdateroleInput | $Enums.UserRole[]
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     regionId?: NullableStringFieldUpdateOperationsInput | string | null
+    countryId?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     phoneVerified?: BoolFieldUpdateOperationsInput | boolean
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -42512,8 +42818,9 @@ export namespace Prisma {
     lastName: string
     email: string
     emailVerified?: boolean
+    passwordVerified?: boolean
     image?: string | null
-    role?: $Enums.UserRole
+    role?: UserCreateroleInput | $Enums.UserRole[]
     postalCode?: string | null
     city?: string | null
     phoneNumber?: string | null
@@ -42524,6 +42831,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     region?: RegionCreateNestedOneWithoutUsersInput
+    country?: CountryCreateNestedOneWithoutUsersInput
     businessAccess?: BusinessUserAccessCreateNestedManyWithoutUserInput
     createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
     createdUsers?: UserCreateNestedManyWithoutCreatedByInput
@@ -42541,11 +42849,13 @@ export namespace Prisma {
     lastName: string
     email: string
     emailVerified?: boolean
+    passwordVerified?: boolean
     image?: string | null
-    role?: $Enums.UserRole
+    role?: UserCreateroleInput | $Enums.UserRole[]
     postalCode?: string | null
     city?: string | null
     regionId?: string | null
+    countryId?: string | null
     phoneNumber?: string | null
     phoneVerified?: boolean
     timezone?: string | null
@@ -42638,8 +42948,9 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    passwordVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    role?: UserUpdateroleInput | $Enums.UserRole[]
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -42650,6 +42961,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     region?: RegionUpdateOneWithoutUsersNestedInput
+    country?: CountryUpdateOneWithoutUsersNestedInput
     businessAccess?: BusinessUserAccessUpdateManyWithoutUserNestedInput
     createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
     createdUsers?: UserUpdateManyWithoutCreatedByNestedInput
@@ -42667,11 +42979,13 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    passwordVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    role?: UserUpdateroleInput | $Enums.UserRole[]
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     regionId?: NullableStringFieldUpdateOperationsInput | string | null
+    countryId?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     phoneVerified?: BoolFieldUpdateOperationsInput | boolean
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -42734,8 +43048,9 @@ export namespace Prisma {
     lastName: string
     email: string
     emailVerified?: boolean
+    passwordVerified?: boolean
     image?: string | null
-    role?: $Enums.UserRole
+    role?: UserCreateroleInput | $Enums.UserRole[]
     postalCode?: string | null
     city?: string | null
     phoneNumber?: string | null
@@ -42746,6 +43061,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     region?: RegionCreateNestedOneWithoutUsersInput
+    country?: CountryCreateNestedOneWithoutUsersInput
     consumerProfile?: ConsumerCreateNestedOneWithoutUserInput
     createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
     createdUsers?: UserCreateNestedManyWithoutCreatedByInput
@@ -42763,11 +43079,13 @@ export namespace Prisma {
     lastName: string
     email: string
     emailVerified?: boolean
+    passwordVerified?: boolean
     image?: string | null
-    role?: $Enums.UserRole
+    role?: UserCreateroleInput | $Enums.UserRole[]
     postalCode?: string | null
     city?: string | null
     regionId?: string | null
+    countryId?: string | null
     phoneNumber?: string | null
     phoneVerified?: boolean
     timezone?: string | null
@@ -42962,8 +43280,9 @@ export namespace Prisma {
     lastName: string
     email: string
     emailVerified?: boolean
+    passwordVerified?: boolean
     image?: string | null
-    role?: $Enums.UserRole
+    role?: UserCreateroleInput | $Enums.UserRole[]
     postalCode?: string | null
     city?: string | null
     phoneNumber?: string | null
@@ -42974,6 +43293,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     region?: RegionCreateNestedOneWithoutUsersInput
+    country?: CountryCreateNestedOneWithoutUsersInput
     consumerProfile?: ConsumerCreateNestedOneWithoutUserInput
     businessAccess?: BusinessUserAccessCreateNestedManyWithoutUserInput
     createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
@@ -42991,11 +43311,13 @@ export namespace Prisma {
     lastName: string
     email: string
     emailVerified?: boolean
+    passwordVerified?: boolean
     image?: string | null
-    role?: $Enums.UserRole
+    role?: UserCreateroleInput | $Enums.UserRole[]
     postalCode?: string | null
     city?: string | null
     regionId?: string | null
+    countryId?: string | null
     phoneNumber?: string | null
     phoneVerified?: boolean
     timezone?: string | null
@@ -43036,8 +43358,9 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    passwordVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    role?: UserUpdateroleInput | $Enums.UserRole[]
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -43048,6 +43371,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     region?: RegionUpdateOneWithoutUsersNestedInput
+    country?: CountryUpdateOneWithoutUsersNestedInput
     consumerProfile?: ConsumerUpdateOneWithoutUserNestedInput
     createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
     createdUsers?: UserUpdateManyWithoutCreatedByNestedInput
@@ -43065,11 +43389,13 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    passwordVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    role?: UserUpdateroleInput | $Enums.UserRole[]
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     regionId?: NullableStringFieldUpdateOperationsInput | string | null
+    countryId?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     phoneVerified?: BoolFieldUpdateOperationsInput | boolean
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -43288,8 +43614,9 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    passwordVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    role?: UserUpdateroleInput | $Enums.UserRole[]
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -43300,6 +43627,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     region?: RegionUpdateOneWithoutUsersNestedInput
+    country?: CountryUpdateOneWithoutUsersNestedInput
     consumerProfile?: ConsumerUpdateOneWithoutUserNestedInput
     businessAccess?: BusinessUserAccessUpdateManyWithoutUserNestedInput
     createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
@@ -43317,11 +43645,13 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    passwordVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    role?: UserUpdateroleInput | $Enums.UserRole[]
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     regionId?: NullableStringFieldUpdateOperationsInput | string | null
+    countryId?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     phoneVerified?: BoolFieldUpdateOperationsInput | boolean
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -43354,6 +43684,7 @@ export namespace Prisma {
     merchants?: MerchantCreateNestedManyWithoutCountryInput
     brands?: BrandCreateNestedManyWithoutCountryInput
     stores?: StoreCreateNestedManyWithoutCountryInput
+    users?: UserCreateNestedManyWithoutCountryInput
   }
 
   export type CountryUncheckedCreateWithoutCurrencyInput = {
@@ -43372,6 +43703,7 @@ export namespace Prisma {
     merchants?: MerchantUncheckedCreateNestedManyWithoutCountryInput
     brands?: BrandUncheckedCreateNestedManyWithoutCountryInput
     stores?: StoreUncheckedCreateNestedManyWithoutCountryInput
+    users?: UserUncheckedCreateNestedManyWithoutCountryInput
   }
 
   export type CountryCreateOrConnectWithoutCurrencyInput = {
@@ -43536,6 +43868,7 @@ export namespace Prisma {
     merchants?: MerchantCreateNestedManyWithoutCountryInput
     brands?: BrandCreateNestedManyWithoutCountryInput
     stores?: StoreCreateNestedManyWithoutCountryInput
+    users?: UserCreateNestedManyWithoutCountryInput
   }
 
   export type CountryUncheckedCreateWithoutContinentInput = {
@@ -43554,6 +43887,7 @@ export namespace Prisma {
     merchants?: MerchantUncheckedCreateNestedManyWithoutCountryInput
     brands?: BrandUncheckedCreateNestedManyWithoutCountryInput
     stores?: StoreUncheckedCreateNestedManyWithoutCountryInput
+    users?: UserUncheckedCreateNestedManyWithoutCountryInput
   }
 
   export type CountryCreateOrConnectWithoutContinentInput = {
@@ -43852,6 +44186,78 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type UserCreateWithoutCountryInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    lastName: string
+    email: string
+    emailVerified?: boolean
+    passwordVerified?: boolean
+    image?: string | null
+    role?: UserCreateroleInput | $Enums.UserRole[]
+    postalCode?: string | null
+    city?: string | null
+    phoneNumber?: string | null
+    phoneVerified?: boolean
+    timezone?: string | null
+    locale?: string | null
+    status?: $Enums.Status
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    region?: RegionCreateNestedOneWithoutUsersInput
+    consumerProfile?: ConsumerCreateNestedOneWithoutUserInput
+    businessAccess?: BusinessUserAccessCreateNestedManyWithoutUserInput
+    createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
+    createdUsers?: UserCreateNestedManyWithoutCreatedByInput
+    createdAccessRecords?: BusinessUserAccessCreateNestedManyWithoutCreatedByInput
+    emailChangeRecords?: EmailChangeRecordCreateNestedManyWithoutUserInput
+    phoneChangeRecords?: PhoneChangeRecordCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutCountryInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    lastName: string
+    email: string
+    emailVerified?: boolean
+    passwordVerified?: boolean
+    image?: string | null
+    role?: UserCreateroleInput | $Enums.UserRole[]
+    postalCode?: string | null
+    city?: string | null
+    regionId?: string | null
+    phoneNumber?: string | null
+    phoneVerified?: boolean
+    timezone?: string | null
+    locale?: string | null
+    status?: $Enums.Status
+    createdById?: string | null
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    consumerProfile?: ConsumerUncheckedCreateNestedOneWithoutUserInput
+    businessAccess?: BusinessUserAccessUncheckedCreateNestedManyWithoutUserInput
+    createdUsers?: UserUncheckedCreateNestedManyWithoutCreatedByInput
+    createdAccessRecords?: BusinessUserAccessUncheckedCreateNestedManyWithoutCreatedByInput
+    emailChangeRecords?: EmailChangeRecordUncheckedCreateNestedManyWithoutUserInput
+    phoneChangeRecords?: PhoneChangeRecordUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutCountryInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutCountryInput, UserUncheckedCreateWithoutCountryInput>
+  }
+
+  export type UserCreateManyCountryInputEnvelope = {
+    data: UserCreateManyCountryInput | UserCreateManyCountryInput[]
+    skipDuplicates?: boolean
+  }
+
   export type CurrencyUpsertWithoutCountriesInput = {
     update: XOR<CurrencyUpdateWithoutCountriesInput, CurrencyUncheckedUpdateWithoutCountriesInput>
     create: XOR<CurrencyCreateWithoutCountriesInput, CurrencyUncheckedCreateWithoutCountriesInput>
@@ -44048,6 +44454,22 @@ export namespace Prisma {
     data: XOR<StoreUpdateManyMutationInput, StoreUncheckedUpdateManyWithoutCountryInput>
   }
 
+  export type UserUpsertWithWhereUniqueWithoutCountryInput = {
+    where: UserWhereUniqueInput
+    update: XOR<UserUpdateWithoutCountryInput, UserUncheckedUpdateWithoutCountryInput>
+    create: XOR<UserCreateWithoutCountryInput, UserUncheckedCreateWithoutCountryInput>
+  }
+
+  export type UserUpdateWithWhereUniqueWithoutCountryInput = {
+    where: UserWhereUniqueInput
+    data: XOR<UserUpdateWithoutCountryInput, UserUncheckedUpdateWithoutCountryInput>
+  }
+
+  export type UserUpdateManyWithWhereWithoutCountryInput = {
+    where: UserScalarWhereInput
+    data: XOR<UserUpdateManyMutationInput, UserUncheckedUpdateManyWithoutCountryInput>
+  }
+
   export type CountryCreateWithoutRegionsInput = {
     id?: string
     isoCode: string
@@ -44064,6 +44486,7 @@ export namespace Prisma {
     merchants?: MerchantCreateNestedManyWithoutCountryInput
     brands?: BrandCreateNestedManyWithoutCountryInput
     stores?: StoreCreateNestedManyWithoutCountryInput
+    users?: UserCreateNestedManyWithoutCountryInput
   }
 
   export type CountryUncheckedCreateWithoutRegionsInput = {
@@ -44082,6 +44505,7 @@ export namespace Prisma {
     merchants?: MerchantUncheckedCreateNestedManyWithoutCountryInput
     brands?: BrandUncheckedCreateNestedManyWithoutCountryInput
     stores?: StoreUncheckedCreateNestedManyWithoutCountryInput
+    users?: UserUncheckedCreateNestedManyWithoutCountryInput
   }
 
   export type CountryCreateOrConnectWithoutRegionsInput = {
@@ -44277,8 +44701,9 @@ export namespace Prisma {
     lastName: string
     email: string
     emailVerified?: boolean
+    passwordVerified?: boolean
     image?: string | null
-    role?: $Enums.UserRole
+    role?: UserCreateroleInput | $Enums.UserRole[]
     postalCode?: string | null
     city?: string | null
     phoneNumber?: string | null
@@ -44288,6 +44713,7 @@ export namespace Prisma {
     status?: $Enums.Status
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
+    country?: CountryCreateNestedOneWithoutUsersInput
     consumerProfile?: ConsumerCreateNestedOneWithoutUserInput
     businessAccess?: BusinessUserAccessCreateNestedManyWithoutUserInput
     createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
@@ -44306,10 +44732,12 @@ export namespace Prisma {
     lastName: string
     email: string
     emailVerified?: boolean
+    passwordVerified?: boolean
     image?: string | null
-    role?: $Enums.UserRole
+    role?: UserCreateroleInput | $Enums.UserRole[]
     postalCode?: string | null
     city?: string | null
+    countryId?: string | null
     phoneNumber?: string | null
     phoneVerified?: boolean
     timezone?: string | null
@@ -44364,6 +44792,7 @@ export namespace Prisma {
     merchants?: MerchantUpdateManyWithoutCountryNestedInput
     brands?: BrandUpdateManyWithoutCountryNestedInput
     stores?: StoreUpdateManyWithoutCountryNestedInput
+    users?: UserUpdateManyWithoutCountryNestedInput
   }
 
   export type CountryUncheckedUpdateWithoutRegionsInput = {
@@ -44382,6 +44811,7 @@ export namespace Prisma {
     merchants?: MerchantUncheckedUpdateManyWithoutCountryNestedInput
     brands?: BrandUncheckedUpdateManyWithoutCountryNestedInput
     stores?: StoreUncheckedUpdateManyWithoutCountryNestedInput
+    users?: UserUncheckedUpdateManyWithoutCountryNestedInput
   }
 
   export type MerchantUpsertWithWhereUniqueWithoutRegionInput = {
@@ -44841,6 +45271,7 @@ export namespace Prisma {
     regions?: RegionCreateNestedManyWithoutCountryInput
     brands?: BrandCreateNestedManyWithoutCountryInput
     stores?: StoreCreateNestedManyWithoutCountryInput
+    users?: UserCreateNestedManyWithoutCountryInput
   }
 
   export type CountryUncheckedCreateWithoutMerchantsInput = {
@@ -44859,6 +45290,7 @@ export namespace Prisma {
     regions?: RegionUncheckedCreateNestedManyWithoutCountryInput
     brands?: BrandUncheckedCreateNestedManyWithoutCountryInput
     stores?: StoreUncheckedCreateNestedManyWithoutCountryInput
+    users?: UserUncheckedCreateNestedManyWithoutCountryInput
   }
 
   export type CountryCreateOrConnectWithoutMerchantsInput = {
@@ -45066,6 +45498,7 @@ export namespace Prisma {
     regions?: RegionUpdateManyWithoutCountryNestedInput
     brands?: BrandUpdateManyWithoutCountryNestedInput
     stores?: StoreUpdateManyWithoutCountryNestedInput
+    users?: UserUpdateManyWithoutCountryNestedInput
   }
 
   export type CountryUncheckedUpdateWithoutMerchantsInput = {
@@ -45084,6 +45517,7 @@ export namespace Prisma {
     regions?: RegionUncheckedUpdateManyWithoutCountryNestedInput
     brands?: BrandUncheckedUpdateManyWithoutCountryNestedInput
     stores?: StoreUncheckedUpdateManyWithoutCountryNestedInput
+    users?: UserUncheckedUpdateManyWithoutCountryNestedInput
   }
 
   export type BusinessRegistrationUpsertWithWhereUniqueWithoutMerchantInput = {
@@ -45250,6 +45684,7 @@ export namespace Prisma {
     regions?: RegionCreateNestedManyWithoutCountryInput
     merchants?: MerchantCreateNestedManyWithoutCountryInput
     stores?: StoreCreateNestedManyWithoutCountryInput
+    users?: UserCreateNestedManyWithoutCountryInput
   }
 
   export type CountryUncheckedCreateWithoutBrandsInput = {
@@ -45268,6 +45703,7 @@ export namespace Prisma {
     regions?: RegionUncheckedCreateNestedManyWithoutCountryInput
     merchants?: MerchantUncheckedCreateNestedManyWithoutCountryInput
     stores?: StoreUncheckedCreateNestedManyWithoutCountryInput
+    users?: UserUncheckedCreateNestedManyWithoutCountryInput
   }
 
   export type CountryCreateOrConnectWithoutBrandsInput = {
@@ -45532,6 +45968,7 @@ export namespace Prisma {
     regions?: RegionUpdateManyWithoutCountryNestedInput
     merchants?: MerchantUpdateManyWithoutCountryNestedInput
     stores?: StoreUpdateManyWithoutCountryNestedInput
+    users?: UserUpdateManyWithoutCountryNestedInput
   }
 
   export type CountryUncheckedUpdateWithoutBrandsInput = {
@@ -45550,6 +45987,7 @@ export namespace Prisma {
     regions?: RegionUncheckedUpdateManyWithoutCountryNestedInput
     merchants?: MerchantUncheckedUpdateManyWithoutCountryNestedInput
     stores?: StoreUncheckedUpdateManyWithoutCountryNestedInput
+    users?: UserUncheckedUpdateManyWithoutCountryNestedInput
   }
 
   export type BusinessRegistrationUpsertWithWhereUniqueWithoutBrandInput = {
@@ -45702,6 +46140,7 @@ export namespace Prisma {
     regions?: RegionCreateNestedManyWithoutCountryInput
     merchants?: MerchantCreateNestedManyWithoutCountryInput
     brands?: BrandCreateNestedManyWithoutCountryInput
+    users?: UserCreateNestedManyWithoutCountryInput
   }
 
   export type CountryUncheckedCreateWithoutStoresInput = {
@@ -45720,6 +46159,7 @@ export namespace Prisma {
     regions?: RegionUncheckedCreateNestedManyWithoutCountryInput
     merchants?: MerchantUncheckedCreateNestedManyWithoutCountryInput
     brands?: BrandUncheckedCreateNestedManyWithoutCountryInput
+    users?: UserUncheckedCreateNestedManyWithoutCountryInput
   }
 
   export type CountryCreateOrConnectWithoutStoresInput = {
@@ -46021,6 +46461,7 @@ export namespace Prisma {
     regions?: RegionUpdateManyWithoutCountryNestedInput
     merchants?: MerchantUpdateManyWithoutCountryNestedInput
     brands?: BrandUpdateManyWithoutCountryNestedInput
+    users?: UserUpdateManyWithoutCountryNestedInput
   }
 
   export type CountryUncheckedUpdateWithoutStoresInput = {
@@ -46039,6 +46480,7 @@ export namespace Prisma {
     regions?: RegionUncheckedUpdateManyWithoutCountryNestedInput
     merchants?: MerchantUncheckedUpdateManyWithoutCountryNestedInput
     brands?: BrandUncheckedUpdateManyWithoutCountryNestedInput
+    users?: UserUncheckedUpdateManyWithoutCountryNestedInput
   }
 
   export type CurrencyUpsertWithoutStoresInput = {
@@ -46829,8 +47271,9 @@ export namespace Prisma {
     lastName: string
     email: string
     emailVerified?: boolean
+    passwordVerified?: boolean
     image?: string | null
-    role?: $Enums.UserRole
+    role?: UserCreateroleInput | $Enums.UserRole[]
     postalCode?: string | null
     city?: string | null
     phoneNumber?: string | null
@@ -46841,6 +47284,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     region?: RegionCreateNestedOneWithoutUsersInput
+    country?: CountryCreateNestedOneWithoutUsersInput
     consumerProfile?: ConsumerCreateNestedOneWithoutUserInput
     businessAccess?: BusinessUserAccessCreateNestedManyWithoutUserInput
     createdBy?: UserCreateNestedOneWithoutCreatedUsersInput
@@ -46858,11 +47302,13 @@ export namespace Prisma {
     lastName: string
     email: string
     emailVerified?: boolean
+    passwordVerified?: boolean
     image?: string | null
-    role?: $Enums.UserRole
+    role?: UserCreateroleInput | $Enums.UserRole[]
     postalCode?: string | null
     city?: string | null
     regionId?: string | null
+    countryId?: string | null
     phoneNumber?: string | null
     phoneVerified?: boolean
     timezone?: string | null
@@ -46903,8 +47349,9 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    passwordVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    role?: UserUpdateroleInput | $Enums.UserRole[]
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -46915,6 +47362,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     region?: RegionUpdateOneWithoutUsersNestedInput
+    country?: CountryUpdateOneWithoutUsersNestedInput
     consumerProfile?: ConsumerUpdateOneWithoutUserNestedInput
     businessAccess?: BusinessUserAccessUpdateManyWithoutUserNestedInput
     createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
@@ -46932,11 +47380,13 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    passwordVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    role?: UserUpdateroleInput | $Enums.UserRole[]
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     regionId?: NullableStringFieldUpdateOperationsInput | string | null
+    countryId?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     phoneVerified?: BoolFieldUpdateOperationsInput | boolean
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -47001,11 +47451,13 @@ export namespace Prisma {
     lastName: string
     email: string
     emailVerified?: boolean
+    passwordVerified?: boolean
     image?: string | null
-    role?: $Enums.UserRole
+    role?: UserCreateroleInput | $Enums.UserRole[]
     postalCode?: string | null
     city?: string | null
     regionId?: string | null
+    countryId?: string | null
     phoneNumber?: string | null
     phoneVerified?: boolean
     timezone?: string | null
@@ -47187,8 +47639,9 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    passwordVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    role?: UserUpdateroleInput | $Enums.UserRole[]
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -47199,6 +47652,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     region?: RegionUpdateOneWithoutUsersNestedInput
+    country?: CountryUpdateOneWithoutUsersNestedInput
     consumerProfile?: ConsumerUpdateOneWithoutUserNestedInput
     businessAccess?: BusinessUserAccessUpdateManyWithoutUserNestedInput
     createdUsers?: UserUpdateManyWithoutCreatedByNestedInput
@@ -47216,11 +47670,13 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    passwordVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    role?: UserUpdateroleInput | $Enums.UserRole[]
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     regionId?: NullableStringFieldUpdateOperationsInput | string | null
+    countryId?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     phoneVerified?: BoolFieldUpdateOperationsInput | boolean
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -47245,11 +47701,13 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    passwordVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    role?: UserUpdateroleInput | $Enums.UserRole[]
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     regionId?: NullableStringFieldUpdateOperationsInput | string | null
+    countryId?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     phoneVerified?: BoolFieldUpdateOperationsInput | boolean
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -47524,6 +47982,7 @@ export namespace Prisma {
     merchants?: MerchantUpdateManyWithoutCountryNestedInput
     brands?: BrandUpdateManyWithoutCountryNestedInput
     stores?: StoreUpdateManyWithoutCountryNestedInput
+    users?: UserUpdateManyWithoutCountryNestedInput
   }
 
   export type CountryUncheckedUpdateWithoutCurrencyInput = {
@@ -47542,6 +48001,7 @@ export namespace Prisma {
     merchants?: MerchantUncheckedUpdateManyWithoutCountryNestedInput
     brands?: BrandUncheckedUpdateManyWithoutCountryNestedInput
     stores?: StoreUncheckedUpdateManyWithoutCountryNestedInput
+    users?: UserUncheckedUpdateManyWithoutCountryNestedInput
   }
 
   export type CountryUncheckedUpdateManyWithoutCurrencyInput = {
@@ -47660,6 +48120,7 @@ export namespace Prisma {
     merchants?: MerchantUpdateManyWithoutCountryNestedInput
     brands?: BrandUpdateManyWithoutCountryNestedInput
     stores?: StoreUpdateManyWithoutCountryNestedInput
+    users?: UserUpdateManyWithoutCountryNestedInput
   }
 
   export type CountryUncheckedUpdateWithoutContinentInput = {
@@ -47678,6 +48139,7 @@ export namespace Prisma {
     merchants?: MerchantUncheckedUpdateManyWithoutCountryNestedInput
     brands?: BrandUncheckedUpdateManyWithoutCountryNestedInput
     stores?: StoreUncheckedUpdateManyWithoutCountryNestedInput
+    users?: UserUncheckedUpdateManyWithoutCountryNestedInput
   }
 
   export type CountryUncheckedUpdateManyWithoutContinentInput = {
@@ -47766,6 +48228,28 @@ export namespace Prisma {
     currencyId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+  }
+
+  export type UserCreateManyCountryInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    lastName: string
+    email: string
+    emailVerified?: boolean
+    passwordVerified?: boolean
+    image?: string | null
+    role?: UserCreateroleInput | $Enums.UserRole[]
+    postalCode?: string | null
+    city?: string | null
+    regionId?: string | null
+    phoneNumber?: string | null
+    phoneVerified?: boolean
+    timezone?: string | null
+    locale?: string | null
+    status?: $Enums.Status
+    createdById?: string | null
   }
 
   export type RegionUpdateWithoutCountryInput = {
@@ -48016,6 +48500,90 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type UserUpdateWithoutCountryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    passwordVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: UserUpdateroleInput | $Enums.UserRole[]
+    postalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    phoneVerified?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    locale?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    region?: RegionUpdateOneWithoutUsersNestedInput
+    consumerProfile?: ConsumerUpdateOneWithoutUserNestedInput
+    businessAccess?: BusinessUserAccessUpdateManyWithoutUserNestedInput
+    createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
+    createdUsers?: UserUpdateManyWithoutCreatedByNestedInput
+    createdAccessRecords?: BusinessUserAccessUpdateManyWithoutCreatedByNestedInput
+    emailChangeRecords?: EmailChangeRecordUpdateManyWithoutUserNestedInput
+    phoneChangeRecords?: PhoneChangeRecordUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutCountryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    passwordVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: UserUpdateroleInput | $Enums.UserRole[]
+    postalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    regionId?: NullableStringFieldUpdateOperationsInput | string | null
+    phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    phoneVerified?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    locale?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    consumerProfile?: ConsumerUncheckedUpdateOneWithoutUserNestedInput
+    businessAccess?: BusinessUserAccessUncheckedUpdateManyWithoutUserNestedInput
+    createdUsers?: UserUncheckedUpdateManyWithoutCreatedByNestedInput
+    createdAccessRecords?: BusinessUserAccessUncheckedUpdateManyWithoutCreatedByNestedInput
+    emailChangeRecords?: EmailChangeRecordUncheckedUpdateManyWithoutUserNestedInput
+    phoneChangeRecords?: PhoneChangeRecordUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateManyWithoutCountryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    passwordVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: UserUpdateroleInput | $Enums.UserRole[]
+    postalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    regionId?: NullableStringFieldUpdateOperationsInput | string | null
+    phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    phoneVerified?: BoolFieldUpdateOperationsInput | boolean
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    locale?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
   export type MerchantCreateManyRegionInput = {
     id?: string
     name: string
@@ -48090,10 +48658,12 @@ export namespace Prisma {
     lastName: string
     email: string
     emailVerified?: boolean
+    passwordVerified?: boolean
     image?: string | null
-    role?: $Enums.UserRole
+    role?: UserCreateroleInput | $Enums.UserRole[]
     postalCode?: string | null
     city?: string | null
+    countryId?: string | null
     phoneNumber?: string | null
     phoneVerified?: boolean
     timezone?: string | null
@@ -48326,8 +48896,9 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    passwordVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    role?: UserUpdateroleInput | $Enums.UserRole[]
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -48337,6 +48908,7 @@ export namespace Prisma {
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
+    country?: CountryUpdateOneWithoutUsersNestedInput
     consumerProfile?: ConsumerUpdateOneWithoutUserNestedInput
     businessAccess?: BusinessUserAccessUpdateManyWithoutUserNestedInput
     createdBy?: UserUpdateOneWithoutCreatedUsersNestedInput
@@ -48355,10 +48927,12 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    passwordVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    role?: UserUpdateroleInput | $Enums.UserRole[]
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
+    countryId?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     phoneVerified?: BoolFieldUpdateOperationsInput | boolean
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -48384,10 +48958,12 @@ export namespace Prisma {
     lastName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    passwordVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    role?: UserUpdateroleInput | $Enums.UserRole[]
     postalCode?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
+    countryId?: NullableStringFieldUpdateOperationsInput | string | null
     phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
     phoneVerified?: BoolFieldUpdateOperationsInput | boolean
     timezone?: NullableStringFieldUpdateOperationsInput | string | null

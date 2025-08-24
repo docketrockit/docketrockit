@@ -13,16 +13,20 @@ const continents = [
 ];
 
 async function seedContinents() {
+    const totalLength = continents.length;
+    let count = 1;
     try {
-        console.log('🌎 Seeding countries...');
+        console.log('🌎 Seeding continents...');
         for (const continent of continents) {
             await prisma.continent.create({
                 data: {
                     name: continent
                 }
             });
+            console.log(`Seeded ${count} / ${totalLength} continents`);
+            count++;
         }
-        console.log(`✅ Seeded ${continents.length} countries`);
+        console.log(`✅ Seeded ${continents.length} continents`);
     } catch (error) {
         console.error('❌ Error during seeding:', error);
         throw error;

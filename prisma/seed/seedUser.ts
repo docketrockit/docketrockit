@@ -17,8 +17,11 @@ async function seedUser() {
                 name: 'Mark',
                 lastName: 'Rosenberg',
                 email: 'mark@docketrockit.com',
-                role: 'ADMIN',
-                phoneNumber: '+61411896030'
+                role: ['ADMIN'],
+                phoneNumber: '+61411896030',
+                emailVerified: true,
+                phoneVerified: true,
+                passwordVerified: true
             }
         });
         const password = await hash('mark1234', opts);

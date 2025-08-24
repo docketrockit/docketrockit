@@ -9,6 +9,7 @@ import { prisma } from '@/lib/prisma';
 import { hashPassword, verifyPassword } from '@/lib/argon2';
 import { sendVerificationEmail, sendResetEmail } from '@/lib/mail';
 import { logPasswordResetRequested } from '@/actions/audit/audit-auth';
+import { RoleArraySchema } from '@/schemas/auth';
 
 const options = {
     database: prismaAdapter(prisma, {
@@ -59,7 +60,7 @@ const options = {
                 required: true
             },
             role: {
-                type: ['USER', 'MERCHANT'] as Array<UserRole>
+                type: 'string[]'
             },
             postalCode: {
                 type: 'string',
@@ -70,6 +71,10 @@ const options = {
                 required: false
             },
             regionId: {
+                type: 'string',
+                required: false
+            },
+            countryId: {
                 type: 'string',
                 required: false
             },
@@ -90,6 +95,10 @@ const options = {
                 required: false
             },
             emailVerified: {
+                type: 'boolean',
+                required: false
+            },
+            passwordVerified: {
                 type: 'boolean',
                 required: false
             }
@@ -118,10 +127,15 @@ export const auth = betterAuth({
             const accounts = await prisma.account.findMany({
                 where: { id: user.id }
             });
+            const businessUserAccess =
+                await prisma.businessUserAccess.findUnique({
+                    where: { id: user.id }
+                });
             return {
                 session,
                 user: {
-                    ...user
+                    ...user,
+                    businessUserAccess
                 },
                 accounts
             };
